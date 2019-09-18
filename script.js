@@ -7,32 +7,37 @@ class Neuron {
   constructor(a,b) {
     this.x = a;
     this.y = b;
-    this.s = s;
+    this.s = 10;
     this.out = [];
     this.in = [];
   }
   draw() {
     ctx.fillRect(this.x, this.y,this.s,this.s);
+    ctx.fillText(this.in.reduce((a, b) => a + b,0), this.x+10,this.y);
+    this.out.forEach(x=>x.draw());
   }
-  update() {
-    this.out.forEach(x=>x.update(this.in[0]+this.in[1]));
+  update(inn) {
+    this.in = inn || this.in;
+    console.log(this.in);
+    this.out.forEach(x=>x.update([this.in.reduce((a, b) => a + b,0)])); //for each output, send out sum of this input
   }
 }
 
 let t = 0;
 let neurons = new Neuron(20,10);
+neurons.out = [new Neuron(10,40), new Neuron(30,40)];
+
+
+neurons.update([3,1]);
 
 function draw() {
   ctx.clearRect(0,0,c.width,c.height);
   
   
-  for(let n of neurons) {
-    n.draw();
-  }  
+  neurons.draw();
   
   t++
   window.requestAnimationFrame(draw);
 }
-
 
 draw();
