@@ -36,12 +36,12 @@ function addConnection(a,b){
 }
 
 addConnection(neurons[0],neurons[1]);
+console.log(1);
 function draw() {
   ctx.clearRect(0,0,c.width,c.height);
   
   for(let i = 0; i < neurons.size(); i++){
     neurons[i].draw();
-    console.log(i);
   }
   //neurons.draw();
   
