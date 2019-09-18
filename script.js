@@ -3,6 +3,8 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
+const damp = 0.8;
+
 class Neuron {
   constructor(a,b) {
     this.x = a;
@@ -18,8 +20,7 @@ class Neuron {
   }
   update(inn) {
     this.in = inn || this.in;
-    console.log(this.in);
-    this.out.forEach(x=>x.update([this.in.reduce((a, b) => a + b,0)])); //for each output, send out sum of this input
+    this.out.forEach(x=>x.update([this.in.reduce((a, b) => (a + b),0)*damp])); //for each output, send out sum of this input
   }
 }
 
