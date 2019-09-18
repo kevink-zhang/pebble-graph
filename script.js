@@ -10,9 +10,9 @@ class Neuron {
     this.x = a;
     this.y = b;
     this.s = 10;
-    this.out = [];
-    this.in = [];
-    this.input = [];
+    this.out = []; //vertices which this goes into
+    this.in = []; //vertices which go into this
+    this.input = []; //input values
   }
   draw() {
     ctx.fillRect(this.x, this.y,this.s,this.s);
@@ -29,7 +29,7 @@ let t = 0;
 let neurons = [new Neuron(20,10),new Neuron(10,40), new Neuron(50,40)];
 
 
-neurons[0].update([3,4]);
+//neurons[0].update([4]);
 
 function addConnection(a,b){
   a.out.push(b);
@@ -37,6 +37,7 @@ function addConnection(a,b){
 }
 
 addConnection(neurons[0],neurons[1]);
+addConnection(neurons[0],neurons[2]);
 neurons[0].update([3,1]);
 
 function draw() {
