@@ -16,7 +16,7 @@ class Neuron {
   draw() {
     ctx.fillRect(this.x, this.y,this.s,this.s);
     ctx.fillText(this.in.reduce((a, b) => a + b,0), this.x+10,this.y);
-    this.out.forEach(x=>x.draw());
+    //this.out.forEach(x=>x.draw());
   }
   update(inn) {
     this.in = inn || this.in;
@@ -25,17 +25,25 @@ class Neuron {
 }
 
 let t = 0;
-let neurons = new Neuron(20,10);
-neurons.out = [new Neuron(10,40), new Neuron(30,40)];
+let neurons = [new Neuron(20,10),new Neuron(10,40), new Neuron(30,40)];
 
 
 neurons.update([3,1]);
 
+function addConnection(a,b){
+  a.out.append(b);
+  b.in.append(a);
+}
+
+addConnection(neurons[0],neurons[1]);
 function draw() {
   ctx.clearRect(0,0,c.width,c.height);
   
-  
-  neurons.draw();
+  for(let i = 0; i < neurons.size(); i++){
+    neurons[i].draw();
+    console.log(i);
+  }
+  //neurons.draw();
   
   t++
   window.requestAnimationFrame(draw);
