@@ -12,6 +12,7 @@ class Neuron {
     this.s = 10;
     this.out = [];
     this.in = [];
+    
   }
   draw() {
     ctx.fillRect(this.x, this.y,this.s,this.s);
@@ -28,7 +29,7 @@ let t = 0;
 let neurons = [new Neuron(20,10),new Neuron(10,40), new Neuron(30,40)];
 
 
-neurons.update([3,1]);
+//neurons.update([3,1]);
 
 function addConnection(a,b){
   a.out.append(b);
@@ -36,7 +37,7 @@ function addConnection(a,b){
 }
 
 addConnection(neurons[0],neurons[1]);
-console.log(1);
+
 function draw() {
   ctx.clearRect(0,0,c.width,c.height);
   
@@ -45,7 +46,7 @@ function draw() {
   }
   //neurons.draw();
   
-  t++
+  t++;
   window.requestAnimationFrame(draw);
 }
 
