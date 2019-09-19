@@ -11,6 +11,7 @@ class Neuron {
     this.out = []; //vertices which this goes into
     this.in = []; //vertices which go into this
     this.inval = []; //input values
+    
   }
   draw() {
     ctx.fillRect(this.x, this.y,this.s,this.s);
@@ -28,6 +29,7 @@ class Neuron {
     let sendval = (this.inval.reduce((a, b) => (a + b),0))*damp;
     //this.out.forEach(x=>x.update([this.inval.reduce((a, b) => (a + b),0)*damp])); //for each output, send out sum of this input
     this.out.forEach(x=>x.update(sendval));
+
   }
 }
 
@@ -37,20 +39,19 @@ function addConnection(a,b){
 }
 
 let t = 0; //time counter
-let neurons = [new Neuron(20,10),new Neuron(10,40), new Neuron(50,40)];
+let neurons = [new Neuron(20,10),new Neuron(10,40), new Neuron(50,40), new Neuron(150,40), new Neuron(200,40)];
 
 neurons[0].update(4);
 
 addConnection(neurons[0],neurons[1]);
 addConnection(neurons[0],neurons[2]);
-addConnection(neurons[1],neurons[2]);
+addConnection(neurons[3],neurons[4]);
 
 
 function draw() {
   ctx.clearRect(0,0,c.width,c.height);
   
   neurons.forEach(n=>n.draw());
-  console.log
   t++;
   window.requestAnimationFrame(draw);
 }
