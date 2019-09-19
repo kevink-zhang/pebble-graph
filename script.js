@@ -14,9 +14,8 @@ class Neuron {
   }
   draw() {
     ctx.fillRect(this.x, this.y,this.s,this.s);
-    //ctx.fillText(this.inval, this.x+10,this.y);
     ctx.fillText(this.inval.reduce((a, b) => a + b,0), this.x+10,this.y);
-    //this.out.forEach(x=>x.draw());
+    
     for(let n of this.out){
       ctx.beginPath();
       ctx.moveTo(this.x+this.s/2,this.y+this.s/2);
@@ -26,35 +25,32 @@ class Neuron {
   }
   update(inv) {
     this.inval.push(inv); // || this.inval;
-    let sendval = this.inval.reduce((a, b) => (a + b),0)*damp;
+    let sendval = (this.inval.reduce((a, b) => (a + b),0))*damp;
     //this.out.forEach(x=>x.update([this.inval.reduce((a, b) => (a + b),0)*damp])); //for each output, send out sum of this input
     this.out.forEach(x=>x.update(sendval));
   }
 }
-
-let t = 0;
-let neurons = [new Neuron(20,10),new Neuron(10,40), new Neuron(50,40)];
-
-neurons[0].update(4);
 
 function addConnection(a,b){
   a.out.push(b);
   b.in.push(a);
 }
 
+let t = 0; //time counter
+let neurons = [new Neuron(20,10),new Neuron(10,40), new Neuron(50,40)];
+
+neurons[0].update(4);
+
 addConnection(neurons[0],neurons[1]);
 addConnection(neurons[0],neurons[2]);
 addConnection(neurons[1],neurons[2]);
 
-//neurons[0].update();
 
 function draw() {
   ctx.clearRect(0,0,c.width,c.height);
   
-  for(let i = 0; i < neurons.length; i++){
-    neurons[i].draw();
-  }
-  
+  neurons.forEach(n=>n.draw());
+  console.log
   t++;
   window.requestAnimationFrame(draw);
 }
