@@ -1,3 +1,7 @@
+// Was thinking about this a little bit more, and we really need a way for signals to propogate slowly...
+// That is how the brain works, and this should be able to do the same thing
+// Also, action potentials always happen at full strength
+
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
@@ -11,7 +15,6 @@ class Neuron {
     this.out = []; //vertices which this goes into
     this.in = []; //vertices which go into this
     this.inval = []; //input values
-    
   }
   draw() {
     ctx.fillRect(this.x, this.y,this.s,this.s);
