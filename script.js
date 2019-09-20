@@ -5,11 +5,14 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
-const damp = 0.63; //new signal decay
-const decay = 0.99; //neuron value decay rate
-const sim_speed = 5; //simulation speed
+const damp = 0.65; //new signal decay
+const decay = 0.995; //neuron value decay rate
+const sim_speed = 10; //simulation speed
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
+const neuro_ref = 100;
+const neuro_max = 50;
+const neuro_init_color = 50;
 
 function draw_arrow(fromx, fromy, tox, toy) {
   const headlen = 10; // length of head in pixels
@@ -91,7 +94,7 @@ class Neuron {
       draw_arrow(this.x, this.y, n.x, n.y);
     }
 
-    let a = (this.val / 100) * 180 + 75;
+    let a = (this.val / neuro_max) * (255-neuro_init_color) + neuro_init_color;
     ctx.fillStyle = "rgb(" + a + "," + a + "," + a + ")"; //neuron_color;
     ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
     ctx.fillStyle = neuron_color;
@@ -107,7 +110,7 @@ class Neuron {
     if (this.val < this.actpot || this.refractory > 0)
       return [];
 
-    this.refractory = 100;
+    this.refractory = neuro_ref;
     let ret = [];
     for (let n of this.out) {
       ret.push(new Signal(this, n, this.val * damp));
