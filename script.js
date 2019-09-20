@@ -157,16 +157,22 @@ brain.addEdge(0,2);
 brain.addEdge(0,4);
 brain.addEdge(2,3);
 brain.addEdge(3,0);
-//brain.addEdge(0,3);
 brain.addValue(0,4);
 
 
+let active;
 function draw() {
   ctx.clearRect(0,0,c.width,c.height);
   ctx.fillStyle = backdrop;
   ctx.fillRect(0, 0, c.width, c.height);
   
   brain.draw();
+  
+  // sketch draw on top thing
+  if (active){
+  ctx.fillStyle = "red";
+  ctx.fillRect(active.x-active.s/2, active.y-active.s/2, active.s,active.s)
+  }
   brain.update();
   
   ctx.fillStyle = neuron_color;
@@ -177,14 +183,16 @@ function draw() {
 
 draw();
 
-c.addEventListener("mousedown", e=>{
+c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
   
-  let below = brain.nodes.find(n => n.x<x+15 && n.x > x-15 && n.y<y+15 && n.y > y-15);
+  let below = brain.nodes.find(n => n.x<x+n.s && n.x > x-n.s && n.y<y+n.s && n.y > y-n.s);
   if (below) {
-    below.val = 1000
+    active = below;
   } else {
-    brain.nodes.push(new Neuron(x,y,brain.nodes.length))  
+    let n = new Neuron(x,y,brain.nodes.length);
+    active = n;
+    brain.nodes.push(n);  
   }
 });
