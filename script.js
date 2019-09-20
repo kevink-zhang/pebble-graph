@@ -83,7 +83,7 @@ class Neuron {
     this.s = 15;
     this.id = i;
     this.out = []; // vertices which this goes into
-    this.in = []; // vertices which go into this
+    this.signals = []; // signals which currently are inside synapses (should replace .val)
     this.refractory = 0;
     this.val = 0; // display value
     this.actpot = 2; // action potential barrier
