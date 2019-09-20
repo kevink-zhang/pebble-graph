@@ -26,6 +26,10 @@ class Signal {
     this.uVec = [dx/mag,dy/mag];
   }
   draw(){
+    if(this.dead)
+      return;
+    ctx.strokeStyle(neuron_color);
+    //ctx.fillText(this.val,this.x,this.y+5);
     ctx.beginPath();
     ctx.arc(this.pos[0], this.pos[1], 5, 0, 2 * Math.PI);
     ctx.stroke();
@@ -82,7 +86,8 @@ class Neuron {
     for(let n of this.out){
       ret.push(new Signal(this,n,this.val*damp));
     }
-    return ret;
+    if(this.val>this.actpot)
+      return ret;
   }
 }
 
@@ -97,12 +102,13 @@ class Graph {
     this.signals.forEach(x=>x.draw());
   }
   update(){
-    let remov = [];
     for(let s of this.signals){
       if(!s.dead && s.update()){
         this.addValue(s.endid.ID,s.val);
-        remov.push(s);
       }
+    }
+    for(let n of this.nodes){
+      n.val=fround(n.val*damp,10);
     }
   }
   addValue(n,v){
@@ -142,7 +148,7 @@ function dist(p1,p2){
   return Math.sqrt((p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1]));
 }
 function fround(x,f){
-  return Math.round(x*f)/f;
+  return Math.floor(x*f)/f;
 }
 
 
