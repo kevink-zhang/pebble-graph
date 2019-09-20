@@ -36,20 +36,18 @@ class Signal {
     this.src = src; // source neuron
     this.end = end; // target neuron
     this.progress = 0;
-    this.val = val;
-    this.dead = false;
-
-    let dx = this.end.x - this.src.x;
-    let dy = this.end.y - this.src.y;
+    this.val = val; // strength of the resulting neurotransmitter
+    this.fired = false; // make sure we don't fire twice before cleanup
+    
+    const dx = this.end.x - this.src.x;
+    const dy = this.end.y - this.src.y;
     this.mag = Math.sqrt(dx**2+dy**2);
   }
   draw() {
-    if (this.dead) return;
-
-    let dx = this.end.x - this.src.x;
-    let dy = this.end.y - this.src.y;
-    let posx = this.src.x + dx*this.progress;
-    let posy = this.src.y + dy*this.progress;
+    const dx = this.end.x - this.src.x;
+    const dy = this.end.y - this.src.y;
+    const posx = this.src.x + dx*this.progress;
+    const posy = this.src.y + dy*this.progress;
     
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(this.val, 10), posx, posy - 10);
@@ -60,19 +58,8 @@ class Signal {
     ctx.stroke();
   }
   update() {
-    if (this.dead) {
-      return false;
-    }
-
     this.progress += 0.5/this.mag;
-    if (this.progress >= 1) {
-      this.dead = true;
-      return true;
-    }
-    return false;
-  }
-  kill() {
-    this.dead = true;
+    return  !this.fired && (this.fired = this.progress >= 1);
   }
 }
 class Neurotransmitter {
@@ -82,7 +69,7 @@ class Neurotransmitter {
   }
 }
 class Neuron {
-  constructor(a, b, i) {
+  constructor(a, b, i, weight) {
     this.x = a;
     this.y = b;
     this.s = 15;
@@ -90,18 +77,18 @@ class Neuron {
     this.out = []; // vertices which this goes into
     this.signals = []; // signals which currently are inside synapses (should replace .val)
     this.refractory = 0;
-    this.weight = 1; // set to -1 for inhibitory neurons
-    this.actpot = 1.5; // action potential barrier
+    this.weight = weight; // set to -1 for inhibitory neurons
+    this.actpot = 1; // action potential barrier
   }
   draw() {
-    for (let n of this.out) {
+    for (const n of this.out) {
       ctx.strokeStyle = neuron_color;
       draw_arrow(this.x, this.y, n.x, n.y);
     }
 
-    let sum = this.sum();
-    let a = (sum / neuro_max) * (255-neuro_init_color) + neuro_init_color;
-    ctx.fillStyle = "rgb(" + a + "," + a + "," + a + ")";
+    const sum = this.sum();
+    const a = (sum / neuro_max) * (255-neuro_init_color) + neuro_init_color;
+    ctx.fillStyle = "rgb(" + (this.weight<0?a:0) + "," + (this.weight<0?0:a) + ",0)";
     ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(sum, 10), this.x + 12, this.y);
@@ -114,7 +101,7 @@ class Neuron {
 
     this.signals.push(new Neurotransmitter(inVal));
     
-    let sum = this.sum();
+    const sum = this.sum();
 
     // action potential not met, will not fire
     if (sum < this.actpot || this.refractory > 0)
@@ -122,13 +109,13 @@ class Neuron {
 
     this.refractory = neuro_ref;
 
-    let ret = this.out.map(n => new Signal(this, n, this.weight))
+    const ret = this.out.map(n => new Signal(this, n, this.weight))
 
     return ret;
   }
   tick() {
     this.refractory = Math.max(this.refractory - 1, 0);
-    for (let s of this.signals) s.time -= 0.001;
+    for (const s of this.signals) s.time -= 0.001;
     this.signals = this.signals.filter(x=>x.time>0)
   }
 }
@@ -141,7 +128,7 @@ class Graph {
   draw() {
     this.nodes.forEach(x => x.draw());
     this.signals.forEach(x => x.draw());
-    this.signals = this.signals.filter(x=>!x.dead)
+    this.signals = this.signals.filter(x=>x.progress<=1)
   }
   update() {
     for (let s of this.signals) {
@@ -191,7 +178,7 @@ class Graph {
         tests -= 5;
       }
     }
-    this.nodes.push(new Neuron(testPos[0], testPos[1], this.nodes.length));
+    this.nodes.push(new Neuron(testPos[0], testPos[1], this.nodes.length, 1));
   }
   addEdge(a, b) {
     this.nodes[a].out.push(this.nodes[b]);
@@ -283,7 +270,7 @@ c.addEventListener("mousedown", e => {
       }
     }
   } else {
-    let n = new Neuron(x, y, brain.nodes.length);
+    let n = new Neuron(x, y, brain.nodes.length, e.shiftKey?-1:1);
     brain.nodes.push(n);
   }
 });
