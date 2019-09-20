@@ -214,14 +214,14 @@ for(let i = 0; i < 5; i++){
   brain.addNode();
 }
 
-brain.addEdge(0,1);
-brain.addEdge(0,2);
-brain.addEdge(2,4);
-brain.addEdge(0,4);
-brain.addEdge(2,3);
-brain.addEdge(1,2);
-brain.addEdge(3,0);
-brain.addValue(0,20);
+brain.addEdge(0, 1);
+brain.addEdge(0, 2);
+brain.addEdge(2, 4);
+brain.addEdge(0, 4);
+brain.addEdge(2, 3);
+brain.addEdge(1, 2);
+brain.addEdge(3, 0);
+brain.addValue(0, 20);
 
 
 let active = null;
@@ -234,7 +234,7 @@ function draw() {
   
   if (active){
     ctx.fillStyle = "yellow";
-    ctx.fillRect(active.x-active.s/2, active.y-active.s/2, active.s,active.s)
+    ctx.fillRect(active.x - active.s / 2, active.y - active.s / 2, active.s, active.s)
   }
   for(let i = 0; i < sim_speed; i++){
     brain.update();
@@ -257,25 +257,43 @@ c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
   
-  let below = brain.nodes.find(n => n.x<x+n.s && n.x > x-n.s && n.y<y+n.s && n.y > y-n.s);
+  let below = brain.nodes.find(n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s);
   if (below) {
-    if(e.button==2){
+    if (e.button==2) {
       brain.addValue(below.ID,10);
-    }else{
-    if(active!=null){
-      if(below!=active){
-        brain.addEdge(active.ID,below.ID);
-      }
-      active = null;
+    } else {
+      if(active!=null){
+        if(below!=active){
+          brain.addEdge(active.ID,below.ID);
+        }
+        active = null;
       
-    }
-    else{
-      active = below;
-    }
+      }else{
+        active = below;
       }
+    }
   } else {
     let n = new Neuron(x,y,brain.nodes.length);
-    //active = n;
     brain.nodes.push(n);  
+  }
+});
+let movedx = 0;
+let movedy = 0;
+c.addEventListener("mousemove", e => {
+  let x = e.clientX - c.getBoundingClientRect().left;
+  let y = e.clientY - c.getBoundingClientRect().top;
+  if(active){
+    movedx += active.x - x;
+    movedy += active.y - y;
+    active.x = x;
+    active.y = y;
+  }
+});
+c.addEventListener("mouseup", e => {
+  console.log(movedx, movedy)
+  if(Math.abs(movedx)>20 || Math.abs(movedy)>20){
+    active = null;
+    movedx = 0;
+    movedy = 0;
   }
 });
