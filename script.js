@@ -18,6 +18,7 @@ class Signal {
     this.endid = endid; //end neuron
     this.pos = this.src;
     this.val = val;
+    this.dead = false;
     
     let dx = this.end[0]-this.src[0];
     let dy = this.end[1]-this.src[1];
@@ -28,7 +29,6 @@ class Signal {
     ctx.beginPath();
     ctx.arc(this.pos[0], this.pos[1], 5, 0, 2 * Math.PI);
     ctx.stroke();
-    ctx.fillStyle(neuron_color);
   }
   update() {
     for(let i = 0; i < 2; i++){
@@ -38,6 +38,9 @@ class Signal {
       return true;
     }
     return false;
+  }
+  kill() {
+    this.dead = true;
   }
 }
 
@@ -87,9 +90,11 @@ class Graph {
     this.signals.forEach(x=>x.draw());
   }
   update(){
+    let remov = [];
     for(let s of this.signals){
       if(s.update()){
-        this.signals.remove(s);
+        this.addValue(s.endid.ID,s.val);
+        remov.push(s);
       }
     }
   }
@@ -157,6 +162,8 @@ function draw() {
   brain.draw();
   brain.update();
   
+  ctx.fillStyle = neuron_color;
+  ctx.fillText(t,200,150);
   t++;
   window.requestAnimationFrame(draw);
 }
