@@ -126,8 +126,8 @@ class Graph {
     this.signals = [];
   }
   draw() {
-    this.nodes.forEach(x => x.draw());
     this.signals.forEach(x => x.draw());
+    this.nodes.forEach(x => x.draw());
     this.signals = this.signals.filter(x=>x.progress<=1)
   }
   update() {
@@ -199,7 +199,11 @@ function distToSegment(p, v, w) {
   return Math.sqrt(dist(p, { x: v[0] + t * (w[0] - v[0]), y: v[1] + t * (w[1] - v[1]) }));
 }
 
+
+
 let t = 0; //time counter
+let paused = true; //will not update brain
+
 let brain = new Graph();
 
 for (let i = 0; i < 5; i++) {
@@ -213,7 +217,7 @@ brain.addEdge(0, 4);
 brain.addEdge(2, 3);
 brain.addEdge(1, 2);
 brain.addEdge(3, 0);
-brain.addValue(0, 20);
+brain.addValue(0, 100);
 
 let active = null;
 let down = false;
@@ -228,8 +232,11 @@ function draw() {
     ctx.fillStyle = "yellow";
     ctx.fillRect(active.x - active.s / 2, active.y - active.s / 2, active.s, active.s);
   }
-  for (let i = 0; i < sim_speed; i++) {
-    brain.update();
+  if(!paused){
+    for (let i = 0; i < sim_speed; i++) {
+      brain.update();
+    }
+    t += sim_speed;
   }
 
   if(!down && active) {
@@ -238,7 +245,22 @@ function draw() {
 
   ctx.fillStyle = neuron_color;
   ctx.fillText(t, 450, 450);
-  t += sim_speed;
+  
+  ctx.fillRect(5,5,15,15);
+  if(paused){
+    ctx.fillStyle = backdrop;
+    ctx.beginPath();
+    ctx.moveTo(10-2, 7);
+    ctx.lineTo(10-2,17);
+    ctx.lineTo(20-2, 12);
+    ctx.closePath();
+    ctx.fill();
+  }
+  else{
+    //ctx.fillSyle = backdrop;
+    ctx.fillRect(8,7,2,10);
+    ctx.fillRect(16,7,2,10);
+  }
   window.requestAnimationFrame(draw);
 }
 
@@ -253,7 +275,14 @@ c.addEventListener("contextmenu", e => {
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-
+  
+  if(x>5&&x<20&&y>5&&y<20){
+    if(!paused)
+      paused = true;
+    else
+      paused = false;
+    return;
+  }
   let below = brain.nodes.find(n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s);
   if (below) {
     if (e.button == 2) {
