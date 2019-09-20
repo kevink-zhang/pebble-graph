@@ -5,10 +5,10 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
-const damp = 0.7; //new signal decay
+const damp = 0.63; //new signal decay
 const decay = 0.99; //neuron value decay rate
 const burnout = 50; //if neuron value exceeds burnout, then neuron will "die"
-const sim_speed = 10; //simulation speed
+const sim_speed = 5; //simulation speed
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 
@@ -73,6 +73,14 @@ class Neuron {
     this.actpot = 2; //action potential barrier
   }
   draw() {
+    for(let n of this.out){
+      ctx.beginPath();
+      ctx.strokeStyle = neuron_color;
+      ctx.moveTo(this.x,this.y);
+      ctx.lineTo(n.x, n.y);
+      ctx.stroke();
+    }
+    
     let a = this.val/burnout*180+75;
     ctx.fillStyle = "rgb("+a+","+a+","+a+")";//neuron_color;
     if(this.dead)
@@ -82,15 +90,11 @@ class Neuron {
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(this.val,10),this.x+12,this.y);
     
-    for(let n of this.out){
-      ctx.beginPath();
-      ctx.strokeStyle = neuron_color;
-      ctx.moveTo(this.x,this.y);
-      ctx.lineTo(n.x, n.y);
-      ctx.stroke();
-    }
   }
   update(inVal) {
+    if(this.dead){
+      return [];
+    }
     this.val+=inVal;
     this.val = fround(this.val,10);
     if(this.val>burnout)
@@ -126,7 +130,8 @@ class Graph {
       }
     }
     for(let n of this.nodes){
-      n.val*=decay;
+      if(!n.dead)
+        n.val*=decay;
     }
   }
   addValue(n,v){
@@ -139,6 +144,7 @@ class Graph {
     let testPos = [];
     let tooClose = true;
     let minbound = 70;
+    let minlined = 50;
     let tests = 0;
     while(tooClose){
       tooClose = false;
@@ -149,9 +155,20 @@ class Graph {
           break;
         }
       }
+      
+      for(let n1 of this.nodes){
+        for(let n2 of this.nodes){
+          if(distToSegment(testPos,[n1.x,n1.y],[n2.x,n2.y])<minlined){
+            tooClose = true;
+            break;
+          }
+        }
+      }
+      
       tests++;
       if(tests>5){
         minbound-=10;
+        minlined-=4;
         tests -= 5;
       }
     }
@@ -168,7 +185,14 @@ function dist(p1,p2){
 function fround(x,f){
   return Math.floor(x*f)/f;
 }
-
+function distToSegment(p, v, w) {
+  var l2 = dist(v, w);
+  if (l2 == 0) return dist(p, v);
+  var t = ((p[0] - v[0]) * (w[0] - v[0]) + (p[1] - v[1]) * (w[1] - v[1])) / l2;
+  t = Math.max(0, Math.min(1, t));
+  return Math.sqrt(dist(p, { x: v[0] + t * (w[0] - v[0]),
+                    y: v[1] + t * (w[1] - v[1]) }));
+}
 
 let t = 0; //time counter
 let brain = new Graph();
