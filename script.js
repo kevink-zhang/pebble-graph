@@ -49,7 +49,10 @@ class Graph {
     this.nodes.forEach(x=>x.draw());
     //ctx.fillRect(10,10,10,10);
   }
-  update(n,v){
+  update(){
+    for
+  }
+  nUpdate(n,v){
     this.nodes[n].update(v);
   }
   addNode(){
@@ -59,7 +62,7 @@ class Graph {
       tooClose = false;
       testPos = [20+Math.random()*200,20+Math.random()*70];
       for(let n of this.nodes){
-        if(dist([n.x,n.y],testPos)<50){
+        if(dist([n.x,n.y],testPos)<60){
           tooClose = true;
           break;
         }
@@ -92,7 +95,7 @@ brain.addEdge(0,1);
 brain.addEdge(0,2);
 brain.addEdge(0,4);
 brain.addEdge(2,3);
-brain.update(0,4);
+brain.nUpdate(0,4);
 
 
 function draw() {
