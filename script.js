@@ -45,9 +45,13 @@ class Signal {
     this.src = src;
     this.end = end;
     this.pos = src;
+    this.uVec = 
   }
   draw(){
-    
+    ctx.beginPath();
+    ctx.arc(this.pos[0], this.pos[1], 10, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fillStyle(neuron_color);
   }
   update() {
     
@@ -65,7 +69,11 @@ class Graph {
     //ctx.fillRect(10,10,10,10);
   }
   update(){
-    this.signals.forEach(x=>x.update());
+    for(let s of this.signals){
+      if(s.update()){
+        
+      }
+    }
   }
   addValue(n,v){
     this.nodes[n].update(v);
