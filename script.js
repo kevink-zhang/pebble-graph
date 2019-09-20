@@ -36,16 +36,26 @@ class Neuron {
   update(inVal) {
     this.val+=inVal;
     this.val = fround(this.val,1000);
-    this.out.forEach(x=>x.update(this.val * damp));
+    for()
   }
 }
 
+// this is fine for now
+//idk what that is, but if you think it's better, then go ahead
+// 
+
+
 class Signal {
-  constructor(src,end) {
+  constructor(src,end,srcid, endid) {
     this.src = src;
     this.end = end;
+    this.srcid = srcid; //id of source neuron
+    this.endid = endid; //id of end neuron
     this.pos = src;
-    this.uVec = 0;
+    let dx = end[0]-src[0];
+    let dy = end[1]-src[1];
+    let mag = dist([0,0],[dx,dy]);
+    this.uVec = [dx/mag,dy/mag];
   }
   draw(){
     ctx.beginPath();
@@ -54,7 +64,13 @@ class Signal {
     ctx.fillStyle(neuron_color);
   }
   update() {
-    
+    for(let i = 0; i < 2; i++){
+      this.pos[i]+=this.uVec[i];
+    }
+    if(dist(this.pos,this.end)<1.1){
+      return true;
+    }
+    return false;
   }
 }
 
@@ -81,14 +97,21 @@ class Graph {
   addNode(){
     let testPos = [];
     let tooClose = true;
+    let minbound = 70;
+    let tests = 0;
     while(tooClose){
       tooClose = false;
-      testPos = [20+Math.random()*200,20+Math.random()*70];
+      testPos = [20+Math.random()*200,20+Math.random()*60];
       for(let n of this.nodes){
-        if(dist([n.x,n.y],testPos)<60){
+        if(dist([n.x,n.y],testPos)<minbound){
           tooClose = true;
           break;
         }
+      }
+      tests++;
+      if(tests>5){
+        minbound-=10;
+        tests -= 5;
       }
     }
     this.nodes.push(new Neuron(testPos[0],testPos[1],this.nodes.length));
@@ -134,3 +157,9 @@ function draw() {
 }
 
 draw();
+
+// will fix this in a bit
+c.addEventListener("mousedown", e=>{
+  console.log(c.boundingBox().x);
+  brain.nodes.push(new Neuron(e.clientX,e.clientY,brain.nodes.length))  
+});
