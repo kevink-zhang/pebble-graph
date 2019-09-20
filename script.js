@@ -5,9 +5,10 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
-const damp = 0.9;
-const decay = 0.99;
-const sim_speed = 2;
+const damp = 0.45; //new signal decay
+const decay = 0.99; //neuron value decay rate
+const burnout = 20; //if neuron value exceeds burnout, then neuron will "die"
+const sim_speed = 5; //simulation speed
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 
@@ -45,7 +46,7 @@ class Signal {
     }
     
     for(let i = 0; i < 2; i++){
-      this.pos[i]+=this.uVec[i];
+      this.pos[i]+=this.uVec[i]*sim_speed;
     }
     if(dist(this.pos,this.end)<=1*sim_speed){
       this.dead = true;
@@ -67,11 +68,14 @@ class Neuron {
     this.out = []; //vertices which this goes into
     this.in = []; //vertices which go into this
     
+    this.dead = false;
     this.val = 0; //display value
     this.actpot = 2; //action potential barrier
   }
   draw() {
     ctx.fillStyle = neuron_color;
+    if(this.dead)
+      ctx.fillStyle = backdrop;
     ctx.fillRect(this.x-this.s/2, this.y-this.s/2,this.s,this.s);
     //ctx.fillText(this.inval.reduce((a, b) => a + b,0), this.x+10,this.y);
     ctx.fillText(fround(this.val,10),this.x+12,this.y);
@@ -87,14 +91,18 @@ class Neuron {
   update(inVal) {
     this.val+=inVal;
     this.val = fround(this.val,10);
+    if(this.val>burnout)
+      this.dead = true;
+    
     let ret = [];
     
-    if(this.val<this.actpot) //action potential not met, will not fire
+    if(this.val<this.actpot || this.dead) //action potential not met, will not fire
       return ret;
     
     for(let n of this.out){
       ret.push(new Signal(this,n,this.val*damp));
     }
+    
     return ret;
   }
 }
@@ -172,8 +180,9 @@ brain.addEdge(0,1);
 brain.addEdge(0,2);
 brain.addEdge(0,4);
 brain.addEdge(2,3);
+brain.addEdge(1,2);
 brain.addEdge(3,0);
-brain.addValue(0,4);
+brain.addValue(0,10);
 
 
 let active = null;
@@ -190,11 +199,14 @@ function draw() {
   ctx.fillStyle = "red";
   ctx.fillRect(active.x-active.s/2, active.y-active.s/2, active.s,active.s)
   }
-  brain.update();
+  for(let i = 0; i < sim_speed; i++){
+    brain.update();
+  }
+  
   
   ctx.fillStyle = neuron_color;
-  ctx.fillText(t,400,400);
-  t++;
+  ctx.fillText(t,450,450);
+  t+=sim_speed;
   window.requestAnimationFrame(draw);
 }
 
