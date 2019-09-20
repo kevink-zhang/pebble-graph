@@ -30,29 +30,31 @@ function draw_arrow(fromx, fromy, tox, toy) {
 }
 
 class Signal {
-  constructor(srcid, endid, val) {
-    this.src = [srcid.x, srcid.y];
-    this.end = [endid.x, endid.y];
-    this.srcid = srcid; //source neuron
-    this.endid = endid; //end neuron
-    this.pos = this.src;
+  constructor(src, end, val) {
+    this.src = src; //source neuron
+    this.end = end; //end neuron
+    this.progress = 0; //os = [src.x, src.y];
     this.val = val;
     this.dead = false;
 
-    let dx = this.end[0] - this.src[0];
-    let dy = this.end[1] - this.src[1];
-    let mag = dist([0, 0], [dx, dy]);
-    this.uVec = [dx / mag, dy / mag];
+    let dx = this.end.x - this.src.x;
+    let dy = this.end.y - this.src.y;
+    this.mag = dist([0, 0], [dx, dy]);
   }
   draw() {
     if (this.dead) return;
 
+    let dx = this.end.x - this.src.x;
+    let dy = this.end.y - this.src.y;
+    let posx = this.src.x + dx*this.progress;
+    let posy = this.src.y + dy*this.progress;
+    
     ctx.fillStyle = neuron_color;
-    ctx.fillText(fround(this.val, 10), this.pos[0], this.pos[1] - 10);
+    ctx.fillText(fround(this.val, 10), posx, posy - 10);
 
     ctx.strokeStyle = neuron_color;
     ctx.beginPath();
-    ctx.arc(this.pos[0], this.pos[1], 5, 0, 2 * Math.PI);
+    ctx.arc(posx, posy, 5, 0, 2 * Math.PI);
     ctx.stroke();
   }
   update() {
@@ -60,10 +62,8 @@ class Signal {
       return false;
     }
 
-    for (let i = 0; i < 2; i++) {
-      this.pos[i] += this.uVec[i];
-    }
-    if (dist(this.pos, this.end) <= 1) {
+    this.progress += 0.5/this.mag;
+    if (this.progress >= 1) {
       this.dead = true;
       return true;
     }
@@ -134,7 +134,7 @@ class Graph {
   update() {
     for (let s of this.signals) {
       if (!s.dead && s.update()) {
-        this.addValue(s.endid.ID, s.val);
+        this.addValue(s.end.ID, s.val);
       }
     }
     for (let n of this.nodes) {
