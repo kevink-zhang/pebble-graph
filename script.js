@@ -16,55 +16,54 @@ function draw_arrow(fromx, fromy, tox, toy) {
   const headlen = 10; // length of head in pixels
   const dx = tox - fromx;
   const dy = toy - fromy;
-  const len = Math.sqrt(dx**2+dy**2);
-  const subx = dx/len*15;
-  const suby = dy/len*15;
+  const len = Math.sqrt(dx ** 2 + dy ** 2);
+  const subx = (dx / len) * 15;
+  const suby = (dy / len) * 15;
   const angle = Math.atan2(dy, dx);
   ctx.beginPath();
-  ctx.moveTo(fromx+subx, fromy+suby);
-  ctx.lineTo(tox-subx, toy-suby);
-  ctx.lineTo(tox-subx - headlen * Math.cos(angle - Math.PI / 6), toy-suby - headlen * Math.sin(angle - Math.PI / 6));
-  ctx.moveTo(tox-subx, toy-suby);
-  ctx.lineTo(tox-subx - headlen * Math.cos(angle + Math.PI / 6), toy-suby - headlen * Math.sin(angle + Math.PI / 6));
+  ctx.moveTo(fromx + subx, fromy + suby);
+  ctx.lineTo(tox - subx, toy - suby);
+  ctx.lineTo(tox - subx - headlen * Math.cos(angle - Math.PI / 6), toy - suby - headlen * Math.sin(angle - Math.PI / 6));
+  ctx.moveTo(tox - subx, toy - suby);
+  ctx.lineTo(tox - subx - headlen * Math.cos(angle + Math.PI / 6), toy - suby - headlen * Math.sin(angle + Math.PI / 6));
   ctx.stroke();
 }
 
 class Signal {
   constructor(srcid, endid, val) {
-    this.src = [srcid.x,srcid.y];
-    this.end = [endid.x,endid.y];
+    this.src = [srcid.x, srcid.y];
+    this.end = [endid.x, endid.y];
     this.srcid = srcid; //source neuron
     this.endid = endid; //end neuron
     this.pos = this.src;
     this.val = val;
     this.dead = false;
-    
-    let dx = this.end[0]-this.src[0];
-    let dy = this.end[1]-this.src[1];
-    let mag = dist([0,0],[dx,dy]);
-    this.uVec = [dx/mag,dy/mag];
+
+    let dx = this.end[0] - this.src[0];
+    let dy = this.end[1] - this.src[1];
+    let mag = dist([0, 0], [dx, dy]);
+    this.uVec = [dx / mag, dy / mag];
   }
-  draw(){
-    if(this.dead)
-      return;
-    
+  draw() {
+    if (this.dead) return;
+
     ctx.fillStyle = neuron_color;
-    ctx.fillText(fround(this.val,10),this.pos[0],this.pos[1]-10);
-    
+    ctx.fillText(fround(this.val, 10), this.pos[0], this.pos[1] - 10);
+
     ctx.strokeStyle = neuron_color;
     ctx.beginPath();
     ctx.arc(this.pos[0], this.pos[1], 5, 0, 2 * Math.PI);
     ctx.stroke();
   }
   update() {
-    if(this.dead){
+    if (this.dead) {
       return false;
     }
-    
-    for(let i = 0; i < 2; i++){
-      this.pos[i]+=this.uVec[i];
+
+    for (let i = 0; i < 2; i++) {
+      this.pos[i] += this.uVec[i];
     }
-    if(dist(this.pos,this.end)<=1){
+    if (dist(this.pos, this.end) <= 1) {
       this.dead = true;
       return true;
     }
@@ -76,141 +75,135 @@ class Signal {
 }
 
 class Neuron {
-  constructor(a,b,i) {
+  constructor(a, b, i) {
     this.x = a;
     this.y = b;
     this.s = 15;
     this.ID = i;
     this.out = []; //vertices which this goes into
     this.in = []; //vertices which go into this
-    
+
     this.dead = false;
     this.val = 0; //display value
     this.actpot = 2; //action potential barrier
   }
   draw() {
-    for(let n of this.out){
+    for (let n of this.out) {
       ctx.strokeStyle = neuron_color;
-      draw_arrow(this.x,this.y,n.x,n.y);
+      draw_arrow(this.x, this.y, n.x, n.y);
     }
-    
-    let a = this.val/burnout*180+75;
-    ctx.fillStyle = "rgb("+a+","+a+","+a+")";//neuron_color;
-    if(this.dead)
-      ctx.fillStyle = "rgb(100,0,0)";
-    ctx.fillRect(this.x-this.s/2, this.y-this.s/2,this.s,this.s);
+
+    let a = (this.val / burnout) * 180 + 75;
+    ctx.fillStyle = "rgb(" + a + "," + a + "," + a + ")"; //neuron_color;
+    if (this.dead) ctx.fillStyle = "rgb(100,0,0)";
+    ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
     ctx.fillStyle = neuron_color;
-    ctx.fillText(fround(this.val,10),this.x+12,this.y);
-    
+    ctx.fillText(fround(this.val, 10), this.x + 12, this.y);
   }
   update(inVal) {
-    if(this.dead){
+    if (this.dead) {
       return [];
     }
-    this.val+=inVal;
-    this.val = fround(this.val,10);
-    if(this.val>burnout)
-      this.dead = true;
-    
+    this.val += inVal;
+    this.val = fround(this.val, 10);
+    if (this.val > burnout) this.dead = true;
+
     let ret = [];
-    
-    if(this.val<this.actpot || this.dead) //action potential not met, will not fire
+
+    if (this.val < this.actpot || this.dead)
+      //action potential not met, will not fire
       return ret;
-    
-    for(let n of this.out){
-      ret.push(new Signal(this,n,this.val*damp));
+
+    for (let n of this.out) {
+      ret.push(new Signal(this, n, this.val * damp));
     }
-    
+
     return ret;
   }
 }
 
-
 class Graph {
-  constructor(){
+  constructor() {
     this.nodes = [];
     this.signals = [];
   }
-  draw(){
-    this.nodes.forEach(x=>x.draw());
-    this.signals.forEach(x=>x.draw());
+  draw() {
+    this.nodes.forEach(x => x.draw());
+    this.signals.forEach(x => x.draw());
   }
-  update(){
-    for(let s of this.signals){
-      if(!s.dead && s.update()){
-        this.addValue(s.endid.ID,s.val);
+  update() {
+    for (let s of this.signals) {
+      if (!s.dead && s.update()) {
+        this.addValue(s.endid.ID, s.val);
       }
     }
-    for(let n of this.nodes){
-      if(!n.dead)
-        n.val*=decay;
+    for (let n of this.nodes) {
+      if (!n.dead) n.val *= decay;
     }
   }
-  addValue(n,v){
+  addValue(n, v) {
     let newSigs = this.nodes[n].update(v);
-    for(let s of newSigs){
+    for (let s of newSigs) {
       this.signals.push(s);
     }
   }
-  addNode(){
+  addNode() {
     let testPos = [];
     let tooClose = true;
     let minbound = 70;
     let minlined = 50;
     let tests = 0;
-    while(tooClose){
+    while (tooClose) {
       tooClose = false;
-      testPos = [20+Math.random()*380,20+Math.random()*380];
-      for(let n of this.nodes){
-        if(dist([n.x,n.y],testPos)<minbound){
+      testPos = [20 + Math.random() * 380, 20 + Math.random() * 380];
+      for (let n of this.nodes) {
+        if (dist([n.x, n.y], testPos) < minbound) {
           tooClose = true;
           break;
         }
       }
-      
-      for(let n1 of this.nodes){
-        for(let n2 of this.nodes){
-          if(distToSegment(testPos,[n1.x,n1.y],[n2.x,n2.y])<minlined){
+
+      for (let n1 of this.nodes) {
+        for (let n2 of this.nodes) {
+          if (distToSegment(testPos, [n1.x, n1.y], [n2.x, n2.y]) < minlined) {
             tooClose = true;
             break;
           }
         }
       }
-      
+
       tests++;
-      if(tests>5){
-        minbound-=10;
-        minlined-=4;
+      if (tests > 5) {
+        minbound -= 10;
+        minlined -= 4;
         tests -= 5;
       }
     }
-    this.nodes.push(new Neuron(testPos[0],testPos[1],this.nodes.length));
+    this.nodes.push(new Neuron(testPos[0], testPos[1], this.nodes.length));
   }
-  addEdge(a,b){
+  addEdge(a, b) {
     this.nodes[a].out.push(this.nodes[b]);
   }
 }
 
-function dist(p1,p2){
-  return Math.sqrt((p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1]));
+function dist(p1, p2) {
+  return Math.sqrt((p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]));
 }
-function fround(x,f){
-  return Math.floor(x*f)/f;
+function fround(x, f) {
+  return Math.floor(x * f) / f;
 }
 function distToSegment(p, v, w) {
-  var l2 = dist(v, w);
+  let l2 = dist(v, w);
   if (l2 == 0) return dist(p, v);
-  var t = ((p[0] - v[0]) * (w[0] - v[0]) + (p[1] - v[1]) * (w[1] - v[1])) / l2;
+  let t = ((p[0] - v[0]) * (w[0] - v[0]) + (p[1] - v[1]) * (w[1] - v[1])) / l2;
   t = Math.max(0, Math.min(1, t));
-  return Math.sqrt(dist(p, { x: v[0] + t * (w[0] - v[0]),
-                    y: v[1] + t * (w[1] - v[1]) }));
+  return Math.sqrt(dist(p, { x: v[0] + t * (w[0] - v[0]), y: v[1] + t * (w[1] - v[1]) }));
 }
 
 let t = 0; //time counter
 let brain = new Graph();
 
-
-for(let i = 0; i < 5; i++){
+for (let i = 0; i < 5; i++) {
   brain.addNode();
 }
 
@@ -223,24 +216,22 @@ brain.addEdge(1, 2);
 brain.addEdge(3, 0);
 brain.addValue(0, 20);
 
-
 let active = null;
 
 function draw() {
   ctx.fillStyle = backdrop;
   ctx.fillRect(0, 0, c.width, c.height);
-  
+
   brain.draw();
-  
-  if (active){
+
+  if (active) {
     ctx.fillStyle = "yellow";
-    ctx.fillRect(active.x - active.s / 2, active.y - active.s / 2, active.s, active.s)
+    ctx.fillRect(active.x - active.s / 2, active.y - active.s / 2, active.s, active.s);
   }
-  for(let i = 0; i < sim_speed; i++){
+  for (let i = 0; i < sim_speed; i++) {
     brain.update();
   }
-  
-  
+
   ctx.fillStyle = neuron_color;
   ctx.fillText(t, 450, 450);
   t += sim_speed;
@@ -252,29 +243,28 @@ draw();
 c.addEventListener("contextmenu", e => {
   e.preventDefault();
   return false;
-})
+});
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  
+
   let below = brain.nodes.find(n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s);
   if (below) {
-    if (e.button==2) {
-      brain.addValue(below.ID,10);
+    if (e.button == 2) {
+      brain.addValue(below.ID, 10);
     } else {
-      if(active!=null){
-        if(below!=active){
-          brain.addEdge(active.ID,below.ID);
+      if (active != null) {
+        if (below != active) {
+          brain.addEdge(active.ID, below.ID);
         }
         active = null;
-      
-      }else{
+      } else {
         active = below;
       }
     }
   } else {
-    let n = new Neuron(x,y,brain.nodes.length);
-    brain.nodes.push(n);  
+    let n = new Neuron(x, y, brain.nodes.length);
+    brain.nodes.push(n);
   }
 });
 let movedx = 0;
@@ -282,7 +272,7 @@ let movedy = 0;
 c.addEventListener("mousemove", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  if(active){
+  if (active) {
     movedx += active.x - x;
     movedy += active.y - y;
     active.x = x;
@@ -290,8 +280,8 @@ c.addEventListener("mousemove", e => {
   }
 });
 c.addEventListener("mouseup", e => {
-  console.log(movedx, movedy)
-  if(Math.abs(movedx)>20 || Math.abs(movedy)>20){
+  console.log(movedx, movedy);
+  if (Math.abs(movedx) > 20 || Math.abs(movedy) > 20) {
     active = null;
     movedx = 0;
     movedy = 0;
