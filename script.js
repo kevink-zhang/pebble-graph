@@ -23,7 +23,7 @@ class Neuron {
     ctx.fillStyle = neuron_color;
     ctx.fillRect(this.x-this.s/2, this.y-this.s/2,this.s,this.s);
     //ctx.fillText(this.inval.reduce((a, b) => a + b,0), this.x+10,this.y);
-    ctx.fillText(this.val,this.x,this.y);
+    ctx.fillText(this.val,this.x+12,this.y);
     
     for(let n of this.out){
       ctx.beginPath();
@@ -35,6 +35,7 @@ class Neuron {
   }
   update(inVal) {
     this.val+=inVal;
+    this.val = fround(this.val,1000);
     this.out.forEach(x=>x.update(this.val * damp));
   }
 }
@@ -74,7 +75,9 @@ class Graph {
 function dist(p1,p2){
   return Math.sqrt((p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1]));
 }
-
+function fround(x,f){
+  return Math.round(x*f)/f;
+}
 
 
 let t = 0; //time counter
