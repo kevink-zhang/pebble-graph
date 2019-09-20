@@ -21,7 +21,7 @@ function draw_arrow(fromx, fromy, tox, toy) {
   const suby = dy/len*15;
   const angle = Math.atan2(dy, dx);
   ctx.beginPath();
-  ctx.moveTo(fromx, fromy);
+  ctx.moveTo(fromx+subx, fromy+suby);
   ctx.lineTo(tox-subx, toy-suby);
   ctx.lineTo(tox-subx - headlen * Math.cos(angle - Math.PI / 6), toy-suby - headlen * Math.sin(angle - Math.PI / 6));
   ctx.moveTo(tox-subx, toy-suby);
@@ -92,10 +92,6 @@ class Neuron {
     for(let n of this.out){
       ctx.strokeStyle = neuron_color;
       draw_arrow(this.x,this.y,n.x,n.y);
-      // ctx.beginPath();
-      // ctx.moveTo(this.x,this.y);
-      // ctx.lineTo(n.x, n.y);
-      // ctx.stroke();
     }
     
     let a = this.val/burnout*180+75;
@@ -103,7 +99,6 @@ class Neuron {
     if(this.dead)
       ctx.fillStyle = "rgb(100,0,0)";
     ctx.fillRect(this.x-this.s/2, this.y-this.s/2,this.s,this.s);
-    //ctx.fillText(this.inval.reduce((a, b) => a + b,0), this.x+10,this.y);
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(this.val,10),this.x+12,this.y);
     
@@ -237,7 +232,6 @@ function draw() {
   
   brain.draw();
   
-  // sketch draw on top thing
   if (active){
     ctx.fillStyle = "yellow";
     ctx.fillRect(active.x-active.s/2, active.y-active.s/2, active.s,active.s)
@@ -255,21 +249,30 @@ function draw() {
 
 draw();
 
+c.addEventListener("contextmenu", e => {
+  e.preventDefault();
+  return false;
+})
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
   
   let below = brain.nodes.find(n => n.x<x+n.s && n.x > x-n.s && n.y<y+n.s && n.y > y-n.s);
   if (below) {
+    if(e.button==2){
+      brain.addValue(below.ID,10);
+    }else{
     if(active!=null){
       if(below!=active){
         brain.addEdge(active.ID,below.ID);
       }
       active = null;
+      
     }
     else{
       active = below;
     }
+      }
   } else {
     let n = new Neuron(x,y,brain.nodes.length);
     //active = n;
