@@ -5,7 +5,7 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
-const damp = 0.8;
+const damp = 0.45;
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 
@@ -31,10 +31,15 @@ class Signal {
     ctx.stroke();
   }
   update() {
+    if(this.dead){
+      return false;
+    }
+    
     for(let i = 0; i < 2; i++){
       this.pos[i]+=this.uVec[i];
     }
     if(dist(this.pos,this.end)<1.1){
+      this.dead = true;
       return true;
     }
     return false;
@@ -70,7 +75,7 @@ class Neuron {
   }
   update(inVal) {
     this.val+=inVal;
-    this.val = fround(this.val,1000);
+    this.val = fround(this.val,10);
     let ret = [];
     for(let n of this.out){
       ret.push(new Signal(this,n,this.val*damp));
@@ -92,7 +97,7 @@ class Graph {
   update(){
     let remov = [];
     for(let s of this.signals){
-      if(s.update()){
+      if(!s.dead && s.update()){
         this.addValue(s.endid.ID,s.val);
         remov.push(s);
       }
@@ -111,7 +116,7 @@ class Graph {
     let tests = 0;
     while(tooClose){
       tooClose = false;
-      testPos = [20+Math.random()*200,20+Math.random()*60];
+      testPos = [20+Math.random()*380,20+Math.random()*380];
       for(let n of this.nodes){
         if(dist([n.x,n.y],testPos)<minbound){
           tooClose = true;
@@ -151,6 +156,8 @@ brain.addEdge(0,1);
 brain.addEdge(0,2);
 brain.addEdge(0,4);
 brain.addEdge(2,3);
+brain.addEdge(3,0);
+//brain.addEdge(0,3);
 brain.addValue(0,4);
 
 
@@ -163,7 +170,7 @@ function draw() {
   brain.update();
   
   ctx.fillStyle = neuron_color;
-  ctx.fillText(t,200,150);
+  ctx.fillText(t,400,400);
   t++;
   window.requestAnimationFrame(draw);
 }
@@ -171,8 +178,13 @@ function draw() {
 draw();
 
 c.addEventListener("mousedown", e=>{
-  let top = c.getBoundingClientRect().top;
-  let left = c.getBoundingClientRect().left;
-  console.log();
-  brain.nodes.push(new Neuron(e.clientX-left,e.clientY-top,brain.nodes.length))  
+  let x = e.clientX - c.getBoundingClientRect().left;
+  let y = e.clientY - c.getBoundingClientRect().top;
+  
+  let below = brain.nodes.find(n => n.x<x+15 && n.x > x-15 && n.y<y+15 && n.y > y-15);
+  if (below) {
+    below.val = 1000
+  } else {
+    brain.nodes.push(new Neuron(x,y,brain.nodes.length))  
+  }
 });
