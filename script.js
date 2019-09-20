@@ -6,55 +6,99 @@ const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
 const damp = 0.8;
+const backdrop = "#000000";
+const neuron_color = "#ffffff";
 
 class Neuron {
-  constructor(a,b) {
+  constructor(a,b,i) {
     this.x = a;
     this.y = b;
-    this.s = 10;
+    this.s = 15;
+    this.ID = i;
     this.out = []; //vertices which this goes into
     this.in = []; //vertices which go into this
-    this.inval = []; //input values
+    this.val = 0;
   }
   draw() {
-    ctx.fillRect(this.x, this.y,this.s,this.s);
-    ctx.fillText(this.inval.reduce((a, b) => a + b,0), this.x+10,this.y);
+    ctx.fillStyle = neuron_color;
+    ctx.fillRect(this.x-this.s/2, this.y-this.s/2,this.s,this.s);
+    //ctx.fillText(this.inval.reduce((a, b) => a + b,0), this.x+10,this.y);
+    ctx.fillText(this.val,this.x,this.y);
     
     for(let n of this.out){
       ctx.beginPath();
-      ctx.moveTo(this.x+this.s/2,this.y+this.s/2);
-      ctx.lineTo(n.x+n.s/2, n.y+n.s/2);
+      ctx.strokeStyle = neuron_color;
+      ctx.moveTo(this.x,this.y);
+      ctx.lineTo(n.x, n.y);
       ctx.stroke();
     }
   }
-  update(inv) {
-    this.inval.push(inv); // || this.inval;
-    let sendval = (this.inval.reduce((a, b) => (a + b),0))*damp;
-    //this.out.forEach(x=>x.update([this.inval.reduce((a, b) => (a + b),0)*damp])); //for each output, send out sum of this input
-    this.out.forEach(x=>x.update(sendval));
-
+  update(inVal) {
+    this.val+=inVal;
+    this.out.forEach(x=>x.update(this.val * damp));
   }
 }
 
-function addConnection(a,b){
-  a.out.push(b);
-  b.in.push(a);
+class Graph {
+  constructor(){
+    this.nodes = [];
+    this.signals = [];
+  }
+  draw(){
+    this.nodes.forEach(x=>x.draw());
+    //ctx.fillRect(10,10,10,10);
+  }
+  update(n,v){
+    this.nodes[n].update(v);
+  }
+  addNode(){
+    let testPos = [];
+    let tooClose = true;
+    while(tooClose){
+      tooClose = false;
+      testPos = [20+Math.random()*200,20+Math.random()*70];
+      for(let n of this.nodes){
+        if(dist([n.x,n.y],testPos)<50){
+          tooClose = true;
+          break;
+        }
+      }
+    }
+    this.nodes.push(new Neuron(testPos[0],testPos[1],this.nodes.length));
+  }
+  addEdge(a,b){
+    this.nodes[a].out.push(this.nodes[b]);
+  }
 }
 
+function dist(p1,p2){
+  return Math.sqrt((p1[0]-p2[0])*(p1[0]-p2[0])+(p1[1]-p2[1])*(p1[1]-p2[1]));
+}
+
+
+
 let t = 0; //time counter
-let neurons = [new Neuron(20,10),new Neuron(10,40), new Neuron(50,40), new Neuron(150,40), new Neuron(200,40)];
+let brain = new Graph();
 
-neurons[0].update(4);
 
-addConnection(neurons[0],neurons[1]);
-addConnection(neurons[0],neurons[2]);
-addConnection(neurons[3],neurons[4]);
+for(let i = 0; i < 5; i++){
+  brain.addNode();
+}
+
+brain.addEdge(0,1);
+brain.addEdge(0,2);
+brain.addEdge(0,4);
+brain.addEdge(2,3);
+brain.update(0,4);
 
 
 function draw() {
   ctx.clearRect(0,0,c.width,c.height);
+  ctx.fillStyle = backdrop;
+  ctx.fillRect(0, 0, c.width, c.height);
   
-  neurons.forEach(n=>n.draw());
+  brain.draw();
+  
   t++;
   window.requestAnimationFrame(draw);
 }
