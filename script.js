@@ -5,7 +5,7 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
-const damp = 0.45;
+const damp = 0.9;
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 
@@ -57,7 +57,9 @@ class Neuron {
     this.ID = i;
     this.out = []; //vertices which this goes into
     this.in = []; //vertices which go into this
-    this.val = 0;
+    
+    this.val = 0; //display value
+    this.actpot = 2; //action potential barrier
   }
   draw() {
     ctx.fillStyle = neuron_color;
@@ -160,7 +162,8 @@ brain.addEdge(3,0);
 brain.addValue(0,4);
 
 
-let active;
+let active = null;
+
 function draw() {
   ctx.clearRect(0,0,c.width,c.height);
   ctx.fillStyle = backdrop;
@@ -189,10 +192,18 @@ c.addEventListener("mousedown", e => {
   
   let below = brain.nodes.find(n => n.x<x+n.s && n.x > x-n.s && n.y<y+n.s && n.y > y-n.s);
   if (below) {
-    active = below;
+    if(active!=null){
+      if(below!=active){
+        brain.addEdge(active.ID,below.ID);
+      }
+      active = null;
+    }
+    else{
+      active = below;
+    }
   } else {
     let n = new Neuron(x,y,brain.nodes.length);
-    active = n;
+    //active = n;
     brain.nodes.push(n);  
   }
 });
