@@ -12,6 +12,22 @@ const sim_speed = 5; //simulation speed
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 
+function draw_arrow(fromx, fromy, tox, toy) {
+  const headlen = 10; // length of head in pixels
+  const dx = tox - fromx;
+  const dy = toy - fromy;
+  const len = Math.sqrt(dx**2+dy**2);
+  const subx = dx/len*15;
+  const suby = dy/len*15;
+  const angle = Math.atan2(dy, dx);
+  ctx.beginPath();
+  ctx.moveTo(fromx, fromy);
+  ctx.lineTo(tox-subx, toy-suby);
+  ctx.lineTo(tox-subx - headlen * Math.cos(angle - Math.PI / 6), toy-suby - headlen * Math.sin(angle - Math.PI / 6));
+  ctx.moveTo(tox-subx, toy-suby);
+  ctx.lineTo(tox-subx - headlen * Math.cos(angle + Math.PI / 6), toy-suby - headlen * Math.sin(angle + Math.PI / 6));
+  ctx.stroke();
+}
 
 class Signal {
   constructor(srcid, endid, val) {
@@ -74,11 +90,12 @@ class Neuron {
   }
   draw() {
     for(let n of this.out){
-      ctx.beginPath();
       ctx.strokeStyle = neuron_color;
-      ctx.moveTo(this.x,this.y);
-      ctx.lineTo(n.x, n.y);
-      ctx.stroke();
+      draw_arrow(this.x,this.y,n.x,n.y);
+      // ctx.beginPath();
+      // ctx.moveTo(this.x,this.y);
+      // ctx.lineTo(n.x, n.y);
+      // ctx.stroke();
     }
     
     let a = this.val/burnout*180+75;
@@ -215,7 +232,6 @@ brain.addValue(0,20);
 let active = null;
 
 function draw() {
-  ctx.clearRect(0,0,c.width,c.height);
   ctx.fillStyle = backdrop;
   ctx.fillRect(0, 0, c.width, c.height);
   
@@ -223,8 +239,8 @@ function draw() {
   
   // sketch draw on top thing
   if (active){
-  ctx.fillStyle = "yellow";
-  ctx.fillRect(active.x-active.s/2, active.y-active.s/2, active.s,active.s)
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(active.x-active.s/2, active.y-active.s/2, active.s,active.s)
   }
   for(let i = 0; i < sim_speed; i++){
     brain.update();
@@ -232,8 +248,8 @@ function draw() {
   
   
   ctx.fillStyle = neuron_color;
-  ctx.fillText(t,450,450);
-  t+=sim_speed;
+  ctx.fillText(t, 450, 450);
+  t += sim_speed;
   window.requestAnimationFrame(draw);
 }
 
