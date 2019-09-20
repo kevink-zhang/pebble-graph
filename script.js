@@ -7,7 +7,6 @@ const ctx = c.getContext("2d");
 
 const damp = 0.63; //new signal decay
 const decay = 0.99; //neuron value decay rate
-const burnout = 50; //if neuron value exceeds burnout, then neuron will "die"
 const sim_speed = 5; //simulation speed
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
@@ -82,8 +81,7 @@ class Neuron {
     this.id = i;
     this.out = []; // vertices which this goes into
     this.in = []; // vertices which go into this
-
-    this.dead = false;
+    this.refractory = 0;
     this.val = 0; // display value
     this.actpot = 2; // action potential barrier
   }
@@ -93,9 +91,8 @@ class Neuron {
       draw_arrow(this.x, this.y, n.x, n.y);
     }
 
-    let a = (this.val / burnout) * 180 + 75;
+    let a = (this.val / 100) * 180 + 75;
     ctx.fillStyle = "rgb(" + a + "," + a + "," + a + ")"; //neuron_color;
-    if (this.dead) ctx.fillStyle = "rgb(100,0,0)";
     ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(this.val, 10), this.x + 12, this.y);
@@ -105,18 +102,22 @@ class Neuron {
       return [];
     }
     this.val += inVal;
-    if (this.val > burnout) this.dead = true;
 
     //action potential not met, will not fire
-    if (this.val < this.actpot || this.dead)
+    if (this.val < this.actpot || this.refractory > 0)
       return [];
 
+    this.refractory = 100;
     let ret = [];
     for (let n of this.out) {
       ret.push(new Signal(this, n, this.val * damp));
     }
 
     return ret;
+  }
+  tick() {
+        this.val *= decay;
+        this.refractory = Math.max(this.refractory - 1, 0);
   }
 }
 
@@ -128,15 +129,16 @@ class Graph {
   draw() {
     this.nodes.forEach(x => x.draw());
     this.signals.forEach(x => x.draw());
+    this.signals = this.signals.filter(x=>!x.dead)
   }
   update() {
     for (let s of this.signals) {
-      if (!s.dead && s.update()) {
+      if (s.update()) {
         this.addValue(s.end.id, s.val);
       }
     }
     for (let n of this.nodes) {
-      if (!n.dead) n.val *= decay;
+      n.tick();
     }
   }
   addValue(n, v) {
