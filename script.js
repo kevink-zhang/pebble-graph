@@ -41,7 +41,12 @@ class Neuron {
 }
 
 class Signal {
-  constructor() {
+  constructor(src,end) {
+    this.src = src;
+    this.end = end;
+    this.pos = src;
+  }
+  draw(){
     
   }
   update() {
@@ -56,12 +61,13 @@ class Graph {
   }
   draw(){
     this.nodes.forEach(x=>x.draw());
+    this.signals.forEach(x=>x.draw());
     //ctx.fillRect(10,10,10,10);
   }
   update(){
-    //this.signals.forEach(x=>x.update());
+    this.signals.forEach(x=>x.update());
   }
-  nUpdate(n,v){
+  addValue(n,v){
     this.nodes[n].update(v);
   }
   addNode(){
@@ -104,7 +110,7 @@ brain.addEdge(0,1);
 brain.addEdge(0,2);
 brain.addEdge(0,4);
 brain.addEdge(2,3);
-brain.nUpdate(0,4);
+brain.addValue(0,4);
 
 
 function draw() {
