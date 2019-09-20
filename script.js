@@ -31,9 +31,9 @@ function draw_arrow(fromx, fromy, tox, toy) {
 
 class Signal {
   constructor(src, end, val) {
-    this.src = src; //source neuron
-    this.end = end; //end neuron
-    this.progress = 0; //os = [src.x, src.y];
+    this.src = src; // source neuron
+    this.end = end; // target neuron
+    this.progress = 0;
     this.val = val;
     this.dead = false;
 
@@ -108,12 +108,11 @@ class Neuron {
     this.val = fround(this.val, 10);
     if (this.val > burnout) this.dead = true;
 
-    let ret = [];
-
+    //action potential not met, will not fire
     if (this.val < this.actpot || this.dead)
-      //action potential not met, will not fire
-      return ret;
+      return [];
 
+    let ret = [];
     for (let n of this.out) {
       ret.push(new Signal(this, n, this.val * damp));
     }
@@ -217,6 +216,7 @@ brain.addEdge(3, 0);
 brain.addValue(0, 20);
 
 let active = null;
+let down = false;
 
 function draw() {
   ctx.fillStyle = backdrop;
@@ -232,6 +232,10 @@ function draw() {
     brain.update();
   }
 
+  if(!down && active) {
+    draw_arrow(active.x, active.y, mouse.x, mouse.y)
+  }
+
   ctx.fillStyle = neuron_color;
   ctx.fillText(t, 450, 450);
   t += sim_speed;
@@ -239,6 +243,8 @@ function draw() {
 }
 
 draw();
+
+let mouse = {x:0,y:0};
 
 c.addEventListener("contextmenu", e => {
   e.preventDefault();
@@ -259,6 +265,7 @@ c.addEventListener("mousedown", e => {
         }
         active = null;
       } else {
+        down = true;
         active = below;
       }
     }
@@ -272,7 +279,9 @@ let movedy = 0;
 c.addEventListener("mousemove", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  if (active) {
+  mouse.x = x;
+  mouse.y = y;
+  if (active && down) {
     movedx += active.x - x;
     movedy += active.y - y;
     active.x = x;
@@ -281,9 +290,10 @@ c.addEventListener("mousemove", e => {
 });
 c.addEventListener("mouseup", e => {
   console.log(movedx, movedy);
+  down = false;
   if (Math.abs(movedx) > 20 || Math.abs(movedy) > 20) {
     active = null;
     movedx = 0;
-    movedy = 0;
+    movedy = 0;    
   }
 });
