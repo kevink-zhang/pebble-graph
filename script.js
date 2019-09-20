@@ -9,6 +9,38 @@ const damp = 0.8;
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 
+
+class Signal {
+  constructor(srcid, endid, val) {
+    this.src = [srcid.x,srcid.y];
+    this.end = [endid.x,endid.y];
+    this.srcid = srcid; //source neuron
+    this.endid = endid; //end neuron
+    this.pos = this.src;
+    this.val = val;
+    
+    let dx = this.end[0]-this.src[0];
+    let dy = this.end[1]-this.src[1];
+    let mag = dist([0,0],[dx,dy]);
+    this.uVec = [dx/mag,dy/mag];
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.pos[0], this.pos[1], 5, 0, 2 * Math.PI);
+    ctx.stroke();
+    ctx.fillStyle(neuron_color);
+  }
+  update() {
+    for(let i = 0; i < 2; i++){
+      this.pos[i]+=this.uVec[i];
+    }
+    if(dist(this.pos,this.end)<1.1){
+      return true;
+    }
+    return false;
+  }
+}
+
 class Neuron {
   constructor(a,b,i) {
     this.x = a;
@@ -36,43 +68,14 @@ class Neuron {
   update(inVal) {
     this.val+=inVal;
     this.val = fround(this.val,1000);
-    for()
+    let ret = [];
+    for(let n of this.out){
+      ret.push(new Signal(this,n,this.val*damp));
+    }
+    return ret;
   }
 }
 
-// this is fine for now
-//idk what that is, but if you think it's better, then go ahead
-// 
-
-
-class Signal {
-  constructor(src,end,srcid, endid) {
-    this.src = src;
-    this.end = end;
-    this.srcid = srcid; //id of source neuron
-    this.endid = endid; //id of end neuron
-    this.pos = src;
-    let dx = end[0]-src[0];
-    let dy = end[1]-src[1];
-    let mag = dist([0,0],[dx,dy]);
-    this.uVec = [dx/mag,dy/mag];
-  }
-  draw(){
-    ctx.beginPath();
-    ctx.arc(this.pos[0], this.pos[1], 10, 0, 2 * Math.PI);
-    ctx.stroke();
-    ctx.fillStyle(neuron_color);
-  }
-  update() {
-    for(let i = 0; i < 2; i++){
-      this.pos[i]+=this.uVec[i];
-    }
-    if(dist(this.pos,this.end)<1.1){
-      return true;
-    }
-    return false;
-  }
-}
 
 class Graph {
   constructor(){
@@ -82,17 +85,19 @@ class Graph {
   draw(){
     this.nodes.forEach(x=>x.draw());
     this.signals.forEach(x=>x.draw());
-    //ctx.fillRect(10,10,10,10);
   }
   update(){
     for(let s of this.signals){
       if(s.update()){
-        
+        this.signals.remove(s);
       }
     }
   }
   addValue(n,v){
-    this.nodes[n].update(v);
+    let newSigs = this.nodes[n].update(v);
+    for(let s of newSigs){
+      this.signals.push(s);
+    }
   }
   addNode(){
     let testPos = [];
@@ -158,8 +163,9 @@ function draw() {
 
 draw();
 
-// will fix this in a bit
 c.addEventListener("mousedown", e=>{
-  console.log(c.boundingBox().x);
-  brain.nodes.push(new Neuron(e.clientX,e.clientY,brain.nodes.length))  
+  let top = c.getBoundingClientRect().top;
+  let left = c.getBoundingClientRect().left;
+  console.log();
+  brain.nodes.push(new Neuron(e.clientX-left,e.clientY-top,brain.nodes.length))  
 });
