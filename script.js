@@ -247,8 +247,8 @@ function draw() {
   ctx.fillText(t, 450, 450);
   
   ctx.fillRect(5,5,15,15);
+  ctx.fillStyle = backdrop;
   if(paused){
-    ctx.fillStyle = backdrop;
     ctx.beginPath();
     ctx.moveTo(10-2, 7);
     ctx.lineTo(10-2,17);
@@ -257,9 +257,8 @@ function draw() {
     ctx.fill();
   }
   else{
-    //ctx.fillSyle = backdrop;
-    ctx.fillRect(8,7,2,10);
-    ctx.fillRect(16,7,2,10);
+    ctx.fillRect(8,7,3,10);
+    ctx.fillRect(14,7,3,10);
   }
   window.requestAnimationFrame(draw);
 }
