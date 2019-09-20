@@ -45,7 +45,7 @@ class Signal {
     this.src = src;
     this.end = end;
     this.pos = src;
-    this.uVec = 
+    this.uVec = 0;
   }
   draw(){
     ctx.beginPath();
