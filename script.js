@@ -75,7 +75,12 @@ class Signal {
     this.dead = true;
   }
 }
-
+class Neurotransmitter {
+  constructor(val){
+    this.time = 1;
+    this.val = val;
+  }
+}
 class Neuron {
   constructor(a, b, i) {
     this.x = a;
@@ -86,7 +91,6 @@ class Neuron {
     this.signals = []; // signals which currently are inside synapses (should replace .val)
     this.refractory = 0;
     this.weight = 1; // set to -1 for inhibitory neurons
-    this.val = 0; // display value
     this.actpot = 1.5; // action potential barrier
   }
   draw() {
@@ -95,22 +99,25 @@ class Neuron {
       draw_arrow(this.x, this.y, n.x, n.y);
     }
 
-    let a = (this.val / neuro_max) * (255-neuro_init_color) + neuro_init_color;
+    let sum = this.sum();
+    let a = (sum / neuro_max) * (255-neuro_init_color) + neuro_init_color;
     ctx.fillStyle = "rgb(" + a + "," + a + "," + a + ")";
     ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
     ctx.fillStyle = neuron_color;
-    ctx.fillText(fround(this.val, 10), this.x + 12, this.y);
+    ctx.fillText(fround(sum, 10), this.x + 12, this.y);
   }
   sum() {
-    return this.signals.reduce((a,b)=>a.weight + b.weight, 0)
+    return this.signals.map(x=>x.val*x.time).reduce((a, b)=> a + b, 0);
   }
   update(inVal) {
     if (this.dead) return [];
 
-    this.val += inVal;
+    this.signals.push(new Neurotransmitter(inVal));
+    
+    let sum = this.sum();
 
     // action potential not met, will not fire
-    if (this.val < this.actpot || this.refractory > 0)
+    if (sum < this.actpot || this.refractory > 0)
       return [];
 
     this.refractory = neuro_ref;
@@ -120,8 +127,9 @@ class Neuron {
     return ret;
   }
   tick() {
-    this.val *= decay;
     this.refractory = Math.max(this.refractory - 1, 0);
+    for (let s of this.signals) s.time -= 0.001;
+    this.signals = this.signals.filter(x=>x.time>0)
   }
 }
 
