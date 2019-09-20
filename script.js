@@ -40,6 +40,15 @@ class Neuron {
   }
 }
 
+class Signal {
+  constructor() {
+    
+  }
+  update() {
+    
+  }
+}
+
 class Graph {
   constructor(){
     this.nodes = [];
@@ -50,7 +59,7 @@ class Graph {
     //ctx.fillRect(10,10,10,10);
   }
   update(){
-    for
+    //this.signals.forEach(x=>x.update());
   }
   nUpdate(n,v){
     this.nodes[n].update(v);
@@ -104,6 +113,7 @@ function draw() {
   ctx.fillRect(0, 0, c.width, c.height);
   
   brain.draw();
+  brain.update();
   
   t++;
   window.requestAnimationFrame(draw);
