@@ -6,6 +6,8 @@ const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
 const damp = 0.9;
+const decay = 0.99;
+const sim_speed = 2;
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 
@@ -28,8 +30,11 @@ class Signal {
   draw(){
     if(this.dead)
       return;
-    ctx.strokeStyle(neuron_color);
-    //ctx.fillText(this.val,this.x,this.y+5);
+    
+    ctx.fillStyle = neuron_color;
+    ctx.fillText(fround(this.val,10),this.pos[0],this.pos[1]-10);
+    
+    ctx.strokeStyle = neuron_color;
     ctx.beginPath();
     ctx.arc(this.pos[0], this.pos[1], 5, 0, 2 * Math.PI);
     ctx.stroke();
@@ -42,7 +47,7 @@ class Signal {
     for(let i = 0; i < 2; i++){
       this.pos[i]+=this.uVec[i];
     }
-    if(dist(this.pos,this.end)<1.1){
+    if(dist(this.pos,this.end)<=1*sim_speed){
       this.dead = true;
       return true;
     }
@@ -69,7 +74,7 @@ class Neuron {
     ctx.fillStyle = neuron_color;
     ctx.fillRect(this.x-this.s/2, this.y-this.s/2,this.s,this.s);
     //ctx.fillText(this.inval.reduce((a, b) => a + b,0), this.x+10,this.y);
-    ctx.fillText(this.val,this.x+12,this.y);
+    ctx.fillText(fround(this.val,10),this.x+12,this.y);
     
     for(let n of this.out){
       ctx.beginPath();
@@ -83,11 +88,14 @@ class Neuron {
     this.val+=inVal;
     this.val = fround(this.val,10);
     let ret = [];
+    
+    if(this.val<this.actpot) //action potential not met, will not fire
+      return ret;
+    
     for(let n of this.out){
       ret.push(new Signal(this,n,this.val*damp));
     }
-    if(this.val>this.actpot)
-      return ret;
+    return ret;
   }
 }
 
@@ -108,7 +116,7 @@ class Graph {
       }
     }
     for(let n of this.nodes){
-      n.val=fround(n.val*damp,10);
+      n.val*=decay;
     }
   }
   addValue(n,v){
