@@ -5,10 +5,10 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
-const damp = 0.45; //new signal decay
+const damp = 0.7; //new signal decay
 const decay = 0.99; //neuron value decay rate
-const burnout = 20; //if neuron value exceeds burnout, then neuron will "die"
-const sim_speed = 5; //simulation speed
+const burnout = 50; //if neuron value exceeds burnout, then neuron will "die"
+const sim_speed = 10; //simulation speed
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 
@@ -46,9 +46,9 @@ class Signal {
     }
     
     for(let i = 0; i < 2; i++){
-      this.pos[i]+=this.uVec[i]*sim_speed;
+      this.pos[i]+=this.uVec[i];
     }
-    if(dist(this.pos,this.end)<=1*sim_speed){
+    if(dist(this.pos,this.end)<=1){
       this.dead = true;
       return true;
     }
@@ -73,11 +73,13 @@ class Neuron {
     this.actpot = 2; //action potential barrier
   }
   draw() {
-    ctx.fillStyle = neuron_color;
+    let a = this.val/burnout*180+75;
+    ctx.fillStyle = "rgb("+a+","+a+","+a+")";//neuron_color;
     if(this.dead)
-      ctx.fillStyle = backdrop;
+      ctx.fillStyle = "rgb(100,0,0)";
     ctx.fillRect(this.x-this.s/2, this.y-this.s/2,this.s,this.s);
     //ctx.fillText(this.inval.reduce((a, b) => a + b,0), this.x+10,this.y);
+    ctx.fillStyle = neuron_color;
     ctx.fillText(fround(this.val,10),this.x+12,this.y);
     
     for(let n of this.out){
@@ -178,11 +180,12 @@ for(let i = 0; i < 5; i++){
 
 brain.addEdge(0,1);
 brain.addEdge(0,2);
+brain.addEdge(2,4);
 brain.addEdge(0,4);
 brain.addEdge(2,3);
 brain.addEdge(1,2);
 brain.addEdge(3,0);
-brain.addValue(0,10);
+brain.addValue(0,20);
 
 
 let active = null;
@@ -196,7 +199,7 @@ function draw() {
   
   // sketch draw on top thing
   if (active){
-  ctx.fillStyle = "red";
+  ctx.fillStyle = "yellow";
   ctx.fillRect(active.x-active.s/2, active.y-active.s/2, active.s,active.s)
   }
   for(let i = 0; i < sim_speed; i++){
