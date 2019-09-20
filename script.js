@@ -39,7 +39,7 @@ class Signal {
 
     let dx = this.end.x - this.src.x;
     let dy = this.end.y - this.src.y;
-    this.mag = dist([0, 0], [dx, dy]);
+    this.mag = Math.sqrt(dx**2+dy**2);
   }
   draw() {
     if (this.dead) return;
@@ -79,13 +79,13 @@ class Neuron {
     this.x = a;
     this.y = b;
     this.s = 15;
-    this.ID = i;
-    this.out = []; //vertices which this goes into
-    this.in = []; //vertices which go into this
+    this.id = i;
+    this.out = []; // vertices which this goes into
+    this.in = []; // vertices which go into this
 
     this.dead = false;
-    this.val = 0; //display value
-    this.actpot = 2; //action potential barrier
+    this.val = 0; // display value
+    this.actpot = 2; // action potential barrier
   }
   draw() {
     for (let n of this.out) {
@@ -105,7 +105,6 @@ class Neuron {
       return [];
     }
     this.val += inVal;
-    this.val = fround(this.val, 10);
     if (this.val > burnout) this.dead = true;
 
     //action potential not met, will not fire
@@ -133,7 +132,7 @@ class Graph {
   update() {
     for (let s of this.signals) {
       if (!s.dead && s.update()) {
-        this.addValue(s.end.ID, s.val);
+        this.addValue(s.end.id, s.val);
       }
     }
     for (let n of this.nodes) {
@@ -257,11 +256,11 @@ c.addEventListener("mousedown", e => {
   let below = brain.nodes.find(n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s);
   if (below) {
     if (e.button == 2) {
-      brain.addValue(below.ID, 10);
+      brain.addValue(below.id, 10);
     } else {
       if (active != null) {
         if (below != active) {
-          brain.addEdge(active.ID, below.ID);
+          brain.addEdge(active.id, below.id);
         }
         active = null;
       } else {
