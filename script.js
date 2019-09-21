@@ -10,7 +10,7 @@ const decay = 0.995; //neuron value decay rate
 const sim_speed = 10; //simulation speed
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
-const neuro_ref = 0.001; // refractory period decay
+const neuro_ref = 0.003; // refractory period decay
 const neuro_max = 3;
 const neuro_init_color = 100;
 
@@ -63,7 +63,7 @@ class Signal {
   }
 }
 class Neurotransmitter {
-  constructor(val,speed=0.01){
+  constructor(val,speed=0.005){
     this.time = 1;
     this.speed = speed;
     this.val = val;
@@ -111,14 +111,10 @@ class Neuron {
     if (sum < this.actpot)
       return [];
 
-    // TODO we need a depolarization period
-    
     // Repolarize neuron through an influx of inhibitors
-    this.signals.push(new Neurotransmitter(-this.actpot-0.1, neuro_ref))
-
-    const ret = this.out.map(n => new Signal(this, n, this.weight))
-
-    return ret;
+    this.signals.push(new Neurotransmitter(-this.actpot-0.1, neuro_ref));
+    
+    return this.out.map(n => new Signal(this, n, this.weight));
   }
   tick() {
     for (const s of this.signals) s.tick();
@@ -147,7 +143,7 @@ class Graph {
     }
   }
   addValue(n, v) {
-    let newSigs = this.nodes[n].update(v);
+    let newSigs = 
     for (let s of newSigs) {
       this.signals.push(s);
     }
@@ -208,7 +204,7 @@ function distToSegment(p, v, w) {
 
 
 let t = 0; //time counter
-let paused = true; //will not update brain
+let paused = false; //will not update brain
 
 let brain = new Graph();
 
@@ -219,13 +215,7 @@ for (let i = 0; i < 3; i++) {
 brain.addEdge(0, 1);
 brain.addEdge(1, 2);
 brain.addEdge(2, 0);
-// brain.addEdge(0, 2);
-// brain.addEdge(2, 4);
-// brain.addEdge(0, 4);
-// brain.addEdge(2, 3);
-// brain.addEdge(1, 2);
-// brain.addEdge(3, 0);
-// brain.addValue(0, 100);
+brain.addValue(0, 1);
 
 let active = null;
 let down = false;
