@@ -11,8 +11,8 @@ const sim_speed = 10; //simulation speed
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 const neuro_ref = 100; // refractory period
-const neuro_max = 50;
-const neuro_init_color = 50;
+const neuro_max = 3;
+const neuro_init_color = 30;
 
 function draw_arrow(fromx, fromy, tox, toy) {
   const headlen = 10; // length of head in pixels
