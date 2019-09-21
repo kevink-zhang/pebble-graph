@@ -206,17 +206,17 @@ let paused = true; //will not update brain
 
 let brain = new Graph();
 
-for (let i = 0; i < 5; i++) {
+for (let i = 0; i < 1; i++) {
   brain.addNode();
 }
 
-brain.addEdge(0, 1);
-brain.addEdge(0, 2);
-brain.addEdge(2, 4);
-brain.addEdge(0, 4);
-brain.addEdge(2, 3);
-brain.addEdge(1, 2);
-brain.addEdge(3, 0);
+// brain.addEdge(0, 1);
+// brain.addEdge(0, 2);
+// brain.addEdge(2, 4);
+// brain.addEdge(0, 4);
+// brain.addEdge(2, 3);
+// brain.addEdge(1, 2);
+// brain.addEdge(3, 0);
 brain.addValue(0, 100);
 
 let active = null;
