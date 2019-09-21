@@ -219,25 +219,21 @@ let paused = true; //will not update brain
 
 let brain = new Graph();
 
-brain.nodes.push(new Output(250, 15));
+brain.nodes.push(new Neuron(250, 15));
 
 brain.nodes.push(new Neuron(250,200, true));
 brain.nodes.push(new Neuron(300,300, true));
 brain.nodes.push(new Neuron(200,300, true));
 
-// brain.addEdge(brain.nodes[1], brain.nodes[0]);
+brain.nodes.push(new Output(70, 100));
+
+brain.addEdge(brain.nodes[1], brain.nodes[0]);
 brain.addEdge(brain.nodes[1], brain.nodes[2]);
 brain.addEdge(brain.nodes[2], brain.nodes[3]);
 brain.addEdge(brain.nodes[3], brain.nodes[1]);
-brain.addValue(brain.nodes[2], 1);
+brain.addEdge(brain.nodes[0], brain.nodes[4]);
 
 brain.addValue(brain.nodes[2], 1);
-
-/*level 1 solution*/
-// brain.nodes.push(new Neuron(150,100, false,-1));
-// brain.addEdge(brain.nodes[4], brain.nodes[1]);
-// brain.addValue(brain.nodes[4], 1);
-
 
 let active = null;
 let down = false;
