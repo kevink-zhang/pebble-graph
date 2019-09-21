@@ -128,8 +128,8 @@ class Output extends Neuron {
     if (sum < this.actpot)
       return [];
 
-    alert("you dead");
-    paused = true;
+    // alert("you dead");
+    // paused = true;
     
     return this.out.map(n => new Signal(this, n, this.weight));
   }
@@ -233,9 +233,9 @@ brain.addValue(brain.nodes[2], 1);
 brain.addValue(brain.nodes[2], 1);
 
 /*level 1 solution*/
-brain.nodes.push(new Neuron(150,100, false,-1));
-brain.addEdge(brain.nodes[4], brain.nodes[1]);
-brain.addValue(brain.nodes[4], 1);
+// brain.nodes.push(new Neuron(150,100, false,-1));
+// brain.addEdge(brain.nodes[4], brain.nodes[1]);
+// brain.addValue(brain.nodes[4], 1);
 
 
 let active = null;
@@ -355,7 +355,7 @@ window.addEventListener('keydown', e => {
 
     if(key==73)brain.addValue(brain.nodes[0],1);
     if(key==27)active = null;
-    if(key==8 && !active.fix){
+    if(key==8 && !active.fixed){
       brain.nodes = brain.nodes.filter(n=>n!=active);
       brain.nodes.forEach(n=> n.out=n.out.filter(o=>o!=active));
       brain.signals = brain.signals.filter(n=>n.start!=active && n.end!=active);
