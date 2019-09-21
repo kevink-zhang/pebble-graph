@@ -9,12 +9,6 @@ canvas {
   border: 2px solid black;
 }
 
-.playpause {
-  margin: 1em;
-  border-radius: 10px;
-  background: black;
-  box-sizing: border-box;
-}
 .playpause label {
   display: block;
   box-sizing: border-box;

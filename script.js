@@ -1,7 +1,3 @@
-// Was thinking about this a little bit more, and we really need a way for signals to propogate slowly...
-// That is how the brain works, and this should be able to do the same thing
-// Also, action potentials always happen at full strength
-
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
 
@@ -135,15 +131,16 @@ class Graph {
   update() {
     for (let s of this.signals) {
       if (s.update()) {
-        this.addValue(s.end.id, s.val);
+        this.addValue(s.end, s.val);
       }
     }
     for (let n of this.nodes) {
       n.tick();
     }
   }
+  // thinking about switching this to just n
   addValue(n, v) {
-    this.signals.push(...this.nodes[n].update(v));
+    this.signals.push(...n.update(v));
   }
   addNode() {
     let testPos = [];
@@ -180,7 +177,7 @@ class Graph {
     this.nodes.push(new Neuron(testPos[0], testPos[1], this.nodes.length));
   }
   addEdge(a, b) {
-    this.nodes[a].out.push(this.nodes[b]);
+    a.out.push(b);
   }
 }
 
@@ -209,10 +206,10 @@ for (let i = 0; i < 3; i++) {
   brain.addNode();
 }
 
-brain.addEdge(0, 1);
-brain.addEdge(1, 2);
-brain.addEdge(2, 0);
-brain.addValue(0, 1);
+brain.addEdge(brain.nodes[0], brain.nodes[1]);
+brain.addEdge(brain.nodes[1], brain.nodes[2]);
+brain.addEdge(brain.nodes[2], brain.nodes[0]);
+brain.addValue(brain.nodes[0], 1);
 
 let active = null;
 let down = false;
@@ -283,11 +280,11 @@ c.addEventListener("mousedown", e => {
   let below = brain.nodes.find(n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s);
   if (below) {
     if (e.button == 2) {
-      brain.addValue(below.id, 1);
+      brain.addValue(below, 1);
     } else {
       if (active != null) {
         if (below != active) {
-          brain.addEdge(active.id, below.id);
+          brain.addEdge(active, below);
         }
         active = null;
       } else {
@@ -329,7 +326,13 @@ window.addEventListener('keydown', e => {
   if(!(key in keysdown)) {
     keysdown[key] = true;
 
-    if(key==73)brain.addValue(0,1)
+    if(key==73)brain.addValue(brain.nodes[0],1);
+    if(key==27)active = null;
+    if(key==8){
+      brain.nodes = brain.nodes.filter(n=>n!=active);
+      brain.signals = brain.signals.filter(n=>n.start!=active && n.end!=active);
+      active = null;
+    }
   }
 });
 
