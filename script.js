@@ -10,7 +10,7 @@ const decay = 0.995; //neuron value decay rate
 const sim_speed = 10; //simulation speed
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
-const neuro_ref = 100; // refractory period
+const neuro_ref = 0.001; // refractory period decay
 const neuro_max = 3;
 const neuro_init_color = 100;
 
@@ -69,11 +69,11 @@ class Neurotransmitter {
     this.val = val;
   }
   tick(){
-    this.time-=this.speed;
+    this.time -= this.speed;
   }
 }
 class Neuron {
-  constructor(a, b, i, weight) {
+  constructor(a, b, i, weight=1) {
     this.x = a;
     this.y = b;
     this.s = 15;
@@ -111,15 +111,15 @@ class Neuron {
     if (sum < this.actpot)
       return [];
 
+    // TODO we need
     // Create a refractory period through an influx of inhibitors
-    this.signals.push(new Neurotransmitter(-1,0.001))
+    this.signals.push(new Neurotransmitter(-this.actpot-0.1, neuro_ref))
 
     const ret = this.out.map(n => new Signal(this, n, this.weight))
 
     return ret;
   }
   tick() {
-    this.refractory = Math.max(this.refractory - 1, 0);
     for (const s of this.signals) s.tick();
     this.signals = this.signals.filter(x=>x.time>0)
   }
@@ -183,7 +183,7 @@ class Graph {
         tests -= 5;
       }
     }
-    this.nodes.push(new Neuron(testPos[0], testPos[1], this.nodes.length, 1));
+    this.nodes.push(new Neuron(testPos[0], testPos[1], this.nodes.length));
   }
   addEdge(a, b) {
     this.nodes[a].out.push(this.nodes[b]);
@@ -335,10 +335,18 @@ c.addEventListener("mouseup", e => {
     movedy = 0;    
   }
 });
-window.onkeyup = function(e) {
-  var key = e.keyCode ? e.keyCode : e.which;
 
-  if (key == 73) {
-    brain.addValue(0,1);
+let keysdown = {};
+window.addEventListener('keydown', e => {
+  const key = e.keyCode ? e.keyCode : e.which;
+  if(!(key in keysdown)) {
+    keysdown[key] = true;
+
+    if(key==73)brain.addValue(0,1)
   }
-}
+});
+
+window.addEventListener('keyup',  e => {
+  const key = e.keyCode ? e.keyCode : e.which;
+  delete keysdown[key];
+});
