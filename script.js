@@ -128,8 +128,8 @@ class Output extends Neuron {
     if (sum < this.actpot)
       return [];
 
-    // Repolarize neuron through an influx of inhibitors
-    
+    alert("you dead");
+    paused = true;
     
     return this.out.map(n => new Signal(this, n, this.weight));
   }
@@ -214,7 +214,7 @@ function distToSegment(p, v, w) {
 
 
 let t = 0; //time counter
-let paused = false; //will not update brain
+let paused = true; //will not update brain
 
 let brain = new Graph();
 
@@ -228,7 +228,21 @@ brain.addEdge(brain.nodes[1], brain.nodes[0]);
 brain.addEdge(brain.nodes[1], brain.nodes[2]);
 brain.addEdge(brain.nodes[2], brain.nodes[3]);
 brain.addEdge(brain.nodes[3], brain.nodes[1]);
-brain.addValue(brain.nodes[1], 1);
+brain.addValue(brain.nodes[2], 1);
+
+brain.addValue(brain.nodes[2], 1);
+
+/*level 1 solution*/
+brain.nodes.push(new Neuron(150,100, false));
+
+brain.addEdge(brain.nodes[4], brain.nodes[5]);
+brain.addEdge(brain.nodes[5], brain.nodes[6]);
+brain.addEdge(brain.nodes[6], brain.nodes[4]);
+brain.addEdge(brain.nodes[5], brain.nodes[7]);
+brain.addEdge(brain.nodes[7], brain.nodes[1]);
+
+brain.addValue(brain.nodes[4], 1);
+
 
 let active = null;
 let down = false;
