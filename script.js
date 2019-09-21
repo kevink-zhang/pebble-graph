@@ -219,7 +219,7 @@ let paused = true; //will not update brain
 
 let brain = new Graph();
 
-brain.nodes.push(new Neuron(250, 15));
+brain.nodes.push(new Neuron(250, 15, true));
 
 brain.nodes.push(new Neuron(250,200, true));
 brain.nodes.push(new Neuron(300,300, true));
