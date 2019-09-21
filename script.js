@@ -130,7 +130,8 @@ class Output extends Neuron {
 
     // alert("you dead");
     // paused = true;
-    
+    this.signals.push(new Neurotransmitter(-this.actpot-0.1, neuro_ref));
+
     return this.out.map(n => new Signal(this, n, this.weight));
   }
 }
@@ -224,7 +225,7 @@ brain.nodes.push(new Neuron(250,200, true));
 brain.nodes.push(new Neuron(300,300, true));
 brain.nodes.push(new Neuron(200,300, true));
 
-brain.addEdge(brain.nodes[1], brain.nodes[0]);
+// brain.addEdge(brain.nodes[1], brain.nodes[0]);
 brain.addEdge(brain.nodes[1], brain.nodes[2]);
 brain.addEdge(brain.nodes[2], brain.nodes[3]);
 brain.addEdge(brain.nodes[3], brain.nodes[1]);
@@ -350,6 +351,7 @@ c.addEventListener("mouseup", e => {
 let keysdown = {};
 window.addEventListener('keydown', e => {
   const key = e.keyCode ? e.keyCode : e.which;
+  e.preventDefault();
   if(!(key in keysdown)) {
     keysdown[key] = true;
 
