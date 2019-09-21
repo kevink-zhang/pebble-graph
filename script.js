@@ -233,14 +233,8 @@ brain.addValue(brain.nodes[2], 1);
 brain.addValue(brain.nodes[2], 1);
 
 /*level 1 solution*/
-brain.nodes.push(new Neuron(150,100, false));
-
-brain.addEdge(brain.nodes[4], brain.nodes[5]);
-brain.addEdge(brain.nodes[5], brain.nodes[6]);
-brain.addEdge(brain.nodes[6], brain.nodes[4]);
-brain.addEdge(brain.nodes[5], brain.nodes[7]);
-brain.addEdge(brain.nodes[7], brain.nodes[1]);
-
+brain.nodes.push(new Neuron(150,100, false,-1));
+brain.addEdge(brain.nodes[4], brain.nodes[1]);
 brain.addValue(brain.nodes[4], 1);
 
 
