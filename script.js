@@ -277,8 +277,13 @@ c.addEventListener("mousedown", e => {
   let y = e.clientY - c.getBoundingClientRect().top;
   
   if(x>5&&x<20&&y>5&&y<20){
-    if(!paused)
+    if(!paused){
       paused = true;
+      if(active!=null){
+        brain.addVal(active.ID,100);
+        active = null;
+      }
+    }
     else
       paused = false;
     return;
