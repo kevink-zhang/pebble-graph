@@ -111,8 +111,9 @@ class Neuron {
     if (sum < this.actpot)
       return [];
 
-    // TODO we need
-    // Create a refractory period through an influx of inhibitors
+    // TODO we need a depolarization period
+    
+    // Repolarize neuron through an influx of inhibitors
     this.signals.push(new Neurotransmitter(-this.actpot-0.1, neuro_ref))
 
     const ret = this.out.map(n => new Signal(this, n, this.weight))
