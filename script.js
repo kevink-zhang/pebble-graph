@@ -217,7 +217,7 @@ for (let i = 0; i < 1; i++) {
 // brain.addEdge(2, 3);
 // brain.addEdge(1, 2);
 // brain.addEdge(3, 0);
-brain.addValue(0, 100);
+// brain.addValue(0, 100);
 
 let active = null;
 let down = false;
@@ -240,6 +240,7 @@ function draw() {
   }
 
   if(!down && active) {
+    ctx.strokeStyle = neuron_color;
     draw_arrow(active.x, active.y, mouse.x, mouse.y)
   }
 
