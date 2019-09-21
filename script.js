@@ -104,7 +104,7 @@ class Neuron {
     const sum = this.sum();
 
     // action potential not met, will not fire
-    if (sum < this.actpot || this.refractory > 0)
+    if (sum < this.actpot | this.refractory > 0)
       return [];
 
     this.refractory = neuro_ref;
