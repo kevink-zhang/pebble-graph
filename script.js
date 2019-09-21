@@ -143,10 +143,7 @@ class Graph {
     }
   }
   addValue(n, v) {
-    let newSigs = 
-    for (let s of newSigs) {
-      this.signals.push(s);
-    }
+    this.signals.push(...this.nodes[n].update(v));
   }
   addNode() {
     let testPos = [];
@@ -318,7 +315,6 @@ c.addEventListener("mousemove", e => {
   }
 });
 c.addEventListener("mouseup", e => {
-  console.log(movedx, movedy);
   down = false;
   if (Math.abs(movedx) > 20 || Math.abs(movedy) > 20) {
     active = null;
