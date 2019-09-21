@@ -279,13 +279,10 @@ c.addEventListener("mousedown", e => {
   if(x>5&&x<20&&y>5&&y<20){
     if(!paused){
       paused = true;
-      if(active!=null){
-        brain.addVal(active.ID,100);
-        active = null;
-      }
     }
-    else
+    else{
       paused = false;
+    }
     return;
   }
   let below = brain.nodes.find(n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s);
@@ -331,3 +328,10 @@ c.addEventListener("mouseup", e => {
     movedy = 0;    
   }
 });
+window.onkeyup = function(e) {
+  var key = e.keyCode ? e.keyCode : e.which;
+
+  if (key == 73) {
+    brain.addValue(0,1);
+  }
+}
