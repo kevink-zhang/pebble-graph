@@ -69,11 +69,11 @@ class Neurotransmitter {
   }
 }
 class Neuron {
-  constructor(a, b, i, weight=1) {
+  constructor(a, b, fixed=false, weight=1) {
     this.x = a;
     this.y = b;
     this.s = 15;
-    this.id = i;
+    this.fixed = fixed;
     this.out = []; // vertices which this goes into
     this.signals = []; // neurotransmitters which are inside the membrane (effects membrane potential)
     this.weight = weight; // set to -1 for inhibitory neurons
@@ -97,8 +97,6 @@ class Neuron {
     return this.signals.map(x=>x.val*x.time).reduce((a, b)=> a + b, 0);
   }
   update(inVal) {
-    if (this.dead) return [];
-
     this.signals.push(new Neurotransmitter(inVal));
     
     const sum = this.sum();
@@ -117,7 +115,25 @@ class Neuron {
     this.signals = this.signals.filter(x=>x.time>0)
   }
 }
+class Output extends Neuron {
+  constructor(a, b){
+    super(a,b,true);
+  }
+  update(inVal) {
+    this.signals.push(new Neurotransmitter(inVal));
+    
+    const sum = this.sum();
 
+    // action potential not met, will not fire
+    if (sum < this.actpot)
+      return [];
+
+    // Repolarize neuron through an influx of inhibitors
+    
+    
+    return this.out.map(n => new Signal(this, n, this.weight));
+  }
+}
 class Graph {
   constructor() {
     this.nodes = [];
@@ -174,7 +190,7 @@ class Graph {
         tests -= 5;
       }
     }
-    this.nodes.push(new Neuron(testPos[0], testPos[1], this.nodes.length));
+    this.nodes.push(new Neuron(testPos[0], testPos[1]));
   }
   addEdge(a, b) {
     a.out.push(b);
@@ -202,14 +218,17 @@ let paused = false; //will not update brain
 
 let brain = new Graph();
 
-for (let i = 0; i < 3; i++) {
-  brain.addNode();
-}
+brain.nodes.push(new Output(250, 15));
 
-brain.addEdge(brain.nodes[0], brain.nodes[1]);
+brain.nodes.push(new Neuron(250,200, true));
+brain.nodes.push(new Neuron(300,300, true));
+brain.nodes.push(new Neuron(200,300, true));
+
+brain.addEdge(brain.nodes[1], brain.nodes[0]);
 brain.addEdge(brain.nodes[1], brain.nodes[2]);
-brain.addEdge(brain.nodes[2], brain.nodes[0]);
-brain.addValue(brain.nodes[0], 1);
+brain.addEdge(brain.nodes[2], brain.nodes[3]);
+brain.addEdge(brain.nodes[3], brain.nodes[1]);
+brain.addValue(brain.nodes[1], 1);
 
 let active = null;
 let down = false;
@@ -293,7 +312,7 @@ c.addEventListener("mousedown", e => {
       }
     }
   } else {
-    let n = new Neuron(x, y, brain.nodes.length, e.shiftKey?-1:1);
+    let n = new Neuron(x, y, false, e.shiftKey?-1:1);
     brain.nodes.push(n);
   }
 });
@@ -304,7 +323,7 @@ c.addEventListener("mousemove", e => {
   let y = e.clientY - c.getBoundingClientRect().top;
   mouse.x = x;
   mouse.y = y;
-  if (active && down) {
+  if (active && down && !active.fixed) {
     movedx += active.x - x;
     movedy += active.y - y;
     active.x = x;
