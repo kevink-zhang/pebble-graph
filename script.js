@@ -63,9 +63,13 @@ class Signal {
   }
 }
 class Neurotransmitter {
-  constructor(val){
+  constructor(val,speed=0.01){
     this.time = 1;
+    this.speed = speed;
     this.val = val;
+  }
+  tick(){
+    this.time-=this.speed;
   }
 }
 class Neuron {
@@ -75,8 +79,7 @@ class Neuron {
     this.s = 15;
     this.id = i;
     this.out = []; // vertices which this goes into
-    this.signals = []; // signals which currently are inside synapses (should replace .val)
-    this.refractory = 0;
+    this.signals = []; // neurotransmitters which are inside the membrane (effects membrane potential)
     this.weight = weight; // set to -1 for inhibitory neurons
     this.actpot = 1; // action potential barrier
   }
@@ -93,6 +96,7 @@ class Neuron {
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(sum, 10), this.x + 12, this.y);
   }
+  // compute membrane potential with .signals
   sum() {
     return this.signals.map(x=>x.val*x.time).reduce((a, b)=> a + b, 0);
   }
@@ -104,10 +108,11 @@ class Neuron {
     const sum = this.sum();
 
     // action potential not met, will not fire
-    if (sum < this.actpot | this.refractory > 0)
+    if (sum < this.actpot)
       return [];
 
-    this.refractory = neuro_ref;
+    // Create a refractory period through an influx of inhibitors
+    this.signals.push(new Neurotransmitter(-1,0.001))
 
     const ret = this.out.map(n => new Signal(this, n, this.weight))
 
@@ -115,7 +120,7 @@ class Neuron {
   }
   tick() {
     this.refractory = Math.max(this.refractory - 1, 0);
-    for (const s of this.signals) s.time -= 0.001;
+    for (const s of this.signals) s.tick();
     this.signals = this.signals.filter(x=>x.time>0)
   }
 }
@@ -206,11 +211,13 @@ let paused = true; //will not update brain
 
 let brain = new Graph();
 
-for (let i = 0; i < 1; i++) {
+for (let i = 0; i < 3; i++) {
   brain.addNode();
 }
 
-// brain.addEdge(0, 1);
+brain.addEdge(0, 1);
+brain.addEdge(1, 2);
+brain.addEdge(2, 0);
 // brain.addEdge(0, 2);
 // brain.addEdge(2, 4);
 // brain.addEdge(0, 4);
@@ -288,7 +295,7 @@ c.addEventListener("mousedown", e => {
   let below = brain.nodes.find(n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s);
   if (below) {
     if (e.button == 2) {
-      brain.addValue(below.id, 10);
+      brain.addValue(below.id, 1);
     } else {
       if (active != null) {
         if (below != active) {
