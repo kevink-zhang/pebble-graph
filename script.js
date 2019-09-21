@@ -330,6 +330,7 @@ window.addEventListener('keydown', e => {
     if(key==27)active = null;
     if(key==8){
       brain.nodes = brain.nodes.filter(n=>n!=active);
+      brain.nodes.forEach(n=> n.out=n.out.filter(o=>o!=active));
       brain.signals = brain.signals.filter(n=>n.start!=active && n.end!=active);
       active = null;
     }
