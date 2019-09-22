@@ -68,6 +68,7 @@ class Neurotransmitter {
     this.time -= this.speed;
   }
 }
+//sense is WIP
 class Sense {
   constructor(a,b,o){
     this.x = a;
