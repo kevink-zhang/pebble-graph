@@ -76,7 +76,7 @@ class Sense {
     this.outs = []; //output (sensory) neurons
     this.ins = []; //input neurons
     this.timer = 1;
-    this.retime = 1
+    this.retime = 1;
   }
   setAuto(a,t){
     
