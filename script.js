@@ -68,6 +68,18 @@ class Neurotransmitter {
     this.time -= this.speed;
   }
 }
+class Sense {
+  constructor(a,b,o){
+    this.x = a;
+    this.y = b;
+    this.o = o;
+    this.outs = []; //output signals
+    this.ins = []; //signals going in
+  }
+  setAuto(){
+    
+  }
+}
 class Neuron {
   constructor(a, b, fixed=false, weight=1) {
     this.x = a;
