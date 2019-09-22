@@ -75,8 +75,9 @@ class Sense {
     this.o = o;
     this.outs = []; //output signals
     this.ins = []; //signals going in
+    this.timer = 1;
   }
-  setAuto(){
+  setAuto(a,t){
     
   }
 }
