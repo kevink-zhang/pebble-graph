@@ -236,7 +236,7 @@ let paused = true; //will not update brain
 let brain = new Graph();
 
 brain.nodes.push(new Neuron(250, 15, true));
-
+/*
 brain.nodes.push(new Neuron(250,200, true));
 brain.nodes.push(new Neuron(300,300, true));
 brain.nodes.push(new Neuron(200,300, true));
@@ -250,6 +250,7 @@ brain.addEdge(brain.nodes[3], brain.nodes[1]);
 brain.addEdge(brain.nodes[0], brain.nodes[4]);
 
 brain.addValue(brain.nodes[2], 1);
+*/
 
 let active = null;
 let down = false;
