@@ -79,6 +79,7 @@ class Sense {
     this.retime = 1;
   }
   setAuto(a,t){
+    this.retime = t;
     
   }
 }
