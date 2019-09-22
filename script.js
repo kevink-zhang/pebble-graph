@@ -73,8 +73,8 @@ class Sense {
     this.x = a;
     this.y = b;
     this.o = o;
-    this.outs = []; //output signals
-    this.ins = []; //signals going in
+    this.outs = []; //output (sensory) neurons
+    this.ins = []; //input neurons
     this.timer = 1;
   }
   setAuto(a,t){
