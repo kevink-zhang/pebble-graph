@@ -56,7 +56,7 @@ class Signal {
     ctx.stroke();
   }
   update() {
-    this.progress += 1/sig_speed;//0.5/this.mag;
+    this.progress += 0.5/this.mag; // 1/sig_speed;
     return  !this.fired && (this.fired = this.progress >= 1);
   }
 }
@@ -71,6 +71,7 @@ class Neurotransmitter {
   }
 }
 //sense is WIP
+// https://ai.googleblog.com/2019/09/project-ihmehimmeli-temporal-coding-in.html
 class Sense {
   constructor(a,b,o){
     this.x = a;
@@ -83,7 +84,10 @@ class Sense {
   }
   setAuto(a,t){
     this.retime = t;
-    
+    this.outs = a;
+  }
+  draw(){
+    this.outs.forEach(x=>x.draw());
   }
 }
 class Neuron {
