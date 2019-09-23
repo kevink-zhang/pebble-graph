@@ -157,9 +157,28 @@ class Output extends Neuron {
     return this.out.map(n => new Signal(this, n, this.weight));
   }
 }
+class sNeuron extends Neuron {
+  constructor(a, b){
+    super(a,b,true);
+  }
+  draw() {
+    for (const n of this.out) {
+      ctx.strokeStyle = neuron_color;
+      draw_arrow(this.x, this.y, n.x, n.y);
+    }
+
+    const sum = this.sum();
+    const a = (sum / neuro_max) * (255-neuro_init_color) + neuro_init_color;
+    ctx.fillStyle = "rgb(" + (this.weight<0?a:0) + "," + (this.weight<0?0:a) + ",0)";
+    ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
+    ctx.fillStyle = neuron_color;
+    ctx.fillText(fround(sum, 10), this.x + 12, this.y);
+  }
+}
 class Graph {
   constructor() {
     this.nodes = [];
+    this.senses = [];
     this.signals = [];
   }
   draw() {
@@ -181,7 +200,9 @@ class Graph {
   addValue(n, v) {
     this.signals.push(...n.update(v));
   }
-  
+  addSense(s) {
+    this.senses.push(s);
+  }
   addNode() {
     let testPos = [];
     let tooClose = true;
