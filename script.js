@@ -4,6 +4,8 @@ const ctx = c.getContext("2d");
 const damp = 0.65; //new signal decay
 const decay = 0.995; //neuron value decay rate
 const sim_speed = 10; //simulation speed
+const sig_speed = 500; //speed of signal
+
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 const neuro_ref = 0.003; // refractory period decay
@@ -54,7 +56,7 @@ class Signal {
     ctx.stroke();
   }
   update() {
-    this.progress += 0.5/this.mag;
+    this.progress += 1/sig_speed;//0.5/this.mag;
     return  !this.fired && (this.fired = this.progress >= 1);
   }
 }
@@ -175,6 +177,7 @@ class Graph {
   addValue(n, v) {
     this.signals.push(...n.update(v));
   }
+  
   addNode() {
     let testPos = [];
     let tooClose = true;
