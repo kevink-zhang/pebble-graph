@@ -73,21 +73,46 @@ class Neurotransmitter {
 //sense is WIP
 // https://ai.googleblog.com/2019/09/project-ihmehimmeli-temporal-coding-in.html
 class Sense {
-  constructor(a,b,o){
+  constructor(a,b){
     this.x = a;
     this.y = b;
-    this.o = o;
+    this.o = 0;
     this.outs = []; //output (sensory) neurons
     this.ins = []; //input neurons
-    this.timer = 1;
-    this.retime = 1;
+    this.timer = 0;
+    this.patt = []; //pattern of output
+    this.timepat = []; //delays between outputs
+    this.patind = 0;
   }
   setAuto(a,t){
     this.retime = t;
     this.outs = a;
   }
+  addOut(){
+    this.outs.push(new sNeuron(this.x,this.y+this.o*20));
+    this.o++;
+  }
+  removeOut(){
+    this.out.pop();
+    this.o--;
+  }
   draw(){
     this.outs.forEach(x=>x.draw());
+  }
+  update(){
+    if(this.patt.length==0)
+      return
+    this.timer++;
+    if(this.timer>=this.timepat[this.patind]){
+      let i = 0;
+      for(let x of this.patt[this.patind]){
+        if(x==1){
+          this.outs[i].update(1);
+        }
+        i++;
+      }
+      this.patind = (this.patind+1)%this.patt.length;
+    }
   }
 }
 class Neuron {
@@ -184,6 +209,7 @@ class Graph {
   draw() {
     this.signals.forEach(x => x.draw());
     this.nodes.forEach(x => x.draw());
+    this.senses.forEach(x => x.draw());
     this.signals = this.signals.filter(x=>x.progress<=1)
   }
   update() {
@@ -264,6 +290,10 @@ let paused = true; //will not update brain
 let brain = new Graph();
 
 brain.nodes.push(new Neuron(250, 15, true));
+brain.addSense(new Sense(20,50));
+brain.senses[0].addOut();
+brain.senses[0].addOut();
+brain.senses[0].addOut();
 /*
 brain.nodes.push(new Neuron(250,200, true));
 brain.nodes.push(new Neuron(300,300, true));
