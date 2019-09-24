@@ -142,6 +142,7 @@ class Neuron {
     const sum = this.sum();
     const a = (sum / neuro_max) * (255-neuro_init_color) + neuro_init_color;
     ctx.fillStyle = "rgb(" + (this.weight<0?a:0) + "," + (this.weight<0?0:a) + ",0)";
+    if(this.fixed) ctx.fillStyle = "rgb(" + 0 + "," + 0 + ","+(this.weight<0?0:a)+")";
     ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(sum, 10), this.x + 12, this.y);
