@@ -85,14 +85,18 @@ class Sense {
     this.patind = 0;
   }
   setAuto(a,t){
-    this.retime = t;
-    this.outs = a;
+    this.timepat = t;
+    this.patt = a;
   }
   addOut(){
-    this.outs.push(new sNeuron(this.x,this.y+this.o*20));
+    let n = new Output(this.x,this.y+this.o*20);
+    this.outs.push(n);
+    brain.nodes.push(n)
     this.o++;
   }
   removeOut(){
+    //wip, although this shouldn't be used
+    //will not remove sense neuron from brain
     this.out.pop();
     this.o--;
   }
@@ -112,6 +116,7 @@ class Sense {
         i++;
       }
       this.patind = (this.patind+1)%this.patt.length;
+      this.timer = 0;
     }
   }
 }
@@ -182,24 +187,7 @@ class Output extends Neuron {
     return this.out.map(n => new Signal(this, n, this.weight));
   }
 }
-class sNeuron extends Neuron {
-  constructor(a, b){
-    super(a,b,true);
-  }
-  draw() {
-    for (const n of this.out) {
-      ctx.strokeStyle = neuron_color;
-      draw_arrow(this.x, this.y, n.x, n.y);
-    }
 
-    const sum = this.sum();
-    const a = (sum / neuro_max) * (255-neuro_init_color) + neuro_init_color;
-    ctx.fillStyle = "rgb(" + "0" + "," + "0" + ","+(this.weight<0?0:a)+")";
-    ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
-    ctx.fillStyle = neuron_color;
-    ctx.fillText(fround(sum, 10), this.x + 12, this.y);
-  }
-}
 class Graph {
   constructor() {
     this.nodes = [];
@@ -213,6 +201,7 @@ class Graph {
     this.signals = this.signals.filter(x=>x.progress<=1)
   }
   update() {
+    this.senses.forEach(x => x.update());
     for (let s of this.signals) {
       if (s.update()) {
         this.addValue(s.end, s.val);
@@ -294,6 +283,7 @@ brain.addSense(new Sense(20,50));
 brain.senses[0].addOut();
 brain.senses[0].addOut();
 brain.senses[0].addOut();
+brain.senses[0].setAuto([[0,1,0],[1,0,1],[1,1,1]],[500,1000,500]);
 /*
 brain.nodes.push(new Neuron(250,200, true));
 brain.nodes.push(new Neuron(300,300, true));
@@ -377,6 +367,7 @@ c.addEventListener("mousedown", e => {
     return;
   }
   let below = brain.nodes.find(n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s);
+  
   if (below) {
     if (e.button == 2) {
       brain.addValue(below, 1);
