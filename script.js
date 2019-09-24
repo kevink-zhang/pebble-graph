@@ -89,7 +89,8 @@ class Sense {
     this.patt = a;
   }
   addOut(){
-    let n = new Output(this.x,this.y+this.o*20);
+    let n = new Neuron(this.x,this.y+this.o*20,true);
+    //n.fixed = true;
     this.outs.push(n);
     brain.nodes.push(n)
     this.o++;
@@ -111,7 +112,7 @@ class Sense {
       let i = 0;
       for(let x of this.patt[this.patind]){
         if(x==1){
-          this.outs[i].update(1);
+          brain.addValue(this.outs[i],1);
         }
         i++;
       }
@@ -125,6 +126,7 @@ class Neuron {
     this.x = a;
     this.y = b;
     this.s = 15;
+    this.ID = brain.nodes.length;
     this.fixed = fixed;
     this.out = []; // vertices which this goes into
     this.signals = []; // neurotransmitters which are inside the membrane (effects membrane potential)
@@ -278,7 +280,7 @@ let paused = true; //will not update brain
 
 let brain = new Graph();
 
-brain.nodes.push(new Neuron(250, 15, true));
+brain.nodes.push(new Neuron(250, 15,true));
 brain.addSense(new Sense(20,50));
 brain.senses[0].addOut();
 brain.senses[0].addOut();
