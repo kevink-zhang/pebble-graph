@@ -23,15 +23,9 @@ function draw_arrow(fromx, fromy, tox, toy) {
   ctx.beginPath();
   ctx.moveTo(fromx + subx, fromy + suby);
   ctx.lineTo(tox - subx, toy - suby);
-  ctx.lineTo(
-    tox - subx - headlen * Math.cos(angle - Math.PI / 6),
-    toy - suby - headlen * Math.sin(angle - Math.PI / 6)
-  );
+  ctx.lineTo(tox - subx - headlen * Math.cos(angle - Math.PI / 6), toy - suby - headlen * Math.sin(angle - Math.PI / 6));
   ctx.moveTo(tox - subx, toy - suby);
-  ctx.lineTo(
-    tox - subx - headlen * Math.cos(angle + Math.PI / 6),
-    toy - suby - headlen * Math.sin(angle + Math.PI / 6)
-  );
+  ctx.lineTo(tox - subx - headlen * Math.cos(angle + Math.PI / 6), toy - suby - headlen * Math.sin(angle + Math.PI / 6));
   ctx.stroke();
 }
 
@@ -42,17 +36,17 @@ class Signal {
     this.progress = 0;
     this.val = val; // strength of the resulting neurotransmitter
     this.fired = false; // make sure we don't fire twice before cleanup
-
+    
     const dx = this.end.x - this.src.x;
     const dy = this.end.y - this.src.y;
-    this.mag = Math.sqrt(dx ** 2 + dy ** 2);
+    this.mag = Math.sqrt(dx**2+dy**2);
   }
   draw() {
     const dx = this.end.x - this.src.x;
     const dy = this.end.y - this.src.y;
-    const posx = this.src.x + dx * this.progress;
-    const posy = this.src.y + dy * this.progress;
-
+    const posx = this.src.x + dx*this.progress;
+    const posy = this.src.y + dy*this.progress;
+    
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(this.val, 10), posx, posy - 10);
 
@@ -62,24 +56,23 @@ class Signal {
     ctx.stroke();
   }
   update() {
-    this.progress += 0.5 / this.mag; // 1/sig_speed;
-    return !this.fired && (this.fired = this.progress >= 1);
+    this.progress += 1/this.mag; // 1/sig_speed;
+    return  !this.fired && (this.fired = this.progress >= 1);
   }
 }
 class Neurotransmitter {
-  constructor(val, speed = 0.005) {
+  constructor(val,speed=0.005){
     this.time = 1;
     this.speed = speed;
     this.val = val;
   }
-  tick() {
+  tick(){
     this.time -= this.speed;
   }
 }
-//sense is WIP
-// https://ai.googleblog.com/2019/09/project-ihmehimmeli-temporal-coding-in.html
 class Sense {
-  constructor(a, b) {
+  constructor(n,a,b){
+    this.name = n;
     this.x = a;
     this.y = b;
     this.o = 0;
@@ -89,45 +82,68 @@ class Sense {
     this.patt = []; //pattern of output
     this.timepat = []; //delays between outputs
     this.patind = 0;
+    this.cooldown = 0;
   }
-  setAuto(a, t) {
+  setAuto(a,t){
     this.timepat = t;
     this.patt = a;
   }
-  addOut() {
-    let n = new Neuron(this.x, this.y + this.o * 20, true);
+  addOut(){
+    let n = new Neuron(this.x,this.y+this.o*20,true);
     //n.fixed = true;
     this.outs.push(n);
     G.player.brain.nodes.push(n);
     this.o++;
   }
-  removeOut() {
-    //wip, although this shouldn't be used
-    //will not remove sense neuron from brain
-    this.out.pop();
-    this.o--;
+  addIn(){
+    let n = new Neuron(this.x,this.y+this.o*20,true);
+    this.ins.push(n);
+    G.player.brain.nodes.push(n);
+    this.o++;
   }
-  draw() {
-    this.outs.forEach(x => x.draw());
+  sendSignal(s,d){ //if not on cooldown, sends signal s
+    if(this.cooldown==0){
+      this.cooldown = d;
+      for(let i = 0; i < s.length; i++){
+        if(s[i]){
+          G.player.brain.addValue(this.outs[i],1);
+        }
+      }
+    }
   }
-  update() {
-    if (this.patt.length == 0) return;
+  getSignal(){ //returns the array of firing neurons
+    let ret = [];
+    for(let n of this.ins){
+      if(n.sum()!=0) ret.push(1);
+      else ret.push(0);
+    }
+    return ret;
+  }
+  draw(){
+    this.outs.forEach(x=>x.draw());
+  }
+  update(){
+    if(this.cooldown>0){
+      this.cooldown-=sim_speed;
+    }
+    if(this.patt.length==0)
+      return
     this.timer++;
-    if (this.timer >= this.timepat[this.patind]) {
+    if(this.timer>=this.timepat[this.patind]){
       let i = 0;
-      for (let x of this.patt[this.patind]) {
-        if (x == 1) {
-          G.player.brain.addValue(this.outs[i], 1);
+      for(let x of this.patt[this.patind]){
+        if(x==1){
+          G.player.brain.addValue(this.outs[i],1);
         }
         i++;
       }
-      this.patind = (this.patind + 1) % this.patt.length;
+      this.patind = (this.patind+1)%this.patt.length;
       this.timer = 0;
     }
   }
 }
 class Neuron {
-  constructor(a, b, fixed = false, weight = 1) {
+  constructor(a, b, fixed=false, weight=1) {
     this.x = a;
     this.y = b;
     this.s = 15;
@@ -145,57 +161,52 @@ class Neuron {
     }
 
     const sum = this.sum();
-    const a = (sum / neuro_max) * (255 - neuro_init_color) + neuro_init_color;
-    ctx.fillStyle =
-      "rgb(" +
-      (this.weight < 0 ? a : 0) +
-      "," +
-      (this.weight < 0 ? 0 : a) +
-      ",0)";
-    if (this.fixed)
-      ctx.fillStyle =
-        "rgb(" + 0 + "," + 0 + "," + (this.weight < 0 ? 0 : a) + ")";
+    const a = (sum / neuro_max) * (255-neuro_init_color) + neuro_init_color;
+    ctx.fillStyle = "rgb(" + (this.weight<0?a:0) + "," + (this.weight<0?0:a) + ",0)";
+    if(this.fixed) ctx.fillStyle = "rgb(" + 0 + "," + 0 + ","+(this.weight<0?0:a)+")";
     ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(sum, 10), this.x + 12, this.y);
   }
   // compute membrane potential with .signals
   sum() {
-    return this.signals.map(x => x.val * x.time).reduce((a, b) => a + b, 0);
+    return this.signals.map(x=>x.val*x.time).reduce((a, b)=> a + b, 0);
   }
   update(inVal) {
     this.signals.push(new Neurotransmitter(inVal));
-
+    
     const sum = this.sum();
 
     // action potential not met, will not fire
-    if (sum < this.actpot) return [];
+    if (sum < this.actpot)
+      return [];
 
     // Repolarize neuron through an influx of inhibitors
-    this.signals.push(new Neurotransmitter(-this.actpot - 0.1, neuro_ref));
-
+    this.signals.push(new Neurotransmitter(-this.actpot-0.1, neuro_ref));
+    
     return this.out.map(n => new Signal(this, n, this.weight));
   }
   tick() {
     for (const s of this.signals) s.tick();
-    this.signals = this.signals.filter(x => x.time > 0);
+    this.signals = this.signals.filter(x=>x.time>0)
   }
 }
 class Output extends Neuron {
-  constructor(a, b) {
-    super(a, b, true);
+  constructor(a, b){
+    super(a,b,true);
   }
   update(inVal) {
     this.signals.push(new Neurotransmitter(inVal));
-
+    
     const sum = this.sum();
 
     // action potential not met, will not fire
-    if (sum < this.actpot) return [];
+    if (sum < this.actpot)
+      return [];
 
     // alert("you dead");
     // paused = true;
-    this.signals.push(new Neurotransmitter(-this.actpot - 0.1, neuro_ref));
+    this.signals.push(new Neurotransmitter(-this.actpot-0.1, neuro_ref));
 
     return this.out.map(n => new Signal(this, n, this.weight));
   }
@@ -296,6 +307,38 @@ class Graph {
     a.out.push(b);
   }
 }
+
+let inputSenses = ['Vision','Smell','Hearing','Touch'];
+let outputSenses = ['Leg','Arm','Wing','Mouth'];
+let skillTree = {
+  'Vision':(false,{
+    'Distinction':(false,null),
+    'Vision angle':(false,{
+      'Vision sectors':(false,null)
+    }),
+    'Perception':(false,{
+      'Night vision':(false,null)
+    }),
+    'Range':(false,null)
+  }),
+  'Smell':(false,{
+    'Distinction':(false,null),
+    'Range':(false,null)
+  }),
+  'Hearing':(false,{
+    
+  }),
+  'Touch':(false,{
+    
+  }),
+  
+  'Leg':(false,{
+    
+  }),
+  'Arm':(false,{
+    
+  })
+};
 class animal {
   constructor (name, p = [0,0], w = 10, s = 1/500, control = 'CPU1'){
     this.name = name
@@ -470,6 +513,8 @@ function loadLevel(){
   G.player.brain.upSense("Temporal",true,1);
   G.player.brain.senses[2].setAuto([[1]],[500]);
 }
+
+
 let active = null;
 let down = false;
 
