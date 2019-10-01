@@ -310,35 +310,7 @@ class Graph {
 
 let inputSenses = ['Vision','Smell','Hearing','Touch'];
 let outputSenses = ['Leg','Arm','Wing','Mouth'];
-let skillTree = {
-  'Vision':(false,{
-    'Distinction':(false,null),
-    'Vision angle':(false,{
-      'Vision sectors':(false,null)
-    }),
-    'Perception':(false,{
-      'Night vision':(false,null)
-    }),
-    'Range':(false,null)
-  }),
-  'Smell':(false,{
-    'Distinction':(false,null),
-    'Range':(false,null)
-  }),
-  'Hearing':(false,{
-    
-  }),
-  'Touch':(false,{
-    
-  }),
-  
-  'Leg':(false,{
-    
-  }),
-  'Arm':(false,{
-    
-  })
-};
+
 class animal {
   constructor (name, p = [0,0], w = 10, s = 1/500, control = 'CPU1'){
     this.name = name
@@ -393,17 +365,17 @@ class animal {
       let nx = 0;
       let ny = 0;
 
-      if(x[0]&&!x[1]&&x[2]&&!x[3]){
+      if(x[2]){
         nx = this.pos[0]+Math.cos(this.face)*sim_speed*this.speed;
         ny = this.pos[1]+Math.sin(this.face)*sim_speed*this.speed;
       }
-      if(x[0]&&!x[1]&&x[2]&&x[3]){
+      if(x[0]){
         this.face-=sim_speed*this.speed/25;
       }
-      if(x[0]&&x[1]&&x[2]&&!x[3]){
+      if(x[1]){
         this.face+=sim_speed*this.speed/25;
       }
-      if(!x[0]&&x[1]&&!x[2]&&x[3]){
+      if(x[3]){
         nx = this.pos[0]-Math.cos(this.face)*sim_speed*this.speed;
         ny = this.pos[1]-Math.sin(this.face)*sim_speed*this.speed;
       }
