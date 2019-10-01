@@ -98,7 +98,7 @@ class Sense {
     let n = new Neuron(this.x, this.y + this.o * 20, true);
     //n.fixed = true;
     this.outs.push(n);
-    brain.nodes.push(n);
+    G.player.brain.nodes.push(n);
     this.o++;
   }
   removeOut() {
@@ -117,7 +117,7 @@ class Sense {
       let i = 0;
       for (let x of this.patt[this.patind]) {
         if (x == 1) {
-          brain.addValue(this.outs[i], 1);
+          G.player.brain.addValue(this.outs[i], 1);
         }
         i++;
       }
@@ -131,7 +131,7 @@ class Neuron {
     this.x = a;
     this.y = b;
     this.s = 15;
-    this.ID = brain.nodes.length;
+    this.ID = G.player.brain.nodes.length;
     this.fixed = fixed;
     this.out = []; // vertices which this goes into
     this.signals = []; // neurotransmitters which are inside the membrane (effects membrane potential)
@@ -211,7 +211,7 @@ class Graph {
     this.signals.forEach(x => x.draw());
     this.nodes.forEach(x => x.draw());
     this.senses.forEach(x => x.draw());
-    this.signals = this.signals.filter(x => x.progress <= 1);
+    this.signals = this.signals.filter(x=>x.progress<=1)
   }
   update() {
     this.senses.forEach(x => x.update());
@@ -224,14 +224,41 @@ class Graph {
       n.tick();
     }
   }
-  // thinking about switching this to just n
-  addValue(n, v) {
+  addValue(n, v) { //push an update to node n
     this.signals.push(...n.update(v));
   }
-  addSense(s) {
+  addSense(s) { //adds a sense to the brain
     this.senses.push(s);
   }
-  addNode() {
+  upSense(s,t,i) { //adds nodes to sense (if t = true, then they are output nodes, else input)
+    let ii=0;
+    for(;ii<this.senses.length; ii++)
+      if(this.senses[ii].name==s)
+        break;
+    console.log(ii);
+    for(let x = 0; x < i; x++){
+      if(t)
+        this.senses[ii].addOut();
+      else
+        this.senses[ii].addIn();
+    }
+  }
+  signalSense(n,ss,d){
+    for(let s of this.senses){
+      if(s.name==n){
+        s.sendSignal(ss,d);
+        return;
+      }
+    }
+  }
+  getSense(n){
+    for(let s of this.senses){
+      if(s.name==n){
+        return s.getSignal();
+      }
+    }
+  }
+  addNode() { //add a randomly positioned node
     let testPos = [];
     let tooClose = true;
     let minbound = 70;
@@ -265,15 +292,156 @@ class Graph {
     }
     this.nodes.push(new Neuron(testPos[0], testPos[1]));
   }
-  addEdge(a, b) {
+  addEdge(a, b) { //connect a to b
     a.out.push(b);
+  }
+}
+class animal {
+  constructor (name, p = [0,0], w = 10, s = 1/500, control = 'CPU1'){
+    this.name = name
+    this.pos = p; //position
+    
+    this.health = 100;
+    this.face = 0; //facing direction
+    this.speed = s; //move speed
+    this.wid = w; //draw width
+    this.control = control; //player, cpu1, cpu2, etc
+    
+    this.brain = null;
+    if(this.control=='Player'){
+      this.brain = new Graph();
+    }
+    this.senseTree = null; //tree of senses and levels
+    this.vis = Math.PI/4;
+  }
+  update(enemypos,s) {
+    if(this.brain)
+      this.brain.update();
+    if(this.health<0)
+      this.health = 0;
+    if(this.control=='Player'){
+      let enemySeen = false;
+      for(let i = 0; i < enemypos.length; i++){
+        let p = enemypos[i];
+        let theta = Math.atan2(p[1]-this.pos[1],p[0]-this.pos[0]);
+
+        let p2 = 2*Math.PI;
+        let ttheta = (theta+p2)%p2;
+        let hh = ((this.face+this.vis+p2)%p2);
+        let ll = ((this.face-this.vis+p2)%p2);
+        
+        //console.log(ttheta, ll, hh)
+        if(ttheta< hh&& ttheta>ll){
+          enemySeen = true;
+          break;
+        }
+      }
+      if(enemySeen){
+        this.brain.signalSense("Visual",[0,0,1],2000);
+      }
+      else{
+        this.brain.signalSense("Visual",[1,0,0],2000);
+      }
+
+      //motor
+      let x = this.brain.getSense("Motor");
+      //console.log(x);
+      //WIP, cant tell difference between signal from exciter or inhibitor
+      let nx = 0;
+      let ny = 0;
+
+      if(x[0]&&!x[1]&&x[2]&&!x[3]){
+        nx = this.pos[0]+Math.cos(this.face)*sim_speed*this.speed;
+        ny = this.pos[1]+Math.sin(this.face)*sim_speed*this.speed;
+      }
+      if(x[0]&&!x[1]&&x[2]&&x[3]){
+        this.face-=sim_speed*this.speed/25;
+      }
+      if(x[0]&&x[1]&&x[2]&&!x[3]){
+        this.face+=sim_speed*this.speed/25;
+      }
+      if(!x[0]&&x[1]&&!x[2]&&x[3]){
+        nx = this.pos[0]-Math.cos(this.face)*sim_speed*this.speed;
+        ny = this.pos[1]-Math.sin(this.face)*sim_speed*this.speed;
+      }
+      if(nx>0&&nx<s&&ny>0&&ny<s){
+        this.pos[0] = nx;
+        this.pos[1] = ny;
+      }
+    }
+    else{ //enemypos -> player position
+      if(this.control=='CPU1'){
+        let dx = -1*(enemypos[0][0]-this.pos[0]);
+        let dy = -1*(enemypos[0][1]-this.pos[1]);
+        let d = dist(enemypos[0],this.pos);
+        let nx = this.pos[0]-dx/d*sim_speed*this.speed;
+        let ny = this.pos[1]-dy/d*sim_speed*this.speed;
+        
+        if(nx>0&&nx<s&&ny>0&&ny<s&&dist([nx,ny],enemypos[0])>20){
+          this.pos[0] = nx;
+          this.pos[1] = ny;
+        }
+        else if(dist([nx,ny],enemypos[0])<=20){
+          G.player.health-=0.01*sim_speed;
+        }
+      }
+    }
+  }
+  draw(x,y) { //draw on translated x and y
+    ctx.fillStyle = "rgb(0,255,0)";
+    ctx.fillRect(x+this.pos[0]-15,y+this.pos[1]-10,15,3);
+    ctx.fillStyle = "rgb(255,0,0)";
+    ctx.fillRect(x+this.pos[0]-15,y+this.pos[1]-10,15/100*(100-this.health),3)
+    if(this.control=='Player'){
+      this.brain.draw();
+      //vision
+      ctx.fillStyle = "rgb(170,170,0,0.5)";
+      ctx.beginPath();
+      ctx.moveTo(this.pos[0]+x,this.pos[1]+y);
+      ctx.arc(this.pos[0]+x,this.pos[1]+y,100,this.face-this.vis,this.face+this.vis,false);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.save();
+      ctx.fillStyle = "rgb(255,255,170,1)";
+      ctx.translate(x+this.pos[0],y+this.pos[1]);
+      ctx.rotate(this.face);
+      ctx.fillRect(-this.wid/2,-this.wid/2,this.wid,this.wid);
+      ctx.restore();
+    }
+    else{
+      if(this.control=='CPU1'){
+        ctx.fillStyle = "rgb(150,0,0)";
+        ctx.fillRect(x+this.pos[0]-this.wid/2,y+this.pos[1]-this.wid/2,this.wid,this.wid)
+      }
+    }
+  }
+}
+class game {
+  constructor(){
+    this.player = new animal('Jeff',[75,75],10,1/200,'Player');
+    this.enemies = [new animal('Bad child',[25,25])];
+    
+    this.x = 350;
+    this.y = 350;
+    this.s = 150;
+  }
+  draw(){
+    ctx.fillStyle = 'rgb(170,170,170)';
+    ctx.fillRect(this.x,this.y,this.s,this.s);
+    this.player.draw(this.x,this.y);
+    this.enemies.forEach(n=>n.draw(this.x,this.y));
+  }
+  update(){
+    let ePos = [];
+    this.enemies.forEach(n=>ePos.push(n.pos));
+    this.player.update(ePos,this.s);
+    this.enemies.forEach(n=>n.update([this.player.pos],this.s));
   }
 }
 
 function dist(p1, p2) {
-  return Math.sqrt(
-    (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1])
-  );
+  return Math.sqrt((p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]));
 }
 function fround(x, f) {
   return Math.floor(x * f) / f;
@@ -283,83 +451,67 @@ function distToSegment(p, v, w) {
   if (l2 == 0) return dist(p, v);
   let t = ((p[0] - v[0]) * (w[0] - v[0]) + (p[1] - v[1]) * (w[1] - v[1])) / l2;
   t = Math.max(0, Math.min(1, t));
-  return Math.sqrt(
-    dist(p, { x: v[0] + t * (w[0] - v[0]), y: v[1] + t * (w[1] - v[1]) })
-  );
+  return Math.sqrt(dist(p, { x: v[0] + t * (w[0] - v[0]), y: v[1] + t * (w[1] - v[1]) }));
 }
+
 
 let t = 0; //time counter
 let paused = true; //will not update brain
+let scene = "neurons"; //scene
 
-let brain = new Graph();
+let G = new game();
 
-brain.nodes.push(new Neuron(250, 15, true));
-brain.addSense(new Sense(20, 50));
-brain.senses[0].addOut();
-brain.senses[0].addOut();
-brain.senses[0].addOut();
-brain.senses[0].setAuto([[0, 1, 0], [1, 0, 1], [1, 1, 1]], [500, 1000, 500]);
-/*
-brain.nodes.push(new Neuron(250,200, true));
-brain.nodes.push(new Neuron(300,300, true));
-brain.nodes.push(new Neuron(200,300, true));
-
-brain.nodes.push(new Output(70, 100));
-
-brain.addEdge(brain.nodes[1], brain.nodes[0]);
-brain.addEdge(brain.nodes[1], brain.nodes[2]);
-brain.addEdge(brain.nodes[2], brain.nodes[3]);
-brain.addEdge(brain.nodes[3], brain.nodes[1]);
-brain.addEdge(brain.nodes[0], brain.nodes[4]);
-
-brain.addValue(brain.nodes[2], 1);
-*/
-
+function loadLevel(){
+  G.player.brain.addSense(new Sense("Visual",20,50));
+  G.player.brain.upSense("Visual",true,3);
+  G.player.brain.addSense(new Sense("Motor",470,50));
+  G.player.brain.upSense("Motor",false,4);
+  G.player.brain.addSense(new Sense("Temporal",300,300));
+  G.player.brain.upSense("Temporal",true,1);
+  G.player.brain.senses[2].setAuto([[1]],[500]);
+}
 let active = null;
 let down = false;
 
+loadLevel();
 function draw() {
   ctx.fillStyle = backdrop;
   ctx.fillRect(0, 0, c.width, c.height);
 
-  brain.draw();
+  G.draw();
 
   if (active) {
     ctx.fillStyle = "yellow";
-    ctx.fillRect(
-      active.x - active.s / 2,
-      active.y - active.s / 2,
-      active.s,
-      active.s
-    );
+    ctx.fillRect(active.x - active.s / 2, active.y - active.s / 2, active.s, active.s);
   }
-  if (!paused) {
+  if(!paused){
     for (let i = 0; i < sim_speed; i++) {
-      brain.update();
+      G.update();
     }
     t += sim_speed;
   }
 
-  if (!down && active) {
+  if(!down && active) {
     ctx.strokeStyle = neuron_color;
-    draw_arrow(active.x, active.y, mouse.x, mouse.y);
+    draw_arrow(active.x, active.y, mouse.x, mouse.y)
   }
 
   ctx.fillStyle = neuron_color;
-  ctx.fillText(t, 450, 450);
-
-  ctx.fillRect(5, 5, 15, 15);
+  ctx.fillText(t, 470, 10);
+  
+  ctx.fillRect(5,5,15,15);
   ctx.fillStyle = backdrop;
-  if (paused) {
+  if(paused){
     ctx.beginPath();
-    ctx.moveTo(10 - 2, 7);
-    ctx.lineTo(10 - 2, 17);
-    ctx.lineTo(20 - 2, 12);
+    ctx.moveTo(10-2, 7);
+    ctx.lineTo(10-2,17);
+    ctx.lineTo(20-2, 12);
     ctx.closePath();
     ctx.fill();
-  } else {
-    ctx.fillRect(8, 7, 3, 10);
-    ctx.fillRect(14, 7, 3, 10);
+  }
+  else{
+    ctx.fillRect(8,7,3,10);
+    ctx.fillRect(14,7,3,10);
   }
   window.requestAnimationFrame(draw);
 }
@@ -384,17 +536,17 @@ c.addEventListener("mousedown", e => {
     }
     return;
   }
-  let below = brain.nodes.find(
+  let below = G.player.brain.nodes.find(
     n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s
   );
 
   if (below) {
     if (e.button == 2) {
-      brain.addValue(below, 1);
+      G.player.brain.addValue(below, 1);
     } else {
       if (active != null) {
         if (below != active) {
-          brain.addEdge(active, below);
+          G.player.brain.addEdge(active, below);
         }
         setActive(null);
       } else {
@@ -404,7 +556,7 @@ c.addEventListener("mousedown", e => {
     }
   } else {
     let n = new Neuron(x, y, false, e.shiftKey ? -1 : 1);
-    brain.nodes.push(n);
+    G.player.brain.nodes.push(n);
   }
 });
 let movedx = 0;
@@ -436,12 +588,12 @@ window.addEventListener("keydown", e => {
   if (!(key in keysdown)) {
     keysdown[key] = true;
 
-    if (key == 73) brain.addValue(brain.nodes[0], 1);
+    if (key == 73) G.player.brain.addValue(G.player.brain.nodes[0], 1);
     if (key == 27) setActive(null);
     if (key == 8 && !active.fixed) {
-      brain.nodes = brain.nodes.filter(n => n != active);
-      brain.nodes.forEach(n => (n.out = n.out.filter(o => o != active)));
-      brain.signals = brain.signals.filter(
+      G.player.brain.nodes = G.player.brain.nodes.filter(n => n != active);
+      G.player.brain.nodes.forEach(n => (n.out = n.out.filter(o => o != active)));
+      G.player.brain.signals = G.player.brain.signals.filter(
         n => n.start != active && n.end != active
       );
       setActive(null);
@@ -459,16 +611,16 @@ const threshold = document.getElementById("threshold");
 const weight = document.getElementById("weight");
 function setActive(a) {
   active = a;
-  if(a){
-    sidebar.classList.remove("hidden")
+  if (a) {
+    sidebar.classList.remove("hidden");
     weight.value = a.weight;
     threshold.value = a.actpot;
-    console.log(a)
-  } else sidebar.classList.add("hidden")
+    console.log(a);
+  } else sidebar.classList.add("hidden");
 }
 threshold.onchange = () => {
   active.actpot = threshold.value;
-}
+};
 weight.onchange = () => {
   active.weight = weight.value;
-}
+};
