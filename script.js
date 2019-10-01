@@ -433,7 +433,6 @@ c.addEventListener("mouseup", e => {
 let keysdown = {};
 window.addEventListener("keydown", e => {
   const key = e.keyCode ? e.keyCode : e.which;
-  e.preventDefault();
   if (!(key in keysdown)) {
     keysdown[key] = true;
 
@@ -462,7 +461,14 @@ function setActive(a) {
   active = a;
   if(a){
     sidebar.classList.remove("hidden")
-    weight.innerHTML = a.weight;
-    threshold.innerHTML = a.threshold;
+    weight.value = a.weight;
+    threshold.value = a.actpot;
+    console.log(a)
   } else sidebar.classList.add("hidden")
+}
+threshold.onchange = () => {
+  active.actpot = threshold.value;
+}
+weight.onchange = () => {
+  active.weight = weight.value;
 }
