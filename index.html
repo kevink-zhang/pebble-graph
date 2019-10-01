@@ -2,27 +2,45 @@
 <html lang="en">
   <head>
     <title>Hello!</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-    <link rel="stylesheet" href="/style.css">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="/style.css" />
     <script src="/script.js" defer></script>
-  </head>  
+  </head>
   <body>
     <h1>Neuronic circuits</h1>
     <p>Inspired by <a href="http://nandgame.com">nandgame</a></p>
-    <p>Click to create a neuron. Shift click to create an inhibitory neuron. Right click to activate and send a action potential through the neuron. 
-      Escape to unselect a neuron, and backspace on a selected neuron to delete it.</p>
-    <p>1. The goal for this level is to make the neuron on the left fire every other time an action potential is sent to the neuron on top. </p>
-    <p>2. Create a circuit so that an action potential will toggle whether or not a loop is sent to the output neuron </p>
-    <p>3. Create a circuit so that an action potential will be sent if an action potential is sent from the other input </p>
+    <p>
+      Click to create a neuron. Shift click to create an inhibitory neuron.
+      Right click to activate and send a action potential through the neuron.
+      Escape to unselect a neuron, and backspace on a selected neuron to delete
+      it.
+    </p>
+    <p>
+      1. The goal for this level is to make the neuron on the left fire every
+      other time an action potential is sent to the neuron on top.
+    </p>
+    <p>
+      2. Create a circuit so that an action potential will toggle whether or not
+      a loop is sent to the output neuron
+    </p>
+    <p>
+      3. Create a circuit so that an action potential will be sent if an action
+      potential is sent from the other input
+    </p>
     <div class="playpause">
       <input type="checkbox" value="None" id="playpause" name="check" />
       <label for="playpause" tabindex="1"></label>
     </div>
-    
-    <canvas id="c" width="500" height="500"></canvas>
-   
+    <div style="display:flex;flex-wrap:wrap">
+      <canvas id="c" width="500" height="500"></canvas>
+      <div id="sidebar" class="hidden">
+        <h1>Neuron x</h1>
+        Weight: <span id="weight">1</span><br>
+        Threshold: <span id="threshold">1</span>
+      </div>
+    </div>
   </body>
 </html>

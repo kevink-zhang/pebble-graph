@@ -23,9 +23,15 @@ function draw_arrow(fromx, fromy, tox, toy) {
   ctx.beginPath();
   ctx.moveTo(fromx + subx, fromy + suby);
   ctx.lineTo(tox - subx, toy - suby);
-  ctx.lineTo(tox - subx - headlen * Math.cos(angle - Math.PI / 6), toy - suby - headlen * Math.sin(angle - Math.PI / 6));
+  ctx.lineTo(
+    tox - subx - headlen * Math.cos(angle - Math.PI / 6),
+    toy - suby - headlen * Math.sin(angle - Math.PI / 6)
+  );
   ctx.moveTo(tox - subx, toy - suby);
-  ctx.lineTo(tox - subx - headlen * Math.cos(angle + Math.PI / 6), toy - suby - headlen * Math.sin(angle + Math.PI / 6));
+  ctx.lineTo(
+    tox - subx - headlen * Math.cos(angle + Math.PI / 6),
+    toy - suby - headlen * Math.sin(angle + Math.PI / 6)
+  );
   ctx.stroke();
 }
 
@@ -36,17 +42,17 @@ class Signal {
     this.progress = 0;
     this.val = val; // strength of the resulting neurotransmitter
     this.fired = false; // make sure we don't fire twice before cleanup
-    
+
     const dx = this.end.x - this.src.x;
     const dy = this.end.y - this.src.y;
-    this.mag = Math.sqrt(dx**2+dy**2);
+    this.mag = Math.sqrt(dx ** 2 + dy ** 2);
   }
   draw() {
     const dx = this.end.x - this.src.x;
     const dy = this.end.y - this.src.y;
-    const posx = this.src.x + dx*this.progress;
-    const posy = this.src.y + dy*this.progress;
-    
+    const posx = this.src.x + dx * this.progress;
+    const posy = this.src.y + dy * this.progress;
+
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(this.val, 10), posx, posy - 10);
 
@@ -56,24 +62,24 @@ class Signal {
     ctx.stroke();
   }
   update() {
-    this.progress += 0.5/this.mag; // 1/sig_speed;
-    return  !this.fired && (this.fired = this.progress >= 1);
+    this.progress += 0.5 / this.mag; // 1/sig_speed;
+    return !this.fired && (this.fired = this.progress >= 1);
   }
 }
 class Neurotransmitter {
-  constructor(val,speed=0.005){
+  constructor(val, speed = 0.005) {
     this.time = 1;
     this.speed = speed;
     this.val = val;
   }
-  tick(){
+  tick() {
     this.time -= this.speed;
   }
 }
 //sense is WIP
 // https://ai.googleblog.com/2019/09/project-ihmehimmeli-temporal-coding-in.html
 class Sense {
-  constructor(a,b){
+  constructor(a, b) {
     this.x = a;
     this.y = b;
     this.o = 0;
@@ -84,45 +90,44 @@ class Sense {
     this.timepat = []; //delays between outputs
     this.patind = 0;
   }
-  setAuto(a,t){
+  setAuto(a, t) {
     this.timepat = t;
     this.patt = a;
   }
-  addOut(){
-    let n = new Neuron(this.x,this.y+this.o*20,true);
+  addOut() {
+    let n = new Neuron(this.x, this.y + this.o * 20, true);
     //n.fixed = true;
     this.outs.push(n);
-    brain.nodes.push(n)
+    brain.nodes.push(n);
     this.o++;
   }
-  removeOut(){
+  removeOut() {
     //wip, although this shouldn't be used
     //will not remove sense neuron from brain
     this.out.pop();
     this.o--;
   }
-  draw(){
-    this.outs.forEach(x=>x.draw());
+  draw() {
+    this.outs.forEach(x => x.draw());
   }
-  update(){
-    if(this.patt.length==0)
-      return
+  update() {
+    if (this.patt.length == 0) return;
     this.timer++;
-    if(this.timer>=this.timepat[this.patind]){
+    if (this.timer >= this.timepat[this.patind]) {
       let i = 0;
-      for(let x of this.patt[this.patind]){
-        if(x==1){
-          brain.addValue(this.outs[i],1);
+      for (let x of this.patt[this.patind]) {
+        if (x == 1) {
+          brain.addValue(this.outs[i], 1);
         }
         i++;
       }
-      this.patind = (this.patind+1)%this.patt.length;
+      this.patind = (this.patind + 1) % this.patt.length;
       this.timer = 0;
     }
   }
 }
 class Neuron {
-  constructor(a, b, fixed=false, weight=1) {
+  constructor(a, b, fixed = false, weight = 1) {
     this.x = a;
     this.y = b;
     this.s = 15;
@@ -140,52 +145,57 @@ class Neuron {
     }
 
     const sum = this.sum();
-    const a = (sum / neuro_max) * (255-neuro_init_color) + neuro_init_color;
-    ctx.fillStyle = "rgb(" + (this.weight<0?a:0) + "," + (this.weight<0?0:a) + ",0)";
-    if(this.fixed) ctx.fillStyle = "rgb(" + 0 + "," + 0 + ","+(this.weight<0?0:a)+")";
+    const a = (sum / neuro_max) * (255 - neuro_init_color) + neuro_init_color;
+    ctx.fillStyle =
+      "rgb(" +
+      (this.weight < 0 ? a : 0) +
+      "," +
+      (this.weight < 0 ? 0 : a) +
+      ",0)";
+    if (this.fixed)
+      ctx.fillStyle =
+        "rgb(" + 0 + "," + 0 + "," + (this.weight < 0 ? 0 : a) + ")";
     ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(sum, 10), this.x + 12, this.y);
   }
   // compute membrane potential with .signals
   sum() {
-    return this.signals.map(x=>x.val*x.time).reduce((a, b)=> a + b, 0);
+    return this.signals.map(x => x.val * x.time).reduce((a, b) => a + b, 0);
   }
   update(inVal) {
     this.signals.push(new Neurotransmitter(inVal));
-    
+
     const sum = this.sum();
 
     // action potential not met, will not fire
-    if (sum < this.actpot)
-      return [];
+    if (sum < this.actpot) return [];
 
     // Repolarize neuron through an influx of inhibitors
-    this.signals.push(new Neurotransmitter(-this.actpot-0.1, neuro_ref));
-    
+    this.signals.push(new Neurotransmitter(-this.actpot - 0.1, neuro_ref));
+
     return this.out.map(n => new Signal(this, n, this.weight));
   }
   tick() {
     for (const s of this.signals) s.tick();
-    this.signals = this.signals.filter(x=>x.time>0)
+    this.signals = this.signals.filter(x => x.time > 0);
   }
 }
 class Output extends Neuron {
-  constructor(a, b){
-    super(a,b,true);
+  constructor(a, b) {
+    super(a, b, true);
   }
   update(inVal) {
     this.signals.push(new Neurotransmitter(inVal));
-    
+
     const sum = this.sum();
 
     // action potential not met, will not fire
-    if (sum < this.actpot)
-      return [];
+    if (sum < this.actpot) return [];
 
     // alert("you dead");
     // paused = true;
-    this.signals.push(new Neurotransmitter(-this.actpot-0.1, neuro_ref));
+    this.signals.push(new Neurotransmitter(-this.actpot - 0.1, neuro_ref));
 
     return this.out.map(n => new Signal(this, n, this.weight));
   }
@@ -201,7 +211,7 @@ class Graph {
     this.signals.forEach(x => x.draw());
     this.nodes.forEach(x => x.draw());
     this.senses.forEach(x => x.draw());
-    this.signals = this.signals.filter(x=>x.progress<=1)
+    this.signals = this.signals.filter(x => x.progress <= 1);
   }
   update() {
     this.senses.forEach(x => x.update());
@@ -261,7 +271,9 @@ class Graph {
 }
 
 function dist(p1, p2) {
-  return Math.sqrt((p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]));
+  return Math.sqrt(
+    (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1])
+  );
 }
 function fround(x, f) {
   return Math.floor(x * f) / f;
@@ -271,22 +283,22 @@ function distToSegment(p, v, w) {
   if (l2 == 0) return dist(p, v);
   let t = ((p[0] - v[0]) * (w[0] - v[0]) + (p[1] - v[1]) * (w[1] - v[1])) / l2;
   t = Math.max(0, Math.min(1, t));
-  return Math.sqrt(dist(p, { x: v[0] + t * (w[0] - v[0]), y: v[1] + t * (w[1] - v[1]) }));
+  return Math.sqrt(
+    dist(p, { x: v[0] + t * (w[0] - v[0]), y: v[1] + t * (w[1] - v[1]) })
+  );
 }
-
-
 
 let t = 0; //time counter
 let paused = true; //will not update brain
 
 let brain = new Graph();
 
-brain.nodes.push(new Neuron(250, 15,true));
-brain.addSense(new Sense(20,50));
+brain.nodes.push(new Neuron(250, 15, true));
+brain.addSense(new Sense(20, 50));
 brain.senses[0].addOut();
 brain.senses[0].addOut();
 brain.senses[0].addOut();
-brain.senses[0].setAuto([[0,1,0],[1,0,1],[1,1,1]],[500,1000,500]);
+brain.senses[0].setAuto([[0, 1, 0], [1, 0, 1], [1, 1, 1]], [500, 1000, 500]);
 /*
 brain.nodes.push(new Neuron(250,200, true));
 brain.nodes.push(new Neuron(300,300, true));
@@ -314,43 +326,47 @@ function draw() {
 
   if (active) {
     ctx.fillStyle = "yellow";
-    ctx.fillRect(active.x - active.s / 2, active.y - active.s / 2, active.s, active.s);
+    ctx.fillRect(
+      active.x - active.s / 2,
+      active.y - active.s / 2,
+      active.s,
+      active.s
+    );
   }
-  if(!paused){
+  if (!paused) {
     for (let i = 0; i < sim_speed; i++) {
       brain.update();
     }
     t += sim_speed;
   }
 
-  if(!down && active) {
+  if (!down && active) {
     ctx.strokeStyle = neuron_color;
-    draw_arrow(active.x, active.y, mouse.x, mouse.y)
+    draw_arrow(active.x, active.y, mouse.x, mouse.y);
   }
 
   ctx.fillStyle = neuron_color;
   ctx.fillText(t, 450, 450);
-  
-  ctx.fillRect(5,5,15,15);
+
+  ctx.fillRect(5, 5, 15, 15);
   ctx.fillStyle = backdrop;
-  if(paused){
+  if (paused) {
     ctx.beginPath();
-    ctx.moveTo(10-2, 7);
-    ctx.lineTo(10-2,17);
-    ctx.lineTo(20-2, 12);
+    ctx.moveTo(10 - 2, 7);
+    ctx.lineTo(10 - 2, 17);
+    ctx.lineTo(20 - 2, 12);
     ctx.closePath();
     ctx.fill();
-  }
-  else{
-    ctx.fillRect(8,7,3,10);
-    ctx.fillRect(14,7,3,10);
+  } else {
+    ctx.fillRect(8, 7, 3, 10);
+    ctx.fillRect(14, 7, 3, 10);
   }
   window.requestAnimationFrame(draw);
 }
 
 draw();
 
-let mouse = {x:0,y:0};
+let mouse = { x: 0, y: 0 };
 
 c.addEventListener("contextmenu", e => {
   e.preventDefault();
@@ -359,18 +375,19 @@ c.addEventListener("contextmenu", e => {
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  
-  if(x>5&&x<20&&y>5&&y<20){
-    if(!paused){
+
+  if (x > 5 && x < 20 && y > 5 && y < 20) {
+    if (!paused) {
       paused = true;
-    }
-    else{
+    } else {
       paused = false;
     }
     return;
   }
-  let below = brain.nodes.find(n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s);
-  
+  let below = brain.nodes.find(
+    n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s
+  );
+
   if (below) {
     if (e.button == 2) {
       brain.addValue(below, 1);
@@ -379,14 +396,14 @@ c.addEventListener("mousedown", e => {
         if (below != active) {
           brain.addEdge(active, below);
         }
-        active = null;
+        setActive(null);
       } else {
         down = true;
-        active = below;
+        setActive(below);
       }
     }
   } else {
-    let n = new Neuron(x, y, false, e.shiftKey?-1:1);
+    let n = new Neuron(x, y, false, e.shiftKey ? -1 : 1);
     brain.nodes.push(n);
   }
 });
@@ -407,31 +424,45 @@ c.addEventListener("mousemove", e => {
 c.addEventListener("mouseup", e => {
   down = false;
   if (Math.abs(movedx) > 20 || Math.abs(movedy) > 20) {
-    active = null;
+    setActive(null);
     movedx = 0;
-    movedy = 0;    
+    movedy = 0;
   }
 });
 
 let keysdown = {};
-window.addEventListener('keydown', e => {
+window.addEventListener("keydown", e => {
   const key = e.keyCode ? e.keyCode : e.which;
   e.preventDefault();
-  if(!(key in keysdown)) {
+  if (!(key in keysdown)) {
     keysdown[key] = true;
 
-    if(key==73)brain.addValue(brain.nodes[0],1);
-    if(key==27)active = null;
-    if(key==8 && !active.fixed){
-      brain.nodes = brain.nodes.filter(n=>n!=active);
-      brain.nodes.forEach(n=> n.out=n.out.filter(o=>o!=active));
-      brain.signals = brain.signals.filter(n=>n.start!=active && n.end!=active);
-      active = null;
+    if (key == 73) brain.addValue(brain.nodes[0], 1);
+    if (key == 27) setActive(null);
+    if (key == 8 && !active.fixed) {
+      brain.nodes = brain.nodes.filter(n => n != active);
+      brain.nodes.forEach(n => (n.out = n.out.filter(o => o != active)));
+      brain.signals = brain.signals.filter(
+        n => n.start != active && n.end != active
+      );
+      setActive(null);
     }
   }
 });
 
-window.addEventListener('keyup',  e => {
+window.addEventListener("keyup", e => {
   const key = e.keyCode ? e.keyCode : e.which;
   delete keysdown[key];
 });
+
+const sidebar = document.getElementById("sidebar");
+const threshold = document.getElementById("threshold");
+const weight = document.getElementById("weight");
+function setActive(a) {
+  active = a;
+  if(a){
+    sidebar.classList.remove("hidden")
+    weight.innerHTML = a.weight;
+    threshold.innerHTML = a.threshold;
+  } else sidebar.classList.add("hidden")
+}
