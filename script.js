@@ -707,6 +707,7 @@ weight.onchange = () => {
   active.weight = weight.value;
 };
 name.onchange = () => {
-  active.name = name.value;
+  if(!active.fixed)
+    active.name = name.value;
 }
 
