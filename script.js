@@ -96,13 +96,14 @@ class Sense {
   }
   addOut() {
     let n = new Neuron(this.x, this.y + this.o * 20, true);
-    //n.fixed = true;
+    n.setName(this.name + " Out "+ this.outs.length);
     this.outs.push(n);
     G.player.brain.nodes.push(n);
     this.o++;
   }
   addIn() {
     let n = new Neuron(this.x, this.y + this.o * 20, true);
+    n.setName(this.name + " In "+ this.ins.length);
     this.ins.push(n);
     G.player.brain.nodes.push(n);
     this.o++;
@@ -160,6 +161,8 @@ class Neuron {
     this.signals = []; // neurotransmitters which are inside the membrane (effects membrane potential)
     this.weight = weight; // set to -1 for inhibitory neurons
     this.actpot = 1; // action potential barrier
+    
+    this.name = "";
   }
   draw() {
     for (const n of this.out) {
@@ -202,6 +205,9 @@ class Neuron {
   tick() {
     for (const s of this.signals) s.tick();
     this.signals = this.signals.filter(x => x.time > 0);
+  }
+  setName(x) {
+    this.name = x;
   }
 }
 class Output extends Neuron {
@@ -683,12 +689,14 @@ window.addEventListener("keyup", e => {
 const sidebar = document.getElementById("sidebar");
 const threshold = document.getElementById("threshold");
 const weight = document.getElementById("weight");
+const name = document.getElementById("name");
 function setActive(a) {
   active = a;
   if (a) {
     sidebar.classList.remove("hidden");
     weight.value = a.weight;
     threshold.value = a.actpot;
+    name.value = a.name;
     console.log(a);
   } else sidebar.classList.add("hidden");
 }
@@ -698,3 +706,7 @@ threshold.onchange = () => {
 weight.onchange = () => {
   active.weight = weight.value;
 };
+name.onchange = () => {
+  active.name = name.value;
+}
+
