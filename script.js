@@ -372,8 +372,8 @@ class animal {
       //motor
       let x = this.brain.getSense("Motor");
       //WIP, cant tell difference between signal from exciter or inhibitor
-      let nx = 0;
-      let ny = 0;
+      let nx = this.pos[0];
+      let ny = this.pos[1];
 
       if (x[2]) {
         nx = this.pos[0] + Math.cos(this.face) * sim_speed * this.speed;
@@ -389,13 +389,17 @@ class animal {
         nx = this.pos[0] - Math.cos(this.face) * sim_speed * this.speed;
         ny = this.pos[1] - Math.sin(this.face) * sim_speed * this.speed;
       }
+      
       if (nx > 0 && nx < s && ny > 0 && ny < s) {
         this.pos[0] = nx;
         this.pos[1] = ny;
       }
       else{
+        //touching border
         this.touch = true;
       }
+        
+      
       
       //touch
       if(this.touch){
@@ -422,6 +426,7 @@ class animal {
           this.pos[1] = ny;
         } else if (dist([nx, ny], enemypos[0]) <= 20) {
           G.player.health -= 0.01 * sim_speed;
+          //enemy is touching player to attack it
           G.player.touch = true;
         }
       }
@@ -526,7 +531,7 @@ function loadLevel() {
   G.player.brain.upSense("Visual", true, 3);
   G.player.brain.addSense(new Sense("Motor", 470, 50));
   G.player.brain.upSense("Motor", false, 4);
-  G.player.brain.addSense(new Sense("Temporal", 20, 150));
+  G.player.brain.addSense(new Sense("Temporal", 100, 150));
   G.player.brain.upSense("Temporal", true, 1);
   G.player.brain.senses[2].setAuto([[1]], [500]);
   G.player.brain.addSense(new Sense("Touch", 20, 150));
