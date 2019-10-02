@@ -404,9 +404,9 @@ class animal {
   }
   draw(x,y) { //draw on translated x and y
     ctx.fillStyle = "rgb(0,255,0)";
-    ctx.fillRect(x+this.pos[0]-15,y+this.pos[1]-10,15,3);
+    ctx.fillRect(x+this.pos[0]-7.5,y+this.pos[1]-10,15,3);
     ctx.fillStyle = "rgb(255,0,0)";
-    ctx.fillRect(x+this.pos[0]-15,y+this.pos[1]-10,15/100*(100-this.health),3)
+    ctx.fillRect(x+this.pos[0]-7.5,y+this.pos[1]-10,15/100*(100-this.health),3)
     if(this.control=='Player'){
       this.brain.draw();
       //vision
