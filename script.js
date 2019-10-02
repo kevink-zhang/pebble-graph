@@ -3,7 +3,7 @@ const ctx = c.getContext("2d");
 
 const damp = 0.65; //new signal decay
 const decay = 0.995; //neuron value decay rate
-const sim_speed = 10; //simulation speed
+const sim_speed = 5; //simulation speed
 const sig_speed = 500; //speed of signal
 
 const backdrop = "#000000";
@@ -698,7 +698,7 @@ function setActive(a) {
     threshold.value = a.actpot;
     name.value = a.name;
     console.log(a);
-  } else sidebar.classList.add("hidden");
+  } //else sidebar.classList.add("hidden");
 }
 threshold.onchange = () => {
   active.actpot = threshold.value;
