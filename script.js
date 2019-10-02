@@ -481,7 +481,7 @@ function loadLevel(){
   G.player.brain.upSense("Visual",true,3);
   G.player.brain.addSense(new Sense("Motor",470,50));
   G.player.brain.upSense("Motor",false,4);
-  G.player.brain.addSense(new Sense("Temporal",300,300));
+  G.player.brain.addSense(new Sense("Temporal",20,150));
   G.player.brain.upSense("Temporal",true,1);
   G.player.brain.senses[2].setAuto([[1]],[500]);
 }
