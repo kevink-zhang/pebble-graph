@@ -341,6 +341,7 @@ class animal {
     }
     this.senseTree = null; //tree of senses and levels
     this.vis = Math.PI / 4;
+    this.touch = false;
   }
   update(enemypos, s) {
     if (this.brain) this.brain.update();
@@ -370,7 +371,6 @@ class animal {
 
       //motor
       let x = this.brain.getSense("Motor");
-      //console.log(x);
       //WIP, cant tell difference between signal from exciter or inhibitor
       let nx = 0;
       let ny = 0;
@@ -393,6 +393,15 @@ class animal {
         this.pos[0] = nx;
         this.pos[1] = ny;
       }
+      else{
+        this.touch = true;
+      }
+      
+      //touch
+      if(this.touch){
+        this.brain.signalSense("Touch",[0,1],2000);
+      }
+      this.touch = false;
     } else {
       //enemypos -> player position
       if (this.control == "CPU1") {
@@ -413,6 +422,7 @@ class animal {
           this.pos[1] = ny;
         } else if (dist([nx, ny], enemypos[0]) <= 20) {
           G.player.health -= 0.01 * sim_speed;
+          G.player.touch = true;
         }
       }
     }
@@ -519,6 +529,8 @@ function loadLevel() {
   G.player.brain.addSense(new Sense("Temporal", 20, 150));
   G.player.brain.upSense("Temporal", true, 1);
   G.player.brain.senses[2].setAuto([[1]], [500]);
+  G.player.brain.addSense(new Sense("Touch", 20, 150));
+  G.player.brain.upSense("Touch",true,2);
 }
 
 let active = null;
