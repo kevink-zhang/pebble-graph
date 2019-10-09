@@ -327,9 +327,6 @@ class Graph {
   }
 }
 
-let inputSenses = ["Vision", "Smell", "Hearing", "Touch"];
-let outputSenses = ["Leg", "Arm", "Wing", "Mouth"];
-
 class animal {
   constructor(name, p = [0, 0], w = 10, s = 1 / 500, control = "CPU1") {
     this.name = name;
@@ -404,8 +401,6 @@ class animal {
         //touching border
         this.touch = true;
       }
-        
-      
       
       //touch
       if(this.touch){
@@ -668,8 +663,9 @@ window.addEventListener("keydown", e => {
 
     if (key == 73) G.player.brain.addValue(G.player.brain.nodes[0], 1);
     if (key == 27) setActive(null);
-    if (key == 8 && !active.fixed) {
-      G.player.brain.nodes = G.player.brain.nodes.filter(n => n != active);
+    if (key == 8) {
+      if(!active.fixed) G.player.brain.nodes = G.player.brain.nodes.filter(n => n != active);
+      else active.out = [];
       G.player.brain.nodes.forEach(
         n => (n.out = n.out.filter(o => o != active))
       );
