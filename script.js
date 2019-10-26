@@ -4,8 +4,8 @@ const ctx = c.getContext("2d");
 const sig_speed = 10; //speed of signal
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
-const neuro_ref = 0.03; // refractory period decay
-const decay = 0.05; //neuron value decay rate
+const neuro_ref = 0.1; // refractory period decay
+const decay = 0.11; //neuron value decay rate
 const neuro_max = 3;
 const neuro_init_color = 100;
 
