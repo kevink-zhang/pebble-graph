@@ -78,7 +78,7 @@ class Neuron {
   constructor(a, b, fixed = false, weight = 1) {
     this.x = a;
     this.y = b;
-    this.s = 15;
+    this.s = 8;
     this.ID = G.nodes.length;
     this.fixed = fixed;
     this.out = []; // vertices which this goes into
@@ -91,6 +91,7 @@ class Neuron {
   draw() {
     for (const n of this.out) {
       ctx.strokeStyle = neuron_color;
+      ctx.lineWidth = 1;
       draw_arrow(this.x, this.y, n.x, n.y);
     }
 
@@ -98,17 +99,21 @@ class Neuron {
     const a = (sum / neuro_max) * (255 - neuro_init_color) + neuro_init_color;
     ctx.fillStyle =
       "rgb(" +
-      (this.weight < 0 ? a : 0) +
-      "," +
-      (this.weight < 0 ? 0 : a) +
-      ",0)";
+      (this.weight < 0 ? 255 : 0) +
+      ",0," +
+      (this.weight < 0 ? 0 : 255) +
+      ")";
     if (this.fixed)
       ctx.fillStyle =
-        "rgb(" + 0 + "," + 0 + "," + (this.weight < 0 ? 0 : a) + ")";
+        "rgb(0," + (this.weight < 0 ? 0 : a) + ",0)";
+    
+    ctx.strokeStyle="lightblue";
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.s, 0, 2*Math.PI);
     ctx.fill();
     ctx.stroke();
+    
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(sum, 10), this.x + 12, this.y);
   }
@@ -217,6 +222,7 @@ function draw() {
 
   if (!down && active) {
     ctx.strokeStyle = neuron_color;
+    ctx.lineWidth = 1;
     draw_arrow(active.x, active.y, mouse.x, mouse.y);
   }
 
@@ -260,7 +266,7 @@ c.addEventListener("mousedown", e => {
     return;
   }
   let below = G.nodes.find(
-    n => n.x < x + n.s && n.x > x - n.s && n.y < y + n.s && n.y > y - n.s
+    n => n.x < x + n.s*1.125 && n.x > x - n.s*1.125 && n.y < y + n.s*1.125 && n.y > y - n.s*1.125
   );
 
   if (below) {
