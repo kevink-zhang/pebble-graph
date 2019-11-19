@@ -105,7 +105,10 @@ class Neuron {
     if (this.fixed)
       ctx.fillStyle =
         "rgb(" + 0 + "," + 0 + "," + (this.weight < 0 ? 0 : a) + ")";
-    ctx.fillRect(this.x - this.s / 2, this.y - this.s / 2, this.s, this.s);
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.s, 0, 2*Math.PI);
+    ctx.fill();
+    ctx.stroke();
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(sum, 10), this.x + 12, this.y);
   }
@@ -200,11 +203,11 @@ function draw() {
 
   if (active) {
     ctx.fillStyle = "yellow";
-    ctx.fillRect(
-      active.x - active.s / 2,
-      active.y - active.s / 2,
-      active.s,
-      active.s
+    ctx.strokeRect(
+      active.x-active.s*1.125,
+      active.y-active.s*1.125,
+      active.s*2.25,
+      active.s*2.25
     );
   }
   if (!paused) {
@@ -337,7 +340,7 @@ function setActive(a) {
     threshold.value = a.actpot;
     name.value = a.name;
     console.log(a);
-  } //else sidebar.classList.add("hidden");
+  }
 }
 threshold.onchange = () => {
   active.actpot = threshold.value;
