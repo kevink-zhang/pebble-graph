@@ -1,5 +1,5 @@
 const c = document.querySelector("#c");
-const c2 = document.querySelector("#c2")
+const c2 = document.querySelector("#c2");
 const ctx = c.getContext("2d");
 const ctx2 = c2.getContext("2d");
 
@@ -9,6 +9,12 @@ const scale = window.devicePixelRatio;
 c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
+
+c2.style.width = "80px";
+c2.style.height = "48px";
+c2.width = Math.ceil(80 * scale);
+c2.height = Math.ceil(48 * scale);
+ctx2.scale(scale, scale);
 
 const sig_speed = 0.02; //speed of signal
 const backdrop = "#000000";
@@ -119,7 +125,11 @@ class Neuron {
     ctx.stroke();
 
     ctx.fillStyle = neuron_color;
-    ctx.fillText(fround(sum, 10), this.x + 12, this.y);
+    ctx.fillText(
+      (this.name ? this.name + ": " : "") + fround(sum, 10),
+      this.x + 12,
+      this.y
+    );
   }
   // compute membrane potential with .signals
   sum() {
@@ -247,18 +257,18 @@ function draw() {
     ctx.fillRect(8, 7, 3, 10);
     ctx.fillRect(14, 7, 3, 10);
   }
-  
-  
-  ctx2.drawImage( c2, -1, 0);
 
-    ctx2.fillStyle = "white";
+  ctx2.scale(1 / scale, 1 / scale);
+  ctx2.drawImage(c2, -1, 0);
+  ctx2.scale(scale, scale);
 
-	ctx2.fillRect( 80 - 1, 0, 1, 48 );
-  
-  
-    ctx2.fillStyle = "blue";
+  ctx2.fillStyle = "white";
 
-	ctx2.fillRect( 80 - 1, (Math.cos()/2+0.5)*48, 1, 48 );
+  ctx2.fillRect(80 - 1, 0, 1, 48);
+
+  ctx2.fillStyle = "blue";
+
+  ctx2.fillRect(80 - 1, Math.random() * 48, 1, 48);
   window.requestAnimationFrame(draw);
 }
 
