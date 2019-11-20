@@ -7,7 +7,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-const sig_speed = 10; //speed of signal
+const sig_speed = 0.02; //speed of signal
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 const neuro_ref = 0.1; // refractory period decay
@@ -45,10 +45,6 @@ class Signal {
     this.progress = 0;
     this.val = val; // strength of the resulting neurotransmitter
     this.fired = false; // make sure we don't fire twice before cleanup
-
-    const dx = this.end.x - this.src.x;
-    const dy = this.end.y - this.src.y;
-    this.mag = Math.sqrt(dx ** 2 + dy ** 2);
   }
   draw() {
     const dx = this.end.x - this.src.x;
@@ -65,7 +61,7 @@ class Signal {
     ctx.stroke();
   }
   update() {
-    this.progress += sig_speed / this.mag;
+    this.progress += sig_speed;
     return !this.fired && (this.fired = this.progress >= 1);
   }
 }
@@ -215,10 +211,10 @@ function draw() {
   if (active) {
     ctx.fillStyle = "yellow";
     ctx.strokeRect(
-      active.x - active.s * 1.125,
-      active.y - active.s * 1.125,
-      active.s * 2.25,
-      active.s * 2.25
+      active.x - active.s * 1.5,
+      active.y - active.s * 1.5,
+      active.s * 3,
+      active.s * 3
     );
   }
   if (!paused) {
@@ -273,10 +269,10 @@ c.addEventListener("mousedown", e => {
   }
   let below = G.nodes.find(
     n =>
-      n.x < x + n.s * 2.25 &&
-      n.x > x - n.s * 2.25 &&
-      n.y < y + n.s * 2.25 &&
-      n.y > y - n.s * 2.25
+      n.x < x + n.s * 1.5 &&
+      n.x > x - n.s * 1.5 &&
+      n.y < y + n.s * 1.5 &&
+      n.y > y - n.s * 1.5
   );
 
   if (below) {
