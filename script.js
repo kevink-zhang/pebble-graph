@@ -1,5 +1,11 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
+c.style.width = "500px";
+c.style.height = "500px";
+const scale = window.devicePixelRatio;
+c.width = Math.ceil(500 * scale);
+c.height = Math.ceil(500 * scale);
+ctx.scale(scale, scale);
 
 const sig_speed = 10; //speed of signal
 const backdrop = "#000000";
@@ -104,16 +110,15 @@ class Neuron {
       (this.weight < 0 ? 0 : 255) +
       ")";
     if (this.fixed)
-      ctx.fillStyle =
-        "rgb(0," + (this.weight < 0 ? 0 : a) + ",0)";
-    
-    ctx.strokeStyle="lightblue";
+      ctx.fillStyle = "rgb(0," + (this.weight < 0 ? 0 : a) + ",0)";
+
+    ctx.strokeStyle = "lightblue";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.s, 0, 2*Math.PI);
+    ctx.arc(this.x, this.y, this.s, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
-    
+
     ctx.fillStyle = neuron_color;
     ctx.fillText(fround(sum, 10), this.x + 12, this.y);
   }
@@ -209,10 +214,10 @@ function draw() {
   if (active) {
     ctx.fillStyle = "yellow";
     ctx.strokeRect(
-      active.x-active.s*1.125,
-      active.y-active.s*1.125,
-      active.s*2.25,
-      active.s*2.25
+      active.x - active.s * 1.125,
+      active.y - active.s * 1.125,
+      active.s * 2.25,
+      active.s * 2.25
     );
   }
   if (!paused) {
@@ -266,7 +271,11 @@ c.addEventListener("mousedown", e => {
     return;
   }
   let below = G.nodes.find(
-    n => n.x < x + n.s*1.125 && n.x > x - n.s*1.125 && n.y < y + n.s*1.125 && n.y > y - n.s*1.125
+    n =>
+      n.x < x + n.s * 1.125 &&
+      n.x > x - n.s * 1.125 &&
+      n.y < y + n.s * 1.125 &&
+      n.y > y - n.s * 1.125
   );
 
   if (below) {
