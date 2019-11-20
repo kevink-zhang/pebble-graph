@@ -134,8 +134,9 @@ class Neuron {
     // action potential not met, will not fire
     if (sum < this.actpot) return [];
 
+    this.signals = [];
     // Repolarize neuron through an influx of inhibitors
-    this.signals.push(new Neurotransmitter(-this.actpot - 0.1, neuro_ref));
+    this.signals.push(new Neurotransmitter(-0.1, neuro_ref));
 
     return this.out.map(n => new Signal(this, n, this.weight));
   }
@@ -272,10 +273,10 @@ c.addEventListener("mousedown", e => {
   }
   let below = G.nodes.find(
     n =>
-      n.x < x + n.s * 1.125 &&
-      n.x > x - n.s * 1.125 &&
-      n.y < y + n.s * 1.125 &&
-      n.y > y - n.s * 1.125
+      n.x < x + n.s * 2.25 &&
+      n.x > x - n.s * 2.25 &&
+      n.y < y + n.s * 2.25 &&
+      n.y > y - n.s * 2.25
   );
 
   if (below) {
