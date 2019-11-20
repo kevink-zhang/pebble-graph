@@ -268,7 +268,7 @@ function draw() {
 
   ctx2.fillStyle = "blue";
 
-  ctx2.fillRect(80 - 1, Math.random() * 48, 1, 48);
+  ctx2.fillRect(80 - 1, 48-(Math.random()) * 48, 1, 1);
   window.requestAnimationFrame(draw);
 }
 
