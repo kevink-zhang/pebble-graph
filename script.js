@@ -1,5 +1,8 @@
 const c = document.querySelector("#c");
+const c2 = document.querySelector("#c2")
 const ctx = c.getContext("2d");
+const ctx2 = c2.getContext("2d");
+
 c.style.width = "500px";
 c.style.height = "500px";
 const scale = window.devicePixelRatio;
@@ -244,6 +247,18 @@ function draw() {
     ctx.fillRect(8, 7, 3, 10);
     ctx.fillRect(14, 7, 3, 10);
   }
+  
+  
+  ctx2.drawImage( c2, -1, 0);
+
+    ctx2.fillStyle = "white";
+
+	ctx2.fillRect( 80 - 1, 0, 1, 48 );
+  
+  
+    ctx2.fillStyle = "blue";
+
+	ctx2.fillRect( 80 - 1, (Math.cos()/2+0.5)*48, 1, 48 );
   window.requestAnimationFrame(draw);
 }
 
