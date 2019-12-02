@@ -20,7 +20,7 @@ const sig_speed = 0.03; //speed of signal
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 const neuro_ref = 0.03; // refractory period decay
-const decay = 0.03; //neuron value decay rate
+const decay = 0.06; //neuron value decay rate
 const neuro_max = 3;
 const neuro_init_color = 100;
 
