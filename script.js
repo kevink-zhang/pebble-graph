@@ -86,7 +86,7 @@ class Neurotransmitter {
 }
 
 class Neuron {
-  constructor(a, b, fixed = false, weight = 1) {
+  constructor(a, b, fixed = false, weight = 1.2) {
     this.x = a;
     this.y = b;
     this.s = 8;
@@ -138,6 +138,12 @@ class Neuron {
   update(inVal) {
     this.signals.push(new Neurotransmitter(inVal));
 
+   
+  }
+  tick() {
+    for (const s of this.signals) s.tick();
+    this.signals = this.signals.filter(x => x.time > 0);
+
     const sum = this.sum();
 
     // action potential not met, will not fire
@@ -148,10 +154,6 @@ class Neuron {
     this.signals.push(new Neurotransmitter(-0.1, neuro_ref));
 
     return this.out.map(n => new Signal(this, n, this.weight));
-  }
-  tick() {
-    for (const s of this.signals) s.tick();
-    this.signals = this.signals.filter(x => x.time > 0);
   }
   setName(x) {
     this.name = x;
@@ -171,20 +173,14 @@ class Graph {
   update() {
     for (let s of this.signals) {
       if (s.update()) {
-        this.addValue(s.end, s.val);
+        // this.addValue(s.end, s.val);
+        s.end.update(s.val);
       }
     }
     for (let n of this.nodes) {
-      n.tick();
+      let x = n.tick();
+      if (x) this.signals.push(...x);
     }
-  }
-  addValue(n, v) {
-    //push an update to node n
-    this.signals.push(...n.update(v));
-  }
-  addEdge(a, b) {
-    //connect a to b
-    a.out.push(b);
   }
 }
 
@@ -302,11 +298,11 @@ c.addEventListener("mousedown", e => {
 
   if (below) {
     if (e.button == 2) {
-      G.addValue(below, 1);
+      below.update(1.2)
     } else {
       if (active != null) {
         if (below != active) {
-          G.addEdge(active, below);
+          active.out.push(below);
         }
         setActive(null);
       } else {
@@ -315,7 +311,7 @@ c.addEventListener("mousedown", e => {
       }
     }
   } else {
-    let n = new Neuron(x, y, false, e.shiftKey ? -1 : 1);
+    let n = new Neuron(x, y, false, e.shiftKey ? -1.2 : 1.2);
     G.nodes.push(n);
   }
 });
@@ -348,7 +344,6 @@ window.addEventListener("keydown", e => {
   if (!(key in keysdown)) {
     keysdown[key] = true;
 
-    if (key == 73) G.addValue(G.nodes[0], 1);
     if (key == 27) setActive(null);
     if (key == 8) {
       if (!active.fixed) G.nodes = G.nodes.filter(n => n != active);
