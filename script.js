@@ -202,7 +202,7 @@ function distToSegment(p, v, w) {
 }
 
 let t = 0; //time counter
-let paused = true; //will not update brain
+let paused = false; //will not update brain
 let scene = "neurons"; //scene
 
 let G = new Graph();
@@ -280,11 +280,7 @@ c.addEventListener("mousedown", e => {
   let y = e.clientY - c.getBoundingClientRect().top;
 
   if (x > 5 && x < 20 && y > 5 && y < 20) {
-    if (!paused) {
-      paused = true;
-    } else {
-      paused = false;
-    }
+    paused = !paused;
     return;
   }
   let below = G.nodes.find(
