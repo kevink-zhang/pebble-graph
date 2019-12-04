@@ -20,7 +20,7 @@ const sig_speed = 0.03; //speed of signal
 const backdrop = "#000000";
 const neuron_color = "#ffffff";
 const neuro_ref = 0.06; // refractory period decay
-const decay = 0.03; //neuron value decay rate
+const decay = 0.02; //neuron value decay rate
 const neuro_max = 3;
 const neuro_init_color = 100;
 
@@ -173,7 +173,6 @@ class Graph {
   update() {
     for (let s of this.signals) {
       if (s.update()) {
-        // this.addValue(s.end, s.val);
         s.end.update(s.val);
       }
     }
