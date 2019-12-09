@@ -83,6 +83,7 @@ class Signal {
     this.pos[0]+=this.dx;
     this.pos[1]+=this.dy;
     if(this.pos[0]>=this.tar.x ){
+      console.log(this.tar);
       this.tar.addVal(1);
     }
   }
@@ -109,10 +110,7 @@ class Graph {
     for(let n of this.nodes){
       if(n.update()){
         this.move = false;
-        for(let e of n.adj){
-          this.signals.push(new Signal(n,e));
-          //console.log(n,e);
-        }
+        n.adj.forEach(x=>this.signals.push(new Signal(n,x)));
         break;
       }
     }
