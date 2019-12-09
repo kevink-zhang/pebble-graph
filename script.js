@@ -22,19 +22,29 @@ class Node {
     this.x = x;
     this.y = y;
     this.v = 0;
+    this.r = 5;
   }
   draw() {
-    ctx.strokeStyle = "lightblue";
-    ctx.fillStyle = "lightblue";
+    ctx.strokeStyle = "black";
+    ctx.fillStyle = "black";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.x,this.y,2,0,2*Math.PI);
+    ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
     ctx.fill();
     ctx.stroke();
     //console.log(this.x, this.y);
+    for(let e of this.adj){
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y);
+      ctx.lineTo(e.x ,e.y);
+      ctx.closePath();
+    }
   }
   addVal(v) {
     this.v+=v;
+  }
+  addEdge(e){
+    this.adj.push(e);
   }
   update() {
     if(this.v>=this.adj.length){
@@ -127,6 +137,8 @@ c.addEventListener("mousemove", e => {
   mouse.x = x;
   mouse.y = y;
 });
+
+let select = null;
 c.addEventListener("mouseup", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
@@ -135,7 +147,16 @@ c.addEventListener("mouseup", e => {
   for(let n of G.nodes){
     let pp = [n.x,n.y];
     if(dist(p,pp)<n.r){
-      n.addVal(1);
+      if(select==n) {
+        n.addVal(1);
+        select = null;
+      }
+      else if(select==null) select = n;
+      else{
+        n.addEdge(select);
+        select.addEdge(n);
+        select = null;
+      }
     }
   }
   G.addNode(x,y);
