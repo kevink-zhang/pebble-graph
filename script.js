@@ -42,7 +42,8 @@ class Node {
       ctx.stroke();
       ctx.closePath();
     }
-    ctx.fillText(this.v,this.x+this.r+2,this.y);
+    ctx.fillText(this.v,this.x+this.r+2,this.y-3);
+    ctx.fillText(this.adj.length,this.x+this.r+2,this.y+10);
   }
   addVal(v) {
     this.v+=v;
@@ -65,15 +66,15 @@ class Signal {
     this.src = src;
     this.tar = tar;
     this.pos = [src.x,src.y];
-    this.dx = (tar.x-src.x)/200;
-    this.dy = (tar.y-src.y)/200;
+    this.dx = (tar.x-src.x)/100;
+    this.dy = (tar.y-src.y)/100;
   }
   draw() {
     ctx.strokeStyle = "red";
     //ctx.fillStyle = "black";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.x,this.y,2,0,2*Math.PI);
+    ctx.arc(this.pos[0],this.pos[1],2,0,2*Math.PI);
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
@@ -81,7 +82,7 @@ class Signal {
   update() {
     this.pos[0]+=this.dx;
     this.pos[1]+=this.dy;
-    if(this.pos[0]==this.tar.x){
+    if(this.pos[0]>=this.tar.x ){
       this.tar.addVal(1);
     }
   }
@@ -98,17 +99,19 @@ class Graph {
   }
   update() {
     this.signals.forEach(x=>x.update());
-    if(this.signals.length>0 && this.signals[0].pos[0]==this.signals[0].tar.x){
+    if(this.signals.length>0 && this.signals[0].pos[0]>=this.signals[0].tar.x){
       this.signals = [];
+      this.move = true;
     }
     
     if(!this.move) return;
     
     for(let n of this.nodes){
       if(n.update()){
+        this.move = false;
         for(let e of n.adj){
           this.signals.push(new Signal(n,e));
-          console.log
+          //console.log(n,e);
         }
         break;
       }
