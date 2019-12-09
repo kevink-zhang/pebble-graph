@@ -23,6 +23,7 @@ class Node {
     this.y = y;
     this.v = 0;
     this.r = 10;
+    this.id = G.nodes.length;
   }
   draw() {
     ctx.strokeStyle = "black";
@@ -47,7 +48,6 @@ class Node {
   }
   addVal(v) {
     this.v+=v;
-    console.log("aDS "+v);
   }
   addEdge(e){
     this.adj.push(e);
