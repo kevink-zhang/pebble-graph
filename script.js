@@ -42,9 +42,11 @@ class Node {
       ctx.stroke();
       ctx.closePath();
     }
+    ctx.fillText(this.v,this.x+this.r+2,this.y);
   }
   addVal(v) {
     this.v+=v;
+    console.log("aDS "+v);
   }
   addEdge(e){
     this.adj.push(e);
@@ -67,7 +69,8 @@ class Signal {
     this.dy = (tar.y-src.y)/200;
   }
   draw() {
-    ctx.arc(this.pos[0],this.pos[1],0,1,2*Math.PI);
+    
+    ctx.arc(this.pos[0],this.pos[1],2,0,2*Math.PI);
   }
   update() {
     this.pos[0]+=this.dx;
@@ -85,11 +88,14 @@ class Graph {
     
   }
   update() {
+    this.signals.forEach(x=>x.update());
     if(!this.move) return;
     
     for(let n of this.nodes){
       if(n.update()){
-        
+        for(let e in n.adj){
+          this.signals.push(new Signal(n,e));
+        }
         break;
       }
     }
@@ -116,8 +122,8 @@ let scene = "add"; //scene
 let G = new Graph();
 
 function draw() {
-  //ctx.fillStyle = backdrop;
-  //ctx.fillRect(0, 0, c.width, c.height);
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, c.width, c.height);
   G.update();
   G.draw();
   
@@ -158,6 +164,7 @@ c.addEventListener("mouseup", e => {
       if(select==n) {
         n.addVal(1);
         select = null;
+        //console.log("IASDJASDA");
       }
       else if(select==null) select = n;
       else{
@@ -167,7 +174,10 @@ c.addEventListener("mouseup", e => {
       }
     }
   }
-  if(newN) G.addNode(x,y);
+  if(newN) {
+    G.addNode(x,y);
+    console.log("NEW");
+  }
   
   console.log(x + " " + y);
 });
