@@ -22,7 +22,7 @@ class Node {
     this.x = x;
     this.y = y;
     this.v = 0;
-    this.r = 5;
+    this.r = 10;
   }
   draw() {
     ctx.strokeStyle = "black";
@@ -32,11 +32,14 @@ class Node {
     ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
     ctx.fill();
     ctx.stroke();
+    ctx.closePath();
     //console.log(this.x, this.y);
     for(let e of this.adj){
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
       ctx.lineTo(e.x ,e.y);
+      //ctx.fill();
+      ctx.stroke();
       ctx.closePath();
     }
   }
@@ -75,12 +78,15 @@ class Graph {
   constructor() {
     this.nodes = [];
     this.signals = [];
+    this.move = true; //true if no signals are active, false otherwise to preserve sanity
   }
   draw() {
     this.nodes.forEach(x=>x.draw());
     
   }
   update() {
+    if(!this.move) return;
+    
     for(let n of this.nodes){
       if(n.update()){
         
@@ -144,9 +150,11 @@ c.addEventListener("mouseup", e => {
   let y = e.clientY - c.getBoundingClientRect().top;
   
   let p = [x,y];
+  let newN = true;
   for(let n of G.nodes){
     let pp = [n.x,n.y];
     if(dist(p,pp)<n.r){
+      newN = false;
       if(select==n) {
         n.addVal(1);
         select = null;
@@ -159,7 +167,7 @@ c.addEventListener("mouseup", e => {
       }
     }
   }
-  G.addNode(x,y);
+  if(newN) G.addNode(x,y);
   
   console.log(x + " " + y);
 });
