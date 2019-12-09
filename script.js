@@ -21,30 +21,41 @@ class Node {
     this.adj = [];
     this.x = x;
     this.y = y;
+    this.v = 0;
   }
   draw() {
-    ctx.arc(x,y,0,2,2*Math.PI)
+    ctx.fillStyle("blue");
+    ctx.arc(this.x,this.y,0,2,2*Math.PI);
   }
+  update(v) {
+    this.v+=v;
+  }
+}
 
+class Signal {
+  constructor(src,tar){
+    this.src = src;
+    this.tar = tar;
+    this.pos = [src.x,src.y];
+    this.dx = 
+  }
+  draw() {
+    
+  }
+  update() {
+    
+  }
+}
 class Graph {
   constructor() {
     this.nodes = [];
+    this.signals = [];
   }
   draw() {
-    this.signals.forEach(x => x.draw());
-    this.nodes.forEach(x => x.draw());
-    this.signals = this.signals.filter(x => x.progress <= 1);
+    
   }
   update() {
-    for (let s of this.signals) {
-      if (s.update()) {
-        s.end.update(s.val);
-      }
-    }
-    for (let n of this.nodes) {
-      let x = n.tick();
-      if (x) this.signals.push(...x);
-    }
+    
   }
 }
 
@@ -68,7 +79,7 @@ let active = null;
 let down = false;
 
 function draw() {
-  ctx.fillStyle = backdrop;
+  //ctx.fillStyle = backdrop;
   ctx.fillRect(0, 0, c.width, c.height);
 
 }
@@ -77,10 +88,7 @@ draw();
 
 let mouse = { x: 0, y: 0 };
 
-c.addEventListener("contextmenu", e => {
-  e.preventDefault();
-  return false;
-});
+
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
