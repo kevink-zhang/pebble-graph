@@ -1,7 +1,7 @@
 const c = document.querySelector("#c");
-const c2 = document.querySelector("#c2");
+//const c2 = document.querySelector("#c2");
 const ctx = c.getContext("2d");
-const ctx2 = c2.getContext("2d");
+//const ctx2 = c2.getContext("2d");
 
 c.style.width = "500px";
 c.style.height = "500px";
@@ -10,11 +10,11 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-c2.style.width = "80px";
-c2.style.height = "48px";
-c2.width = Math.ceil(80 * scale);
-c2.height = Math.ceil(48 * scale);
-ctx2.scale(scale, scale);
+// c2.style.width = "80px";
+// c2.style.height = "48px";
+// c2.width = Math.ceil(80 * scale);
+// c2.height = Math.ceil(48 * scale);
+//ctx2.scale(scale, scale);
 
 class Node {
   constructor(x, y) {
@@ -24,12 +24,14 @@ class Node {
     this.v = 0;
   }
   draw() {
-    ctx.strokeStyle = "light blue";
+    ctx.strokeStyle = "lightblue";
+    ctx.fillStyle = "lightblue";
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.x,this.y,0,2,2*Math.PI);
+    ctx.arc(this.x,this.y,2,0,2*Math.PI);
     ctx.fill();
     ctx.stroke();
-    
+    //console.log(this.x, this.y);
   }
   addVal(v) {
     this.v+=v;
