@@ -24,8 +24,12 @@ class Node {
     this.v = 0;
   }
   draw() {
-    ctx.fillStyle("blue");
+    ctx.strokeStyle = "light blue";
+    ctx.beginPath();
     ctx.arc(this.x,this.y,0,2,2*Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    
   }
   addVal(v) {
     this.v+=v;
@@ -48,10 +52,11 @@ class Signal {
     this.dy = (tar.y-src.y)/200;
   }
   draw() {
-    
+    ctx.arc(this.pos[0],this.pos[1],0,1,2*Math.PI);
   }
   update() {
-    
+    this.pos[0]+=this.dx;
+    this.pos[1]+=this.dy;
   }
 }
 class Graph {
@@ -61,14 +66,18 @@ class Graph {
   }
   draw() {
     this.nodes.forEach(x=>x.draw());
+    
   }
   update() {
     for(let n of this.nodes){
-      if(n.)
+      if(n.update()){
+        
+        break;
+      }
     }
   }
   addNode(x,y){
-    this.nodes.push(Node(x,y));
+    this.nodes.push(new Node(x,y));
   }
 }
 
@@ -88,13 +97,13 @@ let scene = "add"; //scene
 
 let G = new Graph();
 
-let active = null;
-let down = false;
-
 function draw() {
   //ctx.fillStyle = backdrop;
-  ctx.fillRect(0, 0, c.width, c.height);
-
+  //ctx.fillRect(0, 0, c.width, c.height);
+  G.update();
+  G.draw();
+  
+  window.requestAnimationFrame(draw);
 }
 
 draw();
@@ -128,6 +137,8 @@ c.addEventListener("mouseup", e => {
     }
   }
   G.addNode(x,y);
+  
+  console.log(x + " " + y);
 });
 
 let keysdown = {};
