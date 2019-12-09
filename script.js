@@ -69,12 +69,21 @@ class Signal {
     this.dy = (tar.y-src.y)/200;
   }
   draw() {
-    
-    ctx.arc(this.pos[0],this.pos[1],2,0,2*Math.PI);
+    ctx.strokeStyle = "red";
+    //ctx.fillStyle = "black";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,2,0,2*Math.PI);
+    ctx.fill();
+    ctx.stroke();
+    ctx.closePath();
   }
   update() {
     this.pos[0]+=this.dx;
     this.pos[1]+=this.dy;
+    if(this.pos[0]==this.tar.x){
+      this.tar.addVal(1);
+    }
   }
 }
 class Graph {
@@ -85,16 +94,21 @@ class Graph {
   }
   draw() {
     this.nodes.forEach(x=>x.draw());
-    
+    this.signals.forEach(x=>x.draw());
   }
   update() {
     this.signals.forEach(x=>x.update());
+    if(this.signals.length>0 && this.signals[0].pos[0]==this.signals[0].tar.x){
+      this.signals = [];
+    }
+    
     if(!this.move) return;
     
     for(let n of this.nodes){
       if(n.update()){
-        for(let e in n.adj){
+        for(let e of n.adj){
           this.signals.push(new Signal(n,e));
+          console.log
         }
         break;
       }
@@ -124,7 +138,7 @@ let G = new Graph();
 function draw() {
   ctx.fillStyle = "white";
   ctx.fillRect(0, 0, c.width, c.height);
-  G.update();
+  if(scene=="play") G.update();
   G.draw();
   
   window.requestAnimationFrame(draw);
@@ -199,10 +213,14 @@ let keysdown = {};
 //   }
 // });
 
-// window.addEventListener("keyup", e => {
-//   const key = e.keyCode ? e.keyCode : e.which;
-//   delete keysdown[key];
-// });
+window.addEventListener("keyup", e => {
+  const key = e.keyCode;
+  //console.log(key);
+  if(key==32){//space bar, toggles simulation
+    if(scene=="add") scene = "play";
+    else if(scene=="play") scene = "add";
+  }
+});
 
 // const sidebar = document.getElementById("sidebar");
 // const threshold = document.getElementById("threshold");
