@@ -275,18 +275,17 @@ window.addEventListener("keyup", e => {
     select.sink = !select.sink;
     select = null;
   }
-  if(key==90){
-    let ooo = G.nodes.pop();
+  if(key==90 && select!=null){
+    let ooo = select;
+    G.nodes.splice(G.nodes.indexOf(select),1);
     for(let n of G.nodes){
-      //console.log(n.adj);
       for(let e of n.adj){
-        //console.log(e.id, ooo.id);
         if(e.id==ooo.id){
-          //console.log("?ASDa");
           n.adj.splice(n.adj.indexOf(e),1);
         }
       }
     }
+    select = null;
   }
 });
 
