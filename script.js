@@ -10,7 +10,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-const sim_speed = 5;
+const sim_speed = 2;
 
 class Node {
   constructor(x, y) {
@@ -22,7 +22,7 @@ class Node {
     this.id = G.nodes.length;
     this.sink = false;
   }
-  draw() {
+  drawNode() {
     ctx.strokeStyle = "black";
     ctx.fillStyle = "white";
     if(this.sink) ctx.fillStyle = "black";
@@ -33,6 +33,18 @@ class Node {
     ctx.stroke();
     ctx.closePath();
 
+    
+    
+    ctx.fillStyle = "green";
+    if(this.v>=this.adj.length) ctx.fillStyle = "red";
+    ctx.fillText(this.v,this.x+this.r+2,this.y-3);
+    ctx.fillStyle = "black";
+    ctx.fillText(this.adj.length,this.x+this.r+2,this.y+10);
+  }
+  drawEdge() {
+    ctx.strokeStyle = "black";
+    if(select!=null&&(select.id==this.id) ctx.strokeStyle = "green";
+    
     for(let e of this.adj){
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
@@ -40,12 +52,6 @@ class Node {
       ctx.stroke();
       ctx.closePath();
     }
-    
-    ctx.fillStyle = "green";
-    if(this.v>=this.adj.length) ctx.fillStyle = "red";
-    ctx.fillText(this.v,this.x+this.r+2,this.y-3);
-    ctx.fillStyle = "black";
-    ctx.fillText(this.adj.length,this.x+this.r+2,this.y+10);
   }
   addVal(v) {
     this.v+=v;
@@ -106,7 +112,8 @@ class Graph {
   }
   draw() {
     this.signals.forEach(x=>x.draw());
-    this.nodes.forEach(x=>x.draw());
+    this.nodes.forEach(x=>x.drawEdge());
+    this.nodes.forEach(x=>x.drawNode());
     if(this.src){ //checks if positive radius
       ctx.strokeStyle = "red";
       ctx.beginPath();
@@ -272,7 +279,16 @@ window.addEventListener("keyup", e => {
   }
   if(key==90){
     let ooo = G.nodes.pop();
-    for
+    for(let n of G.nodes){
+      //console.log(n.adj);
+      for(let e of n.adj){
+        //console.log(e.id, ooo.id);
+        if(e.id==ooo.id){
+          //console.log("?ASDa");
+          n.adj.splice(n.adj.indexOf(e),1);
+        }
+      }
+    }
   }
 });
 
