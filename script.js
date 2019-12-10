@@ -97,35 +97,43 @@ class Signal {
 class Graph {
   constructor() {
     this.nodes = [];
+    this.mem = [];
     this.signals = [];
     this.move = 0; //0 if no signals are active, -1 otherwise to preserve sanity
     this.src = null;
+    this.cnt = 0;
   }
   draw() {
     this.signals.forEach(x=>x.draw());
     this.nodes.forEach(x=>x.draw());
-    if(this.src&&this.move/(-1)>0){ //checks if positive radius
+    if(this.src){ //checks if positive radius
       ctx.strokeStyle = "red";
       ctx.beginPath();
-      ctx.arc(this.src.x,this.src.y,this.move/(-1),0,2*Math.PI);
+      ctx.arc(this.src.x,this.src.y,this.cnt/4,0,2*Math.PI);
       ctx.stroke();
       ctx.closePath();
     }
   }
   update() {
+    if(this.mem.includes(this.nodes)) console.log("looped");
+    this.mem.push(this.nodes);
+    
     this.signals.forEach(x=>x.update());
     
     if(this.move==0){
       this.src = null;
+      this.cnt = 0;
       for(let n of this.nodes){
         if(n.update()){
           this.move = -1;
           this.src = n;
+          this.cnt = 40;
           n.adj.forEach(x=>this.signals.push(new Signal(n,x)));
           break;
         }
       }
     }
+    else this.cnt++;
     if(this.move>0) this.move--;
     
   }
@@ -155,6 +163,12 @@ function draw() {
   ctx.fillRect(0, 0, c.width, c.height);
   if(scene=="play") G.update();
   G.draw();
+  
+  if(select!=null){
+    ctx.beginPath();
+    ctx.moveTo(select.x-select.r,select.y);
+    ctx.endPath();
+  }
   
   window.requestAnimationFrame(draw);
 }
@@ -188,7 +202,7 @@ c.addEventListener("mouseup", e => {
   let newN = true;
   for(let n of G.nodes){
     let pp = [n.x,n.y];
-    if(dist(p,pp)<n.r){
+    if(dist(p,pp)<=n.r+1){
       newN = false;
       if(select==n) {
         n.addVal(1);
