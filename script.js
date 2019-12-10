@@ -10,7 +10,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-const sim_speed = 20;
+const sim_speed = 25;
 
 class Node {
   constructor(x, y) {
