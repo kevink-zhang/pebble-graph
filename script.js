@@ -97,7 +97,7 @@ class Signal {
 class Graph {
   constructor() {
     this.nodes = [];
-    this.mem = [];
+    this.mem = new Map();
     this.signals = [];
     this.move = 0; //0 if no signals are active, -1 otherwise to preserve sanity
     this.src = null;
@@ -114,17 +114,23 @@ class Graph {
       ctx.closePath();
     }
   }
+  addMemory(){
+    let mm = [];
+    this.nodes.forEach(x=>mm.push(x.v));
+    
+    if(this.mem[mm]) console.log("unstable");
+    this.mem[mm] = true;
+  }
   update() {
     this.signals.forEach(x=>x.update());
     
     if(this.move==0){
       this.src = null;
       this.cnt = 0;
+      
+      this.addMemory();
       for(let n of this.nodes){
         if(n.update()){
-          if(this.mem.includes(this.nodes.slice(0))) console.log("unstable");
-          this.mem.push(this.nodes.slice(0));
-          
           this.move = -1;
           this.src = n;
           this.cnt = 40;
