@@ -115,9 +115,6 @@ class Graph {
     }
   }
   update() {
-    if(this.mem.includes(this.nodes)) console.log("looped");
-    this.mem.push(this.nodes);
-    
     this.signals.forEach(x=>x.update());
     
     if(this.move==0){
@@ -125,6 +122,9 @@ class Graph {
       this.cnt = 0;
       for(let n of this.nodes){
         if(n.update()){
+          if(this.mem.includes(this.nodes.slice(0))) console.log("unstable");
+          this.mem.push(this.nodes.slice(0));
+          
           this.move = -1;
           this.src = n;
           this.cnt = 40;
@@ -155,6 +155,7 @@ function fround(x, f) {
 let t = 0; //time counter
 let paused = false; //will not update graph
 let scene = "add"; //scene
+let select = null; //selected node
 
 let G = new Graph();
 
@@ -165,9 +166,16 @@ function draw() {
   G.draw();
   
   if(select!=null){
+    ctx.strokeStyle = "green";
     ctx.beginPath();
-    ctx.moveTo(select.x-select.r,select.y);
-    ctx.endPath();
+    let s = select.r+3;
+    ctx.moveTo(select.x-s,select.y-s);
+    ctx.lineTo(select.x-s,select.y+s);
+    ctx.lineTo(select.x+s,select.y+s);
+    ctx.lineTo(select.x+s,select.y-s);
+    ctx.lineTo(select.x-s,select.y-s);
+    ctx.stroke();
+    ctx.closePath();
   }
   
   window.requestAnimationFrame(draw);
@@ -193,7 +201,7 @@ c.addEventListener("mousemove", e => {
   mouse.y = y;
 });
 
-let select = null;
+
 c.addEventListener("mouseup", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
