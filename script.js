@@ -42,10 +42,10 @@ class Node {
     ctx.fillText(this.adj.length,this.x+this.r+2,this.y+10);
   }
   drawEdge() {
-    ctx.strokeStyle = "black";
-    if(select!=null&&(select.id==this.id) ctx.strokeStyle = "green";
-    
     for(let e of this.adj){
+      ctx.strokeStyle = "black";
+      if(select!=null&&(select.id==this.id||select.id==e.id)) ctx.strokeStyle = "green";
+                      
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
       ctx.lineTo(e.x ,e.y);
