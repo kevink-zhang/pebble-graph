@@ -1,7 +1,5 @@
 const c = document.querySelector("#c");
-//const c2 = document.querySelector("#c2");
 const ctx = c.getContext("2d");
-//const ctx2 = c2.getContext("2d");
 
 c.style.width = "500px";
 c.style.height = "500px";
