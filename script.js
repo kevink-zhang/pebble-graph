@@ -10,11 +10,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-// c2.style.width = "80px";
-// c2.style.height = "48px";
-// c2.width = Math.ceil(80 * scale);
-// c2.height = Math.ceil(48 * scale);
-//ctx2.scale(scale, scale);
+const sim_speed = 20;
 
 class Node {
   constructor(x, y) {
@@ -84,10 +80,10 @@ class Signal {
     ctx.closePath();
   }
   update() {
-    this.pos[0]+=this.dx;
-    this.pos[1]+=this.dy;
-    this.count--;
-    if(this.count==0){
+    this.pos[0]+=this.dx*sim_speed;
+    this.pos[1]+=this.dy*sim_speed;
+    this.count-=sim_speed;
+    if(this.count<=0){
       this.tar.addVal(1);
       G.signals.splice(G.signals.indexOf(this),1);
       G.move = 50;
@@ -124,14 +120,14 @@ class Graph {
   update() {
     this.signals.forEach(x=>x.update());
     
-    if(this.move==0){
+    if(this.move<=0){
       this.src = null;
       this.cnt = 0;
       
       this.addMemory();
       for(let n of this.nodes){
         if(n.update()){
-          this.move = -1;
+          this.move = "???";
           this.src = n;
           this.cnt = 40;
           n.adj.forEach(x=>this.signals.push(new Signal(n,x)));
@@ -139,8 +135,8 @@ class Graph {
         }
       }
     }
-    else this.cnt++;
-    if(this.move>0) this.move--;
+    else this.cnt+=sim_speed;
+    if(this.move>0) this.move-=sim_speed;
     
   }
   addNode(x,y){
