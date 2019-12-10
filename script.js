@@ -82,9 +82,9 @@ class Signal {
   update() {
     this.pos[0]+=this.dx;
     this.pos[1]+=this.dy;
-    if(this.pos[0]>=this.tar.x ){
-      console.log(this.tar);
+    if(){
       this.tar.addVal(1);
+      G.signals.remove(this);
     }
   }
 }
@@ -100,20 +100,18 @@ class Graph {
   }
   update() {
     this.signals.forEach(x=>x.update());
-    if(this.signals.length>0 && this.signals[0].pos[0]>=this.signals[0].tar.x){
-      this.signals = [];
-      this.move = true;
-    }
     
-    if(!this.move) return;
-    
-    for(let n of this.nodes){
-      if(n.update()){
-        this.move = false;
-        n.adj.forEach(x=>this.signals.push(new Signal(n,x)));
-        break;
+    if(this.move){
+      for(let n of this.nodes){
+        if(n.update()){
+          this.move = false;
+          n.adj.forEach(x=>this.signals.push(new Signal(n,x)));
+          break;
+        }
       }
     }
+    
+    
   }
   addNode(x,y){
     this.nodes.push(new Node(x,y));
