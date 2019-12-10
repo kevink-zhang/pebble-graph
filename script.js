@@ -8,7 +8,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-const sim_speed = 2;
+const sim_speed = 1;
 
 class Node {
   constructor(x, y) {
@@ -23,7 +23,10 @@ class Node {
   drawNode() {
     ctx.strokeStyle = "white";
     ctx.fillStyle = "black";
-    if(this.sink) ctx.fillStyle = "white";
+    if(this.sink){
+      
+    }
+    if(this.v>=this.adj.length) ctx.strokeStyle = "yellow";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
@@ -42,8 +45,8 @@ class Node {
   drawEdge() {
     for(let e of this.adj){
       ctx.strokeStyle = "white";
-      if(select!=null&&(select.id==this.id||select.id==e.id)) ctx.strokeStyle = "green";
-      ctx.lineWidth = 1;
+      if(select!=null&&(select.id==this.id||select.id==e.id)) ctx.strokeStyle = "yellow";
+      ctx.lineWidth = 0.75;
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
       ctx.lineTo(e.x ,e.y);
@@ -188,21 +191,31 @@ function draw() {
   G.draw();
   
   if(select!=null){
-    ctx.strokeStyle = "green";
-    ctx.beginPath();
-    let s = select.r+3;
-    ctx.moveTo(select.x-s,select.y-s);
-    ctx.lineTo(select.x-s,select.y+s);
-    ctx.lineTo(select.x+s,select.y+s);
-    ctx.lineTo(select.x+s,select.y-s);
-    ctx.lineTo(select.x-s,select.y-s);
-    ctx.stroke();
-    ctx.closePath();
+    // ctx.strokeStyle = "green";
+    // ctx.beginPath();
+    // let s = select.r+3;
+    // ctx.moveTo(select.x-s,select.y-s);
+    // ctx.lineTo(select.x-s,select.y+s);
+    // ctx.lineTo(select.x+s,select.y+s);
+    // ctx.lineTo(select.x+s,select.y-s);
+    // ctx.lineTo(select.x-s,select.y-s);
+    // ctx.stroke();
+    // ctx.closePath();
+    ctx.strokeStyle = "yellow";
+    ctx.lineWidth = 1;
+    for(let i = 0; i < 3; i++){
+      ctx.beginPath();
+      ctx.arc(select.x,select.y,select.r+4,i*2*Math.PI/3+t/10,i*2*Math.PI/3+2*Math.PI/3-0.65+t/10);
+      ctx.stroke();
+      ctx.closePath();
+    }
   }
   
   ctx.fillStyle = "white";
   ctx.fillText("mode: "+scene, 5, 10);
   ctx.fillText("unstable: "+G.unstable, 5, 20);
+  
+  t++;
   window.requestAnimationFrame(draw);
 }
 
