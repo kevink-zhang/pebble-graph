@@ -34,16 +34,19 @@ class Node {
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
-    //console.log(this.x, this.y);
+
     for(let e of this.adj){
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
       ctx.lineTo(e.x ,e.y);
-      //ctx.fill();
       ctx.stroke();
       ctx.closePath();
     }
+    
+    ctx.fillStyle = "green";
+    if(this.v>=this.adj.length) ctx.fillStyle = "red";
     ctx.fillText(this.v,this.x+this.r+2,this.y-3);
+    ctx.fillStyle = "black";
     ctx.fillText(this.adj.length,this.x+this.r+2,this.y+10);
   }
   addVal(v) {
@@ -66,8 +69,9 @@ class Signal {
     this.src = src;
     this.tar = tar;
     this.pos = [src.x,src.y];
-    this.dx = (tar.x-src.x)/100;
-    this.dy = (tar.y-src.y)/100;
+    this.count = 25;
+    this.dx = (tar.x-src.x)/this.count;
+    this.dy = (tar.y-src.y)/this.count;
   }
   draw() {
     ctx.strokeStyle = "red";
@@ -82,9 +86,11 @@ class Signal {
   update() {
     this.pos[0]+=this.dx;
     this.pos[1]+=this.dy;
-    if(){
+    this.count--;
+    if(this.count==0){
       this.tar.addVal(1);
-      G.signals.remove(this);
+      G.signals.splice(G.signals.indexOf(this),1);
+      G.move = 50;
     }
   }
 }
@@ -92,25 +98,35 @@ class Graph {
   constructor() {
     this.nodes = [];
     this.signals = [];
-    this.move = true; //true if no signals are active, false otherwise to preserve sanity
+    this.move = 0; //0 if no signals are active, -1 otherwise to preserve sanity
+    this.src = null;
   }
   draw() {
-    this.nodes.forEach(x=>x.draw());
     this.signals.forEach(x=>x.draw());
+    this.nodes.forEach(x=>x.draw());
+    if(this.src&&this.move/(-1)>0){ //checks if positive radius
+      ctx.strokeStyle = "red";
+      ctx.beginPath();
+      ctx.arc(this.src.x,this.src.y,this.move/(-1),0,2*Math.PI);
+      ctx.stroke();
+      ctx.closePath();
+    }
   }
   update() {
     this.signals.forEach(x=>x.update());
     
-    if(this.move){
+    if(this.move==0){
+      this.src = null;
       for(let n of this.nodes){
         if(n.update()){
-          this.move = false;
+          this.move = -1;
+          this.src = n;
           n.adj.forEach(x=>this.signals.push(new Signal(n,x)));
           break;
         }
       }
     }
-    
+    if(this.move>0) this.move--;
     
   }
   addNode(x,y){
