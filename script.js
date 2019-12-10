@@ -24,7 +24,13 @@ class Node {
     ctx.strokeStyle = "white";
     ctx.fillStyle = "black";
     if(this.sink){
-      
+      ctx.lineWidth = 1;
+      for(let i = 0; i < 3; i++){
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.r+4,i*2*Math.PI/3+t/10,i*2*Math.PI/3+2*Math.PI/3-0.65+t/10);
+        ctx.stroke();
+        ctx.closePath();
+      }
     }
     if(this.v>=this.adj.length) ctx.strokeStyle = "yellow";
     ctx.lineWidth = 2;
@@ -201,14 +207,30 @@ function draw() {
     // ctx.lineTo(select.x-s,select.y-s);
     // ctx.stroke();
     // ctx.closePath();
-    ctx.strokeStyle = "yellow";
+    ctx.strokeStyle = "red";
     ctx.lineWidth = 1;
-    for(let i = 0; i < 3; i++){
-      ctx.beginPath();
-      ctx.arc(select.x,select.y,select.r+4,i*2*Math.PI/3+t/10,i*2*Math.PI/3+2*Math.PI/3-0.65+t/10);
-      ctx.stroke();
-      ctx.closePath();
-    }
+    let ooo = select.r+4;
+    let oo = (t/10)%5;
+    ctx.beginPath();
+    ctx.moveTo(select.x+ooo,select.y);
+    ctx.lineTo(select.x+ooo+oo,select.y);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.moveTo(select.x-ooo,select.y);
+    ctx.lineTo(select.x-ooo-oo,select.y);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.moveTo(select.x,select.y+ooo);
+    ctx.lineTo(select.x,select.y+ooo+oo,select.y);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.moveTo(select.x,select.y-ooo);
+    ctx.lineTo(select.x,select.y-ooo-oo,select.y);
+    ctx.stroke();
+    ctx.closePath();
   }
   
   ctx.fillStyle = "white";
