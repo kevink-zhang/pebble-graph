@@ -21,9 +21,9 @@ class Node {
     this.sink = false;
   }
   drawNode() {
-    ctx.strokeStyle = "black";
-    ctx.fillStyle = "white";
-    if(this.sink) ctx.fillStyle = "black";
+    ctx.strokeStyle = "white";
+    ctx.fillStyle = "black";
+    if(this.sink) ctx.fillStyle = "white";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
@@ -33,17 +33,17 @@ class Node {
 
     
     
-    ctx.fillStyle = "green";
-    if(this.v>=this.adj.length) ctx.fillStyle = "red";
+    ctx.fillStyle = "white";
+    if(this.v>=this.adj.length) ctx.fillStyle = "yellow";
     ctx.fillText(this.v,this.x+this.r+2,this.y-3);
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "white";
     ctx.fillText(this.adj.length,this.x+this.r+2,this.y+10);
   }
   drawEdge() {
     for(let e of this.adj){
-      ctx.strokeStyle = "black";
+      ctx.strokeStyle = "white";
       if(select!=null&&(select.id==this.id||select.id==e.id)) ctx.strokeStyle = "green";
-                      
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
       ctx.lineTo(e.x ,e.y);
@@ -79,7 +79,7 @@ class Signal {
     this.dy = (tar.y-src.y)/this.count;
   }
   draw() {
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = "yellow";
     //ctx.fillStyle = "black";
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -114,7 +114,8 @@ class Graph {
     this.nodes.forEach(x=>x.drawEdge());
     this.nodes.forEach(x=>x.drawNode());
     if(this.src){ //checks if positive radius
-      ctx.strokeStyle = "red";
+      ctx.strokeStyle = "yellow";
+      ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.arc(this.src.x,this.src.y,this.cnt/4,0,2*Math.PI);
       ctx.stroke();
@@ -126,7 +127,7 @@ class Graph {
     this.nodes.forEach(x=>mm.push(x.v));
     
     if(this.mem[mm]) {
-      scene = "add";
+      if(!this.unstable) scene = "add";
       this.unstable = true;
       console.log("unstable");
     }
@@ -181,7 +182,7 @@ let select = null; //selected node
 let G = new Graph();
 
 function draw() {
-  ctx.fillStyle = "white";
+  ctx.fillStyle = "black";
   ctx.fillRect(0, 0, c.width, c.height);
   if(scene=="play") G.update();
   G.draw();
@@ -199,9 +200,9 @@ function draw() {
     ctx.closePath();
   }
   
-  ctx.fillStyle = "black";
+  ctx.fillStyle = "white";
   ctx.fillText("mode: "+scene, 5, 10);
-  ctx.fillText("unstable: "+G.unstable, 8, 15);
+  ctx.fillText("unstable: "+G.unstable, 5, 20);
   window.requestAnimationFrame(draw);
 }
 
