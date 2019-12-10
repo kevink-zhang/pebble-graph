@@ -137,10 +137,12 @@ class Graph {
     }
     else this.cnt+=sim_speed;
     if(this.move>0) this.move-=sim_speed;
-    
   }
   addNode(x,y){
     this.nodes.push(new Node(x,y));
+  }
+  setGraph(s){
+    
   }
 }
 
