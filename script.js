@@ -10,7 +10,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-const sim_speed = 25;
+const sim_speed = 5;
 
 class Node {
   constructor(x, y) {
@@ -20,10 +20,12 @@ class Node {
     this.v = 0;
     this.r = 10;
     this.id = G.nodes.length;
+    this.sink = false;
   }
   draw() {
     ctx.strokeStyle = "black";
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "white";
+    if(this.sink) ctx.fillStyle = "black";
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
@@ -52,6 +54,9 @@ class Node {
     this.adj.push(e);
   }
   update() {
+    if(this.sink) return false;
+    if(this.adj.length==0) return false;
+    
     if(this.v>=this.adj.length){
       this.v-=this.adj.length;
       return true;
@@ -256,10 +261,18 @@ let keysdown = {};
 
 window.addEventListener("keyup", e => {
   const key = e.keyCode;
-  //console.log(key);
+  console.log(key);
   if(key==32){//space bar, toggles simulation
     if(scene=="add") scene = "play";
     else if(scene=="play") scene = "add";
+  }
+  if(select!=null && key==83){
+    select.sink = !select.sink;
+    select = null;
+  }
+  if(key==90){
+    let ooo = G.nodes.pop();
+    for
   }
 });
 
