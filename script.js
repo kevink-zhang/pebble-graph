@@ -107,6 +107,7 @@ class Graph {
     this.move = 0; //0 if no signals are active, -1 otherwise to preserve sanity
     this.src = null;
     this.cnt = 0;
+    this.unstable = false;
   }
   draw() {
     this.signals.forEach(x=>x.draw());
@@ -124,7 +125,11 @@ class Graph {
     let mm = [];
     this.nodes.forEach(x=>mm.push(x.v));
     
-    if(this.mem[mm]) console.log("unstable");
+    if(this.mem[mm]) {
+      scene = "add";
+      this.unstable = true;
+      console.log("unstable");
+    }
     this.mem[mm] = true;
   }
   update() {
@@ -135,6 +140,8 @@ class Graph {
       this.cnt = 0;
       
       this.addMemory();
+      if(scene=="add") return;
+      
       for(let n of this.nodes){
         if(n.update()){
           this.move = "???";
@@ -192,6 +199,9 @@ function draw() {
     ctx.closePath();
   }
   
+  ctx.fillStyle = "black";
+  ctx.fillText("mode: "+scene, 5, 10);
+  ctx.fillText("unstable: "+G.unstable, 8, 15);
   window.requestAnimationFrame(draw);
 }
 
@@ -241,10 +251,10 @@ c.addEventListener("mouseup", e => {
   }
   if(newN) {
     G.addNode(x,y);
-    console.log("NEW");
+    console.log("new node at: "+ x +" , "+ y);
   }
   
-  console.log(x + " " + y);
+  //console.log(x + " " + y);
 });
 
 let keysdown = {};
@@ -285,6 +295,9 @@ window.addEventListener("keyup", e => {
         }
       }
     }
+    select = null;
+  }
+  if(key==69 && select!=null){
     select = null;
   }
 });
