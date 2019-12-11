@@ -348,11 +348,15 @@ window.addEventListener("keyup", e => {
   if(key==84){//t key: generate 
     
   }
-  if(key==75){
+  if(key==75){ //k key: generate complete
     G.reset();
+    let xx = c.width/2;
+    let yy = c.height/2;
+    let rr = c.height/2-50;
     for(let i = 0; i < inSize; i++){
-      
+      G.nodes.push(Node(xx+Math.cos(2*Math.PI/inSize*i)*rr,yy+Math.sin(2*Math.PI/inSize*i)));
     }
+    for()
   }
 });
 
