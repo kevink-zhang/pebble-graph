@@ -1,8 +1,11 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
+const clonedeep = require('lodash.clonedeep')
+
 
 c.style.width = "500px";
 c.style.height = "500px";
+
 const scale = window.devicePixelRatio;
 c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
@@ -253,10 +256,11 @@ function draw() {
 function presim(){
   let tt = 0;
   scene = "play";
-  H = [];
+  H = [clonedeep(G)];
   
   while(!G.finsim){
     G.update();
+    H.push(clonedeep(G));
     console.log(tt++);
   }
   scene = "add";
