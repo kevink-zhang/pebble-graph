@@ -310,15 +310,15 @@ let keysdown = {};
 window.addEventListener("keyup", e => {
   const key = e.keyCode;
   console.log(key);
-  if(key==32){//space bar, toggles simulation
+  if(key==32){//space bar: toggles simulation
     if(scene=="add") scene = "play";
     else if(scene=="play") scene = "add";
   }
-  if(select!=null && key==83){
+  if(select!=null && key==83){ //s key: toggles sink node
     select.sink = !select.sink;
     select = null;
   }
-  if(key==90 && select!=null){
+  if(key==90 && select!=null){ //z key: deletes selected node
     let ooo = select;
     G.nodes.splice(G.nodes.indexOf(select),1);
     for(let n of G.nodes){
@@ -330,31 +330,35 @@ window.addEventListener("keyup", e => {
     }
     select = null;
   }
-  if(key==69 && select!=null){
+  if(key==69 && select!=null){ //e key: unselect node
     select = null;
+  }
+  
+  if(key==84){//t key: generate 
+    
   }
 });
 
-// const sidebar = document.getElementById("sidebar");
-// const threshold = document.getElementById("threshold");
-// const weight = document.getElementById("weight");
-// const name = document.getElementById("name");
-// function setActive(a) {
-//   active = a;
-//   if (a) {
-//     sidebar.classList.remove("hidden");
-//     weight.value = a.weight;
-//     threshold.value = a.actpot;
-//     name.value = a.name;
-//     console.log(a);
-//   }
-// }
-// threshold.onchange = () => {
-//   active.actpot = +threshold.value;
-// };
-// weight.onchange = () => {
-//   active.weight = +weight.value;
-// };
-// name.onchange = () => {
-//   if (!active.fixed) active.name = name.value;
-// };
+const sidebar = document.getElementById("sidebar");
+const threshold = document.getElementById("threshold");
+const weight = document.getElementById("weight");
+const name = document.getElementById("name");
+function setActive(a) {
+  active = a;
+  if (a) {
+    sidebar.classList.remove("hidden");
+    weight.value = a.weight;
+    threshold.value = a.actpot;
+    name.value = a.name;
+    console.log(a);
+  }
+}
+threshold.onchange = () => {
+  active.actpot = +threshold.value;
+};
+weight.onchange = () => {
+  active.weight = +weight.value;
+};
+name.onchange = () => {
+  if (!active.fixed) active.name = name.value;
+};
