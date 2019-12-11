@@ -280,14 +280,21 @@ c.addEventListener("mouseup", e => {
     let pp = [n.x,n.y];
     if(dist(p,pp)<=n.r+1){
       newN = false;
-      if(select==n) {
-        select = null;
+      if(keysdown[16]){
+        if(select!=null){
+          select.adj.splice(select.adj.indexOf(n))
+        }
       }
-      else if(select==null) select = n;
       else{
-        n.addEdge(select);
-        select.addEdge(n);
-        select = null;
+        if(select==n) {
+          select = null;
+        }
+        else if(select==null) select = n;
+        else{
+          n.addEdge(select);
+          select.addEdge(n);
+          select = null;
+        }
       }
     }
     if(dist(p,pp)<=n.r*2) newN = false;
@@ -301,21 +308,12 @@ c.addEventListener("mouseup", e => {
 });
 
 let keysdown = {};
-// window.addEventListener("keydown", e => {
-//   const key = e.keyCode ? e.keyCode : e.which;
-//   if (!(key in keysdown)) {
-//     keysdown[key] = true;
-
-//     if (key == 27) setActive(null);
-//     if (key == 8) {
-//       if (!active.fixed) G.nodes = G.nodes.filter(n => n != active);
-//       else active.out = [];
-//       G.nodes.forEach(n => (n.out = n.out.filter(o => o != active)));
-//       G.signals = G.signals.filter(n => n.start != active && n.end != active);
-//       setActive(null);
-//     }
-//   }
-// });
+window.addEventListener("keydown", e => {
+  const key = e.keyCode;
+  if(key == 16){ //shift key: yeeting edges
+    keysdown[16] = true;
+  }
+});
 
 window.addEventListener("keyup", e => {
   const key = e.keyCode;
@@ -323,6 +321,12 @@ window.addEventListener("keyup", e => {
   if(key==32){//space bar: toggles simulation
     if(scene=="add") scene = "play";
     else if(scene=="play") scene = "add";
+  }
+  if(key== 16){//shift up: not yeeting edges
+    keysdown[16] = false;
+  }
+  if(key==82){ //r key: clear graph
+    G.reset();
   }
   if(select!=null && key==83){ //s key: toggles sink node
     select.sink = !select.sink;
@@ -342,7 +346,6 @@ window.addEventListener("keyup", e => {
   }
   if(key==69 && select!=null){ //e key: unselect node
     select.addVal(1);
-    //select = null;
   }
   
   if(key==84){//t key: generate 
@@ -366,9 +369,13 @@ window.addEventListener("keyup", e => {
 });
 
 const inputsize = document.getElementById("size");
-
+const simspeed = document.getElementById("simspeed");
 
 inputsize.onchange = () => {
   inSize = inputsize.value;
 };
+simspeed.onchange = () =>{
+  sim_speed = simspeed.value/2;
+}
+
 
