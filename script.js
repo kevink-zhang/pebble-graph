@@ -199,6 +199,7 @@ let t = 0; //time counter
 let paused = false; //will not update graph
 let scene = "add"; //scene
 let select = null; //selected node
+let inSize = 0; //input graph generation size
 
 let G = new Graph();
 
@@ -339,26 +340,10 @@ window.addEventListener("keyup", e => {
   }
 });
 
-const sidebar = document.getElementById("sidebar");
-const threshold = document.getElementById("threshold");
-const weight = document.getElementById("weight");
-const name = document.getElementById("name");
-function setActive(a) {
-  active = a;
-  if (a) {
-    sidebar.classList.remove("hidden");
-    weight.value = a.weight;
-    threshold.value = a.actpot;
-    name.value = a.name;
-    console.log(a);
-  }
-}
-threshold.onchange = () => {
-  active.actpot = +threshold.value;
+const inputsize = document.getElementById("size");
+
+
+inputsize.onchange = () => {
+  inSize = inputsize.value;
 };
-weight.onchange = () => {
-  active.weight = +weight.value;
-};
-name.onchange = () => {
-  if (!active.fixed) active.name = name.value;
-};
+
