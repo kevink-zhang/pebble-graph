@@ -1,6 +1,27 @@
 const c = document.querySelector("#c");
 const ctx = c.getContext("2d");
-const deepclone = require('lodash.clonedeep')
+
+function deepClone(obj, hash = new WeakMap()) {
+    // Do not try to clone primitives or functions
+    if (Object(obj) !== obj || obj instanceof Function) return obj;
+    if (hash.has(obj)) return hash.get(obj); // Cyclic reference
+    try { // Try to run constructor (without arguments, as we don't know them)
+        var result = new obj.constructor();
+    } catch(e) { // Constructor failed, create object without running the constructor
+        result = Object.create(Object.getPrototypeOf(obj));
+    }
+    // Optional: support for some standard constructors (extend as desired)
+    if (obj instanceof Map)
+        Array.from(obj, ([key, val]) => result.set(deepClone(key, hash), 
+                                                   deepClone(val, hash)) );
+    else if (obj instanceof Set)
+        Array.from(obj, (key) => result.add(deepClone(key, hash)) );
+    // Register in hash    
+    hash.set(obj, result);
+    // Clone and assign enumerable own properties recursively
+    return Object.assign(result, ...Object.keys(obj).map (
+        key => ({ [key]: deepClone(obj[key], hash) }) ));
+}
 
 c.style.width = "500px";
 c.style.height = "500px";
@@ -225,13 +246,17 @@ let G = new Graph();
 let H = [];
 
 function draw() {
+  //background
   ctx.fillStyle = back_color;
   ctx.fillRect(0, 0, c.width, c.height);
+  
+  //update graph
   if(scene=="play") {
     G.update();
   }
+  //draw graph
   G.draw();
-  
+  //draw select animations
   if(select!=null){
     ctx.strokeStyle = select_color;
     ctx.lineWidth = 1;
@@ -243,6 +268,8 @@ function draw() {
     }
   }
   
+  
+  //in
   ctx.fillStyle = neutral_color;
   ctx.fillText("mode: "+scene, 5, 10);
   ctx.fillText("unstable: "+G.unstable, 5, 20);
@@ -256,11 +283,11 @@ function presim(){
   let tt = 0;
   scene = "play";
   
-  H = [deepclone(G)];
+  H = [deepClone(G)];
   
   while(!G.finsim){
     G.update();
-    H.push(deepclone(G));
+    H.push(deepClone(G));
     console.log(tt++);
   }
   scene = "add";
@@ -269,12 +296,12 @@ function presim(){
 
 draw();
 
-let mouse = { x: 0, y: 0 };
-
+let mPos = null;
 
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
+  mPos = [x,y];
 });
 
 let movedx = 0;
@@ -283,12 +310,15 @@ let movedy = 0;
 c.addEventListener("mousemove", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  mouse.x = x;
-  mouse.y = y;
+  if(mPos!=null){
+    
+  }
 });
 
 
 c.addEventListener("mouseup", e => {
+  mPos = null;
+  
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
   
