@@ -8,7 +8,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-const sim_speed = 25;
+let sim_speed = 5;
 const select_color = "yellow";
 const unstable_color = "red";
 const neutral_color = "white";
