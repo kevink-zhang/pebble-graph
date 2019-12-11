@@ -126,6 +126,7 @@ class Graph {
     this.src = null;
     this.cnt = 0;
     this.unstable = false;
+    this.finsim = false;
   }
   reset(){
     this.nodes = [];
@@ -135,6 +136,7 @@ class Graph {
     this.src = null;
     this.cnt = 0;
     this.unstable = false;
+    this.finsim = false;
     select = null;
   }
   draw() {
@@ -154,7 +156,8 @@ class Graph {
     let mm = [];
     this.nodes.forEach(x=>mm.push(x.v));
     
-    if(this.mem[mm]) {
+    if(this.mem[mm]) { //deja vu! i've been in this place before...
+      this.finsim = true;
       if(!this.unstable) scene = "add";
       
       for(let n of this.nodes){
@@ -227,16 +230,6 @@ function draw() {
   G.draw();
   
   if(select!=null){
-    // ctx.strokeStyle = "green";
-    // ctx.beginPath();
-    // let s = select.r+3;
-    // ctx.moveTo(select.x-s,select.y-s);
-    // ctx.lineTo(select.x-s,select.y+s);
-    // ctx.lineTo(select.x+s,select.y+s);
-    // ctx.lineTo(select.x+s,select.y-s);
-    // ctx.lineTo(select.x-s,select.y-s);
-    // ctx.stroke();
-    // ctx.closePath();
     ctx.strokeStyle = select_color;
     ctx.lineWidth = 1;
     for(let i = 0; i < 3; i++){
@@ -254,6 +247,14 @@ function draw() {
   
   t++;
   window.requestAnimationFrame(draw);
+}
+
+function presim(){
+  while(!G.finsim){
+    G.update();
+    console.log("TIME");
+  }
+  G.draw();
 }
 
 draw();
@@ -326,6 +327,10 @@ window.addEventListener("keydown", e => {
 window.addEventListener("keyup", e => {
   const key = e.keyCode;
   console.log(key);
+  if(key==80){
+    presim();
+    console.log("Finished");
+  }
   if(key==32){//space bar: toggles simulation
     if(scene=="add") scene = "play";
     else if(scene=="play") scene = "add";
