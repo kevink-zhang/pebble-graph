@@ -241,6 +241,8 @@ let paused = false; //will not update graph
 let scene = "add"; //scene
 let select = null; //selected node
 let inSize = 0; //input graph generation size
+let slide_pos = c.width/2-slide_wid/2;
+const slide_wid = 300;
 
 let G = new Graph();
 let H = [];
@@ -268,8 +270,23 @@ function draw() {
     }
   }
   
+  //slider
+  ctx.fillStyle = "gray";
+  ctx.beginPath();
+  ctx.moveTo(c.width/2-slide_wid/2,c.height-60);
+  ctx.lineTo(c.width/2-slide_wid/2,c.height-50);
+  ctx.lineTo(c.width/2+slide_wid/2,c.height-50);
+  ctx.lineTo(c.width/2+slide_wid/2,c.height-60);
+  ctx.fill();
+  ctx.closePath();
   
-  //in
+  ctx.fillStyle = "white";
+  ctx.beginPath();
+  ctx.arc(slide_pos,c.height-55,8,0,2*Math.PI);
+  ctx.fill();
+  ctx.closePath();
+  
+  //information
   ctx.fillStyle = neutral_color;
   ctx.fillText("mode: "+scene, 5, 10);
   ctx.fillText("unstable: "+G.unstable, 5, 20);
