@@ -9,6 +9,10 @@ c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
 const sim_speed = 1;
+const select_color = "lightblue";
+const unstable_color = "yellow";
+const neutral_color = "white";
+const back_color = "black";
 
 class Node {
   constructor(x, y) {
@@ -21,37 +25,35 @@ class Node {
     this.sink = false;
   }
   drawNode() {
-    ctx.strokeStyle = "white";
-    ctx.fillStyle = "black";
+    ctx.strokeStyle = neutral_color;
+    ctx.fillStyle = neutral_color;
     if(this.sink){
-      ctx.lineWidth = 1;
-      for(let i = 0; i < 3; i++){
-        ctx.beginPath();
-        ctx.arc(this.x,this.y,this.r+4,i*2*Math.PI/3+t/10,i*2*Math.PI/3+2*Math.PI/3-0.65+t/10);
-        ctx.stroke();
-        ctx.closePath();
-      }
+      ctx.fillStyle = back_color;
     }
-    if(this.v>=this.adj.length) ctx.strokeStyle = "yellow";
+    if(this.v>=this.adj.length) ctx.strokeStyle = ctx.fillStyle = unstable_color;
+    
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
+    ctx.stroke();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.r-4,0,2*Math.PI);
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
-
     
     
-    ctx.fillStyle = "white";
-    if(this.v>=this.adj.length) ctx.fillStyle = "yellow";
+    ctx.fillStyle = neutral_color;
+    if(this.v>=this.adj.length) ctx.fillStyle = unstable_color;
     ctx.fillText(this.v,this.x+this.r+2,this.y-3);
-    ctx.fillStyle = "white";
+    ctx.fillStyle = neutral_color;
     ctx.fillText(this.adj.length,this.x+this.r+2,this.y+10);
   }
   drawEdge() {
     for(let e of this.adj){
-      ctx.strokeStyle = "white";
-      if(select!=null&&(select.id==this.id||select.id==e.id)) ctx.strokeStyle = "yellow";
+      ctx.strokeStyle = neutral_color;
+      if(select!=null&&(select.id==this.id||select.id==e.id)) ctx.strokeStyle = select_color;
       ctx.lineWidth = 0.75;
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
@@ -88,7 +90,7 @@ class Signal {
     this.dy = (tar.y-src.y)/this.count;
   }
   draw() {
-    ctx.strokeStyle = "yellow";
+    ctx.strokeStyle = unstable_color;
     //ctx.fillStyle = "black";
     ctx.lineWidth = 2;
     ctx.beginPath();
@@ -123,7 +125,7 @@ class Graph {
     this.nodes.forEach(x=>x.drawEdge());
     this.nodes.forEach(x=>x.drawNode());
     if(this.src){ //checks if positive radius
-      ctx.strokeStyle = "yellow";
+      ctx.strokeStyle = unstable_color;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.arc(this.src.x,this.src.y,this.cnt/4,0,2*Math.PI);
@@ -191,7 +193,7 @@ let select = null; //selected node
 let G = new Graph();
 
 function draw() {
-  ctx.fillStyle = "black";
+  ctx.fillStyle = back_color;
   ctx.fillRect(0, 0, c.width, c.height);
   if(scene=="play") G.update();
   G.draw();
@@ -207,33 +209,17 @@ function draw() {
     // ctx.lineTo(select.x-s,select.y-s);
     // ctx.stroke();
     // ctx.closePath();
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = select_color;
     ctx.lineWidth = 1;
-    let ooo = select.r+4;
-    let oo = (t/10)%5;
-    ctx.beginPath();
-    ctx.moveTo(select.x+ooo,select.y);
-    ctx.lineTo(select.x+ooo+oo,select.y);
-    ctx.stroke();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.moveTo(select.x-ooo,select.y);
-    ctx.lineTo(select.x-ooo-oo,select.y);
-    ctx.stroke();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.moveTo(select.x,select.y+ooo);
-    ctx.lineTo(select.x,select.y+ooo+oo,select.y);
-    ctx.stroke();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.moveTo(select.x,select.y-ooo);
-    ctx.lineTo(select.x,select.y-ooo-oo,select.y);
-    ctx.stroke();
-    ctx.closePath();
+    for(let i = 0; i < 3; i++){
+      ctx.beginPath();
+      ctx.arc(select.x,select.y,select.r+4,i*2*Math.PI/3+t/10,i*2*Math.PI/3+2*Math.PI/3-0.65+t/10);
+      ctx.stroke();
+      ctx.closePath();
+    }
   }
   
-  ctx.fillStyle = "white";
+  ctx.fillStyle = neutral_color;
   ctx.fillText("mode: "+scene, 5, 10);
   ctx.fillText("unstable: "+G.unstable, 5, 20);
   
