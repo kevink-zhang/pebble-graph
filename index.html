@@ -11,27 +11,33 @@
   </head>
   <body>
     <h1>Pebbles</h1>
-    
+
     <p>
-      Click to create a node. Press e on it to add 1 to its initial value. Click on two nodes to link them. Double click to unselect a node.
+      Click to create a node. Press e on it to add 1 to its initial value. Click
+      on two nodes to link them. Double click to unselect a node.
     </p>
     <p>
-      Press space to play/pause the simulation. Press r to clear the graph. Press s on a node to toggle sink. Press z to yeet the selected node. Select and shift click to yeet an edge between the two nodes.
+      Press space to play/pause the simulation. Press r to clear the graph.
+      Press s on a node to toggle sink. Press z to yeet the selected node.
+      Select and shift click to yeet an edge between the two nodes.
     </p>
     <p>
-      The simulation will pause once it determines the graph is infinitely unstable. Unstable will then become true;
+      The simulation will pause once it determines the graph is infinitely
+      unstable. Unstable will then become true;
     </p>
     <div style="display:flex;flex-wrap:wrap">
       <canvas id="c"></canvas>
     </div>
-    
+
     <div id="sidebar">
       <h1>Graph Generation Inputs</h1>
       <p>
-        Press t to generate a tree. Press k to generate a complete graph. Press c to generate a cycle graph.
+        Press t to generate a tree. Press k to generate a complete graph. Press
+        c to generate a cycle graph.
       </p>
-      Size: <input id="size" value="" /><br>
-      Sim Speed <input id = "simspeed" value="" /><br>
+      Size: <input id="size" value="" /><br />
+      Sim Speed <input id="simspeed" value="" /><br />
     </div>
+    <input id="slider" type="slider" min="0" max="100" />
   </body>
 </html>
