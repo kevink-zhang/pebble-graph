@@ -21,8 +21,9 @@ class Node {
     this.adj = [];
     this.x = x;
     this.y = y;
-    this.v = 0;
+    this.v = 0; //number of pebbles
     this.r = 10;
+    this.tcount = 0; //topple count
     this.id = G.nodes.length;
     this.sink = false;
   }
@@ -53,6 +54,7 @@ class Node {
     ctx.fillText(this.v,this.x+this.r+2,this.y-3);
     ctx.fillStyle = neutral_color;
     ctx.fillText(this.adj.length,this.x+this.r+2,this.y+10);
+    ctx.fillText(this.tcount,this.x-this.r-7,this.y+10);
   }
   drawEdge() {
     for(let e of this.adj){
@@ -78,6 +80,7 @@ class Node {
     
     if(this.v>=this.adj.length){
       this.v-=this.adj.length;
+      this.tcount++;
       return true;
     }
     return false;
@@ -282,7 +285,8 @@ c.addEventListener("mouseup", e => {
       newN = false;
       if(keysdown[16]){
         if(select!=null){
-          select.adj.splice(select.adj.indexOf(n))
+          select.adj.splice(select.adj.indexOf(n),1);
+          n.adj.splice(n.adj.indexOf(select),1);
         }
       }
       else{
