@@ -13,6 +13,7 @@ const select_color = "yellow";
 const unstable_color = "red";
 const neutral_color = "white";
 const back_color = "black";
+const edge_color = "gray";
 const edge_width = 2;
 
 class Node {
@@ -55,7 +56,7 @@ class Node {
   }
   drawEdge() {
     for(let e of this.adj){
-      ctx.strokeStyle = neutral_color;
+      ctx.strokeStyle = edge_color;
       if(select!=null&&(select.id==this.id||select.id==e.id)) ctx.strokeStyle = select_color;
       ctx.lineWidth = edge_width;
       ctx.beginPath();
@@ -231,6 +232,7 @@ function draw() {
   ctx.fillStyle = neutral_color;
   ctx.fillText("mode: "+scene, 5, 10);
   ctx.fillText("unstable: "+G.unstable, 5, 20);
+  ctx.fillText("time: "+t, 5, 30);
   
   t++;
   window.requestAnimationFrame(draw);
