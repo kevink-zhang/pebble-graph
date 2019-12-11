@@ -9,10 +9,11 @@ c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
 const sim_speed = 1;
-const select_color = "lightblue";
-const unstable_color = "yellow";
+const select_color = "yellow";
+const unstable_color = "red";
 const neutral_color = "white";
 const back_color = "black";
+const edge_width = 2;
 
 class Node {
   constructor(x, y) {
@@ -37,6 +38,8 @@ class Node {
     ctx.arc(this.x,this.y,this.r,0,2*Math.PI);
     ctx.stroke();
     ctx.closePath();
+    
+    if(this.sink) ctx.fillStyle = ctx.strokeStyle = back_color;
     ctx.beginPath();
     ctx.arc(this.x,this.y,this.r-4,0,2*Math.PI);
     ctx.fill();
@@ -54,7 +57,7 @@ class Node {
     for(let e of this.adj){
       ctx.strokeStyle = neutral_color;
       if(select!=null&&(select.id==this.id||select.id==e.id)) ctx.strokeStyle = select_color;
-      ctx.lineWidth = 0.75;
+      ctx.lineWidth = edge_width;
       ctx.beginPath();
       ctx.moveTo(this.x, this.y);
       ctx.lineTo(e.x ,e.y);
@@ -139,8 +142,14 @@ class Graph {
     
     if(this.mem[mm]) {
       if(!this.unstable) scene = "add";
-      this.unstable = true;
-      console.log("unstable");
+      
+      for(let n of this.nodes){
+        if(n.v>=n.adj.length&&n.adj.length>0){
+          this.unstable = true;
+          console.log("unstable");
+          break;
+        }
+      }
     }
     this.mem[mm] = true;
   }
