@@ -209,17 +209,21 @@ function fround(x, f) {
 
 
 let t = 0; //time counter
+let st = 0; //simulation time
 let paused = false; //will not update graph
 let scene = "add"; //scene
 let select = null; //selected node
 let inSize = 0; //input graph generation size
 
 let G = new Graph();
+let H = [];
 
 function draw() {
   ctx.fillStyle = back_color;
   ctx.fillRect(0, 0, c.width, c.height);
-  if(scene=="play") G.update();
+  if(scene=="play") {
+    G.update();
+  }
   G.draw();
   
   if(select!=null){
