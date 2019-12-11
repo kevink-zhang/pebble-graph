@@ -242,7 +242,7 @@ let scene = "add"; //scene
 let select = null; //selected node
 let inSize = 0; //input graph generation size
 let slide_pos = c.width/2-slide_wid/2;
-const slide_wid = 300;
+
 
 let G = new Graph();
 let H = [];
