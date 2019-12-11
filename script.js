@@ -132,6 +132,7 @@ class Graph {
     this.src = null;
     this.cnt = 0;
     this.unstable = false;
+    select = null;
   }
   draw() {
     this.signals.forEach(x=>x.draw());
@@ -280,9 +281,7 @@ c.addEventListener("mouseup", e => {
     if(dist(p,pp)<=n.r+1){
       newN = false;
       if(select==n) {
-        n.addVal(1);
         select = null;
-        //console.log("IASDJASDA");
       }
       else if(select==null) select = n;
       else{
@@ -342,7 +341,8 @@ window.addEventListener("keyup", e => {
     select = null;
   }
   if(key==69 && select!=null){ //e key: unselect node
-    select = null;
+    select.addVal(1);
+    //select = null;
   }
   
   if(key==84){//t key: generate 
@@ -354,9 +354,14 @@ window.addEventListener("keyup", e => {
     let yy = c.height/2;
     let rr = c.height/2-50;
     for(let i = 0; i < inSize; i++){
-      G.nodes.push(Node(xx+Math.cos(2*Math.PI/inSize*i)*rr,yy+Math.sin(2*Math.PI/inSize*i)));
+      G.nodes.push(new Node(xx+Math.sin(2*Math.PI/inSize*i)*rr,yy+Math.cos(2*Math.PI/inSize*i)*rr));
     }
-    for()
+    for(let i = 0; i < G.nodes.length-1; i++){
+      for(let j = i+1; j < G.nodes.length; j++){
+        G.nodes[i].adj.push(G.nodes[j]);
+        G.nodes[j].adj.push(G.nodes[i]);
+      }
+    }
   }
 });
 
