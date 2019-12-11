@@ -156,6 +156,7 @@ class Graph {
     let mm = [];
     this.nodes.forEach(x=>mm.push(x.v));
     
+    //console.log(mm);
     if(this.mem[mm]) { //deja vu! i've been in this place before...
       this.finsim = true;
       if(!this.unstable) scene = "add";
@@ -250,10 +251,15 @@ function draw() {
 }
 
 function presim(){
+  let tt = 0;
+  scene = "play";
+  H = [];
+  
   while(!G.finsim){
     G.update();
-    console.log("TIME");
+    console.log(tt++);
   }
+  scene = "add";
   G.draw();
 }
 
