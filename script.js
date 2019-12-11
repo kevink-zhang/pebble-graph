@@ -241,7 +241,9 @@ let paused = false; //will not update graph
 let scene = "add"; //scene
 let select = null; //selected node
 let inSize = 0; //input graph generation size
-let slide_pos = c.width/2-slide_wid/2;
+const slide_wid = 300;
+const slide_rad = 8;
+let slide_pos = c.width/2 - slide_wid/2;
 
 
 let G = new Graph();
@@ -282,7 +284,7 @@ function draw() {
   
   ctx.fillStyle = "white";
   ctx.beginPath();
-  ctx.arc(slide_pos,c.height-55,8,0,2*Math.PI);
+  ctx.arc(slide_pos,c.height-55,slide_rad,0,2*Math.PI);
   ctx.fill();
   ctx.closePath();
   
@@ -318,7 +320,7 @@ let mPos = null;
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  mPos = [x,y];
+  if(dist([x,y],[slide_pos,c.height-55])<slide_rad) mPos = [x,y];
 });
 
 let movedx = 0;
@@ -328,7 +330,7 @@ c.addEventListener("mousemove", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
   if(mPos!=null){
-    
+    mPos = [x,y];
   }
 });
 
