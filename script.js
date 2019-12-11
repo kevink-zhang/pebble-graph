@@ -8,7 +8,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-const sim_speed = 1;
+const sim_speed = 25;
 const select_color = "yellow";
 const unstable_color = "red";
 const neutral_color = "white";
@@ -116,6 +116,15 @@ class Signal {
 }
 class Graph {
   constructor() {
+    this.nodes = [];
+    this.mem = new Map();
+    this.signals = [];
+    this.move = 0; //0 if no signals are active, -1 otherwise to preserve sanity
+    this.src = null;
+    this.cnt = 0;
+    this.unstable = false;
+  }
+  reset(){
     this.nodes = [];
     this.mem = new Map();
     this.signals = [];
@@ -282,6 +291,7 @@ c.addEventListener("mouseup", e => {
         select = null;
       }
     }
+    if(dist(p,pp)<=n.r*2) newN = false;
   }
   if(newN) {
     G.addNode(x,y);
@@ -337,6 +347,12 @@ window.addEventListener("keyup", e => {
   
   if(key==84){//t key: generate 
     
+  }
+  if(key==75){
+    G.reset();
+    for(let i = 0; i < inSize; i++){
+      
+    }
   }
 });
 
