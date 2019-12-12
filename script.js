@@ -36,7 +36,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-let sim_speed = 1;
+let sim_speed = 0.5;
 const select_color = "yellow";
 const unstable_color = "red";
 const neutral_color = "white";
@@ -260,10 +260,10 @@ function draw() {
     G.update();
   }
   else if(scene == "replay"){
-    if(st>=0 && st<H.length)
+    if(st>=0 && st<H.length){
       G = H[st];
-    if(st<H.length)
-      st++;
+    }
+    
     document.getElementById("slider").value = st;
     
   }
@@ -295,6 +295,7 @@ function draw() {
 function presim() {
   let tt = 0;
   scene = "play";
+  sim_speed = 0.25; //adjust for higher "frame rate"
 
   H = [deepClone(G)];
 
