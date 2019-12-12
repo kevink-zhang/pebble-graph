@@ -262,17 +262,26 @@ function draw() {
   
   if (scene == "play") {
     G.update();
-  }
-  else if(scene == "replay"){
+    st = Math.round(st);
     if(st>=0 && st<H.length){
-      G = H[st];
-      st++;
+      H.push(deepClone(G));
+      st+=sim_speed;
     }
     else{
       st = ((st%H.length)+H.length)%H.length;
     }
     document.getElementById("slider").value = st;
-    
+  }
+  else if(scene == "replay"){
+    st = Math.round(st);
+    if(st>=0 && st<H.length){
+      G = H[st];
+      st+=sim_speed;
+    }
+    else{
+      st = ((st%H.length)+H.length)%H.length;
+    }
+    document.getElementById("slider").value = st; 
   }
   //draw graph
   G.draw();
