@@ -330,7 +330,6 @@ let mPos = null;
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  if (dist([x, y], [slide_pos, c.height - 55]) < slide_rad) mPos = [x, y];
 });
 
 let movedx = 0;
