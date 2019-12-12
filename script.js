@@ -259,6 +259,7 @@ function draw() {
   ctx.fillRect(0, 0, c.width, c.height);
 
   //update graph
+  
   if (scene == "play") {
     G.update();
   }
@@ -330,7 +331,6 @@ let mPos = null;
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  if (dist([x, y], [slide_pos, c.height - 55]) < slide_rad) mPos = [x, y];
 });
 
 let movedx = 0;
@@ -435,6 +435,16 @@ window.addEventListener("keyup", e => {
     //e key: unselect node
     select.addVal(1);
   }
+  if(key>=48 && key <58){ //number 0-9: modifies node value
+    let val = key-48;
+    if(select!=null){
+      select.v*=10;
+      select.v+=val;
+    }
+  }
+  if(key==192){ //tilda
+    
+  }
 
   if (key == 84) {
     //t key: generate
@@ -448,8 +458,8 @@ window.addEventListener("keyup", e => {
     for (let i = 0; i < inSize; i++) {
       G.nodes.push(
         new Node(
-          (xx + Math.sin(((2 * Math.PI) / inSize) * i) * rr)/2,
-          (yy + Math.cos(((2 * Math.PI) / inSize) * i) * rr)/2
+          (xx + Math.sin(((2 * Math.PI) / inSize) * i) * rr),
+          (yy + Math.cos(((2 * Math.PI) / inSize) * i) * rr)
         )
       );
     }
@@ -474,7 +484,7 @@ inputsize.onchange = () => {
 simspeed.onchange = () => {
   sim_speed = simspeed.value / 2;
 };
-slider.onchange = () => {
+slider.oninput = () => {
   if(!(scene=="readd"||scene=="replay")) return;
   st = Math.round(slider.value);
   G = H[st];
