@@ -201,7 +201,7 @@ class Graph {
         }
       }
     }
-    this.mem[mm] = mm.size+1;
+    this.mem[mm] = true;//mm.size+1;
   }
   update() {
     this.firing = false;
@@ -279,6 +279,9 @@ function draw() {
       st+=sim_speed*4;
     }
     else{
+      if(st>=H.length&&st<=H.length+sim_speed*4){
+        st = G.finsim;
+      }
       st = ((st%H.length)+H.length)%H.length;
     }
     document.getElementById("slider").value = st; 
@@ -316,7 +319,7 @@ function presim() {
   H = [deepClone(G)];
   let milestone = [];
 
-  while (!G.finsim) {
+  while (G.finsim==false) {
     G.update();
     H.push(deepClone(G));
     
