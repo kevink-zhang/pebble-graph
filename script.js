@@ -445,8 +445,8 @@ window.addEventListener("keyup", e => {
     for (let i = 0; i < inSize; i++) {
       G.nodes.push(
         new Node(
-          xx + Math.sin(((2 * Math.PI) / inSize) * i) * rr,
-          yy + Math.cos(((2 * Math.PI) / inSize) * i) * rr
+          (xx + Math.sin(((2 * Math.PI) / inSize) * i) * rr)/2,
+          (yy + Math.cos(((2 * Math.PI) / inSize) * i) * rr)/2
         )
       );
     }
