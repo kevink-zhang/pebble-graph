@@ -36,7 +36,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-let sim_speed = 5;
+let sim_speed = 0.5;
 const select_color = "yellow";
 const unstable_color = "red";
 const neutral_color = "white";
@@ -156,6 +156,7 @@ class Graph {
     this.cnt = 0;
     this.unstable = false;
     this.finsim = false;
+    this.firing = false; //is true for one frame if topling a node
   }
   reset() {
     this.nodes = [];
@@ -203,6 +204,7 @@ class Graph {
     this.mem[mm] = true;
   }
   update() {
+    this.firing = false;
     this.signals.forEach(x => x.update());
 
     if (this.move <= 0) {
@@ -214,6 +216,7 @@ class Graph {
 
       for (let n of this.nodes) {
         if (n.update()) {
+          this.firing = true;
           this.move = "???";
           this.src = n;
           this.cnt = 40;
@@ -245,9 +248,7 @@ let paused = false; //will not update graph
 let scene = "add"; //scene
 let select = null; //selected node
 let inSize = 0; //input graph generation size
-const slide_wid = 300;
-const slide_rad = 8;
-let slide_pos = c.width / 2 - slide_wid / 2;
+
 
 let G = new Graph();
 let H = [];
@@ -260,6 +261,15 @@ function draw() {
   //update graph
   if (scene == "play") {
     G.update();
+  }
+  else if(scene == "replay"){
+    if(st>=0 && st<H.length){
+      G = H[st];
+      st++;
+    }
+    
+    document.getElementById("slider").value = st;
+    
   }
   //draw graph
   G.draw();
@@ -281,27 +291,6 @@ function draw() {
     }
   }
 
-  //slider
-  ctx.fillStyle = "gray";
-  ctx.beginPath();
-  ctx.moveTo(c.width / 2 - slide_wid / 2, c.height - 60);
-  ctx.lineTo(c.width / 2 - slide_wid / 2, c.height - 50);
-  ctx.lineTo(c.width / 2 + slide_wid / 2, c.height - 50);
-  ctx.lineTo(c.width / 2 + slide_wid / 2, c.height - 60);
-  ctx.fill();
-  ctx.closePath();
-
-  ctx.fillStyle = "white";
-  ctx.beginPath();
-  ctx.arc(slide_pos[0], c.height - 55, slide_rad, 0, 2 * Math.PI);
-  ctx.fill();
-  ctx.closePath();
-
-  //information
-  ctx.fillStyle = neutral_color;
-  ctx.fillText("mode: " + scene, 5, 10);
-  ctx.fillText("unstable: " + G.unstable, 5, 20);
-  ctx.fillText("time: " + t, 5, 30);
 
   t++;
   window.requestAnimationFrame(draw);
@@ -310,16 +299,28 @@ function draw() {
 function presim() {
   let tt = 0;
   scene = "play";
+  sim_speed = 0.25; //adjust for higher "frame rate"
 
   H = [deepClone(G)];
+  let milestone = [];
 
   while (!G.finsim) {
     G.update();
     H.push(deepClone(G));
+    
+    if(G.firing){
+      milestone.push(tt);
+    }
     console.log(tt++);
   }
-  scene = "add";
+  
+  document.getElementById("slider").max = H.length-1;
+  st = document.getElementById("slider").value = H.length-1;
+  document.getElementById("maxtime").value = "/ "+H.length-1;
+  scene = "readd";
   G.draw();
+  
+  
 }
 
 draw();
@@ -340,8 +341,6 @@ c.addEventListener("mousemove", e => {
   let y = e.clientY - c.getBoundingClientRect().top;
   if (mPos != null) {
     mPos = [x, y];
-    slide_pos[0] = x;
-    console.log("ASDHASDH");
   }
 });
 
@@ -395,7 +394,7 @@ window.addEventListener("keydown", e => {
 window.addEventListener("keyup", e => {
   const key = e.keyCode;
   console.log(key);
-  if (key == 80) {
+  if (key == 80) {//p key: presimulation
     presim();
     console.log("Finished");
   }
@@ -403,6 +402,8 @@ window.addEventListener("keyup", e => {
     //space bar: toggles simulation
     if (scene == "add") scene = "play";
     else if (scene == "play") scene = "add";
+    else if (scene == "readd") scene = "replay";
+    else if (scene == "replay") scene = "readd";
   }
   if (key == 16) {
     //shift up: not yeeting edges
@@ -447,8 +448,8 @@ window.addEventListener("keyup", e => {
     for (let i = 0; i < inSize; i++) {
       G.nodes.push(
         new Node(
-          xx + Math.sin(((2 * Math.PI) / inSize) * i) * rr,
-          yy + Math.cos(((2 * Math.PI) / inSize) * i) * rr
+          (xx + Math.sin(((2 * Math.PI) / inSize) * i) * rr)/2,
+          (yy + Math.cos(((2 * Math.PI) / inSize) * i) * rr)/2
         )
       );
     }
@@ -463,6 +464,9 @@ window.addEventListener("keyup", e => {
 
 const inputsize = document.getElementById("size");
 const simspeed = document.getElementById("simspeed");
+const slider = document.getElementById("slider");
+const inputtime = document.getElementById("time");
+const maxdistime = document.getElementById("maxtime");
 
 inputsize.onchange = () => {
   inSize = inputsize.value;
@@ -470,3 +474,12 @@ inputsize.onchange = () => {
 simspeed.onchange = () => {
   sim_speed = simspeed.value / 2;
 };
+slider.onchange = () => {
+  if(!(scene=="readd"||scene=="replay")) return;
+  st = Math.round(slider.value);
+  G = H[st];
+}
+inputtime.onchange = () => {
+  if(!(scene=="readd"||scene=="replay")) return;
+  st = Math.round(inputtime.value);
+}
