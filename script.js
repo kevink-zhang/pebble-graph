@@ -258,7 +258,14 @@ function draw() {
   //update graph
   if (scene == "play") {
     G.update();
-    st+=sim_speed;
+  }
+  else if(scene == "replay"){
+    if(st>=0 && st<H.length)
+      G = H[st];
+    if(st<H.length)
+      st++;
+    document.getElementById("slider").value = st;
+    
   }
   //draw graph
   G.draw();
@@ -296,7 +303,10 @@ function presim() {
     H.push(deepClone(G));
     console.log(tt++);
   }
-  scene = "add";
+  
+  document.getElementById("slider").max = H.length-1;
+  st = document.getElementById("slider").value = H.length-1;
+  scene = "readd";
   G.draw();
 }
 
@@ -371,7 +381,7 @@ window.addEventListener("keydown", e => {
 window.addEventListener("keyup", e => {
   const key = e.keyCode;
   console.log(key);
-  if (key == 80) {
+  if (key == 80) {//p key: presimulation
     presim();
     console.log("Finished");
   }
@@ -379,6 +389,8 @@ window.addEventListener("keyup", e => {
     //space bar: toggles simulation
     if (scene == "add") scene = "play";
     else if (scene == "play") scene = "add";
+    else if (scene == "readd") scene = "replay";
+    else if (scene == "replay") scene = "readd";
   }
   if (key == 16) {
     //shift up: not yeeting edges
@@ -449,4 +461,5 @@ simspeed.onchange = () => {
 };
 slider.onchange = () => {
   st = Math.round(slider.value/100*H.length);
+  G = H[st];
 }
