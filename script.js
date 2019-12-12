@@ -472,6 +472,7 @@ simspeed.onchange = () => {
   sim_speed = simspeed.value / 2;
 };
 slider.onchange = () => {
+  if(!(scene=="readd"||scene=="replay")) return;
   st = Math.round(slider.value);
   G = H[st];
 }
