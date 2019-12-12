@@ -202,7 +202,7 @@ class Graph {
         }
       }
     }
-    this.mem[mm] = true;//mm.size+1;
+    this.mem[mm] = true; //mm.size+1;
   }
   update() {
     this.firing = false;
@@ -231,22 +231,20 @@ class Graph {
   addNode(x, y) {
     this.nodes.push(new Node(x, y));
   }
-  print(){
+  print() {
     let s = "";
-    this.nodes.forEach(x=>s+=String(x.v)+',');
-    s+='|';
-    for(let n of this.nodes){
-      for(let y of n.adj){
-        s+=y.id+',';
+    this.nodes.forEach(x => (s += String(x.v) + ","));
+    s += "|";
+    for (let n of this.nodes) {
+      for (let y of n.adj) {
+        s += y.id + ",";
       }
-      s+='/';
+      s += "/";
     }
     console.log(s);
     return s;
   }
-  init(){
-    
-  }
+  init() {}
 }
 
 function dist(p1, p2) {
@@ -265,7 +263,6 @@ let scene = "add"; //scene
 let select = null; //selected node
 let inSize = 0; //input graph generation size
 
-
 let G = new Graph();
 let H = [];
 
@@ -275,33 +272,30 @@ function draw() {
   ctx.fillRect(0, 0, c.width, c.height);
 
   //update graph
-  
+
   if (scene == "play") {
     G.update();
     st = Math.round(st);
-    if(st>=0 && st<H.length){
+    if (st >= 0 && st < H.length) {
       H.push(deepClone(G));
-      st+=sim_speed;
-    }
-    else{
-      if(st>=H.length&&st<=H.length+sim_speed)
-      st = ((st%H.length)+H.length)%H.length;
+      st += sim_speed;
+    } else {
+      if (st >= H.length && st <= H.length + sim_speed)
+        st = ((st % H.length) + H.length) % H.length;
     }
     document.getElementById("slider").value = st;
-  }
-  else if(scene == "replay"){
+  } else if (scene == "replay") {
     st = Math.round(st);
-    if(st>=0 && st<H.length){
+    if (st >= 0 && st < H.length) {
       G = H[st];
-      st+=sim_speed/presimfrate;
-    }
-    else{
-      if(st>=H.length&&st<=H.length+sim_speed/presimfrate){
-        st = H.indexOf(H[H.length-1]);
+      st += sim_speed / presimfrate;
+    } else {
+      if (st >= H.length && st <= H.length + sim_speed / presimfrate) {
+        st = H.indexOf(H[H.length - 1]);
       }
-      st = ((st%H.length)+H.length)%H.length;
+      st = ((st % H.length) + H.length) % H.length;
     }
-    document.getElementById("slider").value = st; 
+    document.getElementById("slider").value = st;
   }
   //draw graph
   G.draw();
@@ -323,7 +317,6 @@ function draw() {
     }
   }
 
-  G.print();
   t++;
   window.requestAnimationFrame(draw);
 }
@@ -336,23 +329,21 @@ function presim() {
   H = [deepClone(G)];
   let milestone = [];
 
-  while (G.finsim==false) {
+  while (G.finsim == false) {
     G.update();
     H.push(deepClone(G));
-    
-    if(G.firing){
+
+    if (G.firing) {
       milestone.push(tt);
     }
     console.log(tt++);
   }
-  
-  document.getElementById("slider").max = H.length-1;
-  st = document.getElementById("slider").value = H.length-1;
-  document.getElementById("maxtime").value = "/ "+H.length-1;
+
+  document.getElementById("slider").max = H.length - 1;
+  st = document.getElementById("slider").value = H.length - 1;
+  document.getElementById("maxtime").value = "/ " + H.length - 1;
   scene = "readd";
   G.draw();
-  
-  
 }
 
 draw();
@@ -425,7 +416,8 @@ window.addEventListener("keydown", e => {
 window.addEventListener("keyup", e => {
   const key = e.keyCode;
   console.log(key);
-  if (key == 80) {//p key: presimulation
+  if (key == 80) {
+    //p key: presimulation
     presim();
     console.log("Finished");
   }
@@ -463,27 +455,49 @@ window.addEventListener("keyup", e => {
     select = null;
   }
   if (key == 69 && select != null) {
-    //e key: add 1 to node 
+    //e key: add 1 to node
     select.addVal(1);
   }
-  if(key>=48 && key <58){ //number 0-9: modifies node value
-    let val = key-48;
-    if(select!=null){
-      select.v*=10;
-      select.v+=val;
+  if (key >= 48 && key < 58) {
+    //number 0-9: modifies node value
+    let val = key - 48;
+    if (select != null) {
+      select.v *= 10;
+      select.v += val;
     }
   }
-  if(key==192){ //tilda: set node value to 0
-    if(select!=null){
+  if (key == 192) {
+    //tilda: set node value to 0
+    if (select != null) {
       select.v = 0;
     }
   }
-  if(key==27){ //esc key: unselect
+  if (key == 27) {
+    //esc key: unselect
     select = null;
   }
 
   if (key == 84) {
-    //t key: generate
+    //t key: generate tree
+    G.reset();
+    for(let i = 0; i < inSize; i++){
+      while(true){
+        let xx = Math.random()*c.width;
+        let yy = Math.random()*c.height;
+        let ooo = true;
+        for(let n of G.nodes){
+          if(dist([xx,yy],[n.x,n.y])<n.r*(2+2)){
+            ooo=false;
+            break;
+          }
+        }
+        if(ooo) {
+          G.nodes.push(new Node(xx,yy));
+          break;
+        }
+      }
+    }
+    for(let i = 0; i < )
   }
   if (key == 75) {
     //k key: generate complete
@@ -494,8 +508,8 @@ window.addEventListener("keyup", e => {
     for (let i = 0; i < inSize; i++) {
       G.nodes.push(
         new Node(
-          (xx + Math.sin(((2 * Math.PI) / inSize) * i) * rr),
-          (yy + Math.cos(((2 * Math.PI) / inSize) * i) * rr)
+          xx + Math.sin(((2 * Math.PI) / inSize) * i) * rr,
+          yy + Math.cos(((2 * Math.PI) / inSize) * i) * rr
         )
       );
     }
@@ -521,11 +535,11 @@ simspeed.onchange = () => {
   sim_speed = simspeed.value / 2;
 };
 slider.oninput = () => {
-  if(!(scene=="readd"||scene=="replay")) return;
+  if (!(scene == "readd" || scene == "replay")) return;
   st = Math.round(slider.value);
   G = H[st];
-}
+};
 inputtime.onchange = () => {
-  if(!(scene=="readd"||scene=="replay")) return;
+  if (!(scene == "readd" || scene == "replay")) return;
   st = Math.round(inputtime.value);
-}
+};
