@@ -276,7 +276,7 @@ function draw() {
     st = Math.round(st);
     if(st>=0 && st<H.length){
       G = H[st];
-      st+=sim_speed;
+      st+=sim_speed*4;
     }
     else{
       st = ((st%H.length)+H.length)%H.length;
@@ -443,7 +443,7 @@ window.addEventListener("keyup", e => {
     select = null;
   }
   if (key == 69 && select != null) {
-    //e key: unselect node
+    //e key: add 1 to node 
     select.addVal(1);
   }
   if(key>=48 && key <58){ //number 0-9: modifies node value
@@ -453,10 +453,13 @@ window.addEventListener("keyup", e => {
       select.v+=val;
     }
   }
-  if(key==192){ //tilda
+  if(key==192){ //tilda: set node value to 0
     if(select!=null){
       select.v = 0;
     }
+  }
+  if(key==27){
+    
   }
 
   if (key == 84) {
