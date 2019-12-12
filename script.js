@@ -494,7 +494,7 @@ window.addEventListener("keyup", e => {
         if(ooo) {
           G.nodes.push(new Node(xx,yy));
           if(G.nodes.length>1){
-            G.nodes[G.nodes.length-1].adj.push(G.nodes[(Math.random()*G.nodes.length)|0]);
+            G.nodes[G.nodes.length-1].adj.push(G.nodes[(Math.random()*(G.nodes.length-1))|0]);
           }
           break;
         }
