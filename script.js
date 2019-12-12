@@ -37,6 +37,7 @@ c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
 let sim_speed = 0.5;
+const presimfrate = 0.25;
 const select_color = "yellow";
 const unstable_color = "red";
 const neutral_color = "white";
@@ -230,7 +231,13 @@ class Graph {
   addNode(x, y) {
     this.nodes.push(new Node(x, y));
   }
-  setGraph(s) {}
+  print(){
+    let s = "";
+    this.nodes.forEach(x=>s.)
+  }
+  init(){
+    
+  }
 }
 
 function dist(p1, p2) {
@@ -268,6 +275,7 @@ function draw() {
       st+=sim_speed;
     }
     else{
+      if(st>=H.length&&st<=H.length+sim_speed)
       st = ((st%H.length)+H.length)%H.length;
     }
     document.getElementById("slider").value = st;
@@ -276,11 +284,11 @@ function draw() {
     st = Math.round(st);
     if(st>=0 && st<H.length){
       G = H[st];
-      st+=sim_speed*4;
+      st+=sim_speed/presimfrate;
     }
     else{
-      if(st>=H.length&&st<=H.length+sim_speed*4){
-        st = G.finsim;
+      if(st>=H.length&&st<=H.length+sim_speed/presimfrate){
+        st = H.indexOf(H[H.length-1]);
       }
       st = ((st%H.length)+H.length)%H.length;
     }
@@ -314,7 +322,7 @@ function draw() {
 function presim() {
   let tt = 0;
   scene = "play";
-  sim_speed = 0.25; //adjust for higher "frame rate"
+  sim_speed = presimfrate; //adjust for higher "frame rate"
 
   H = [deepClone(G)];
   let milestone = [];
