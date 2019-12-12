@@ -36,7 +36,7 @@ c.width = Math.ceil(500 * scale);
 c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
-let sim_speed = 5;
+let sim_speed = 1;
 const select_color = "yellow";
 const unstable_color = "red";
 const neutral_color = "white";
@@ -245,9 +245,7 @@ let paused = false; //will not update graph
 let scene = "add"; //scene
 let select = null; //selected node
 let inSize = 0; //input graph generation size
-const slide_wid = 300;
-const slide_rad = 8;
-let slide_pos = c.width / 2 - slide_wid / 2;
+
 
 let G = new Graph();
 let H = [];
@@ -260,6 +258,7 @@ function draw() {
   //update graph
   if (scene == "play") {
     G.update();
+    st+=sim_speed;
   }
   //draw graph
   G.draw();
@@ -281,27 +280,6 @@ function draw() {
     }
   }
 
-  //slider
-  ctx.fillStyle = "gray";
-  ctx.beginPath();
-  ctx.moveTo(c.width / 2 - slide_wid / 2, c.height - 60);
-  ctx.lineTo(c.width / 2 - slide_wid / 2, c.height - 50);
-  ctx.lineTo(c.width / 2 + slide_wid / 2, c.height - 50);
-  ctx.lineTo(c.width / 2 + slide_wid / 2, c.height - 60);
-  ctx.fill();
-  ctx.closePath();
-
-  ctx.fillStyle = "white";
-  ctx.beginPath();
-  ctx.arc(slide_pos, c.height - 55, slide_rad, 0, 2 * Math.PI);
-  ctx.fill();
-  ctx.closePath();
-
-  //information
-  ctx.fillStyle = neutral_color;
-  ctx.fillText("mode: " + scene, 5, 10);
-  ctx.fillText("unstable: " + G.unstable, 5, 20);
-  ctx.fillText("time: " + t, 5, 30);
 
   t++;
   window.requestAnimationFrame(draw);
@@ -461,6 +439,7 @@ window.addEventListener("keyup", e => {
 
 const inputsize = document.getElementById("size");
 const simspeed = document.getElementById("simspeed");
+const slider = document.getElementById("slider");
 
 inputsize.onchange = () => {
   inSize = inputsize.value;
@@ -468,3 +447,6 @@ inputsize.onchange = () => {
 simspeed.onchange = () => {
   sim_speed = simspeed.value / 2;
 };
+slider.onchange = () => {
+  st = Math.round(slider.value/100*H.length);
+}
