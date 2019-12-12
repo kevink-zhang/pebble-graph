@@ -156,6 +156,7 @@ class Graph {
     this.cnt = 0;
     this.unstable = false;
     this.finsim = false;
+    this.firing = false; //is true for one frame if topling a node
   }
   reset() {
     this.nodes = [];
@@ -203,6 +204,7 @@ class Graph {
     this.mem[mm] = true;
   }
   update() {
+    this.firing = false;
     this.signals.forEach(x => x.update());
 
     if (this.move <= 0) {
@@ -214,6 +216,7 @@ class Graph {
 
       for (let n of this.nodes) {
         if (n.update()) {
+          this.firing = true;
           this.move = "???";
           this.src = n;
           this.cnt = 40;
@@ -262,6 +265,7 @@ function draw() {
   else if(scene == "replay"){
     if(st>=0 && st<H.length){
       G = H[st];
+      st++;
     }
     
     document.getElementById("slider").value = st;
@@ -298,10 +302,15 @@ function presim() {
   sim_speed = 0.25; //adjust for higher "frame rate"
 
   H = [deepClone(G)];
+  let milestone = [];
 
   while (!G.finsim) {
     G.update();
     H.push(deepClone(G));
+    
+    if(G.firing){
+      milestone.push(tt);
+    }
     console.log(tt++);
   }
   
@@ -309,6 +318,8 @@ function presim() {
   st = document.getElementById("slider").value = H.length-1;
   scene = "readd";
   G.draw();
+  
+  
 }
 
 draw();
@@ -461,6 +472,6 @@ simspeed.onchange = () => {
   sim_speed = simspeed.value / 2;
 };
 slider.onchange = () => {
-  st = Math.round(slider.value/100*H.length);
+  st = Math.round(slider.value);
   G = H[st];
 }
