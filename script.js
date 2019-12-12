@@ -316,6 +316,7 @@ function presim() {
   
   document.getElementById("slider").max = H.length-1;
   st = document.getElementById("slider").value = H.length-1;
+  document.getElementById("maxtime").value = "/ "+H.length-1;
   scene = "readd";
   G.draw();
   
@@ -464,6 +465,8 @@ window.addEventListener("keyup", e => {
 const inputsize = document.getElementById("size");
 const simspeed = document.getElementById("simspeed");
 const slider = document.getElementById("slider");
+const inputtime = document.getElementById("time");
+const maxdistime = document.getElementById("maxtime");
 
 inputsize.onchange = () => {
   inSize = inputsize.value;
@@ -475,4 +478,8 @@ slider.onchange = () => {
   if(!(scene=="readd"||scene=="replay")) return;
   st = Math.round(slider.value);
   G = H[st];
+}
+inputtime.onchange = () => {
+  if(!(scene=="readd"||scene=="replay")) return;
+  st = Math.round(inputtime.value);
 }
