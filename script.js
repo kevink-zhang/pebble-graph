@@ -170,8 +170,8 @@ class Graph {
     select = null;
   }
   draw() {
-    this.signals.forEach(x => x.draw());
     this.nodes.forEach(x => x.drawEdge());
+    this.signals.forEach(x => x.draw());
     this.nodes.forEach(x => x.drawNode());
     if (this.src) {
       //checks if positive radius
@@ -268,7 +268,9 @@ function draw() {
       G = H[st];
       st++;
     }
-    
+    else{
+      st = ((st%H.length)+H.length)%H.length;
+    }
     document.getElementById("slider").value = st;
     
   }
@@ -443,7 +445,9 @@ window.addEventListener("keyup", e => {
     }
   }
   if(key==192){ //tilda
-    
+    if(select!=null){
+      select.v = 0;
+    }
   }
 
   if (key == 84) {

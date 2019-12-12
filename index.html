@@ -13,7 +13,7 @@
     <h1>Pebbles</h1>
 
     <p>
-      Click to create a node. Press e on it to add 1 to its initial value. Click
+      Click to create a node. Press e on it to add 1 to its initial value. You can also type out a number to set a value for a node, and "~" to set the value to 0. Click
       on two nodes to link them. Double click to unselect a node.
     </p>
     <p>
@@ -22,11 +22,17 @@
       Select and shift click to yeet an edge between the two nodes.
     </p>
     <p>
+      There is also a presimulation mode. After creating a graph, press p. Then, you can replay the simulation, and jump to graph states with the slider.
+    </p>
+    <p>
       The simulation will pause once it determines the graph is infinitely
       unstable. Unstable will then become true;
     </p>
     <div id="main" style="display:flex;flex-wrap:wrap">
       <canvas id="c"></canvas>
+  
+    </div>
+    <div>
       <input type="range" min="0" max="0" value="0" class="slider" id="slider" >
       <input id="time" class="timetext"/>
       <t id="maxtime">/ 0</t>
