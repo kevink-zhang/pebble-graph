@@ -201,7 +201,7 @@ class Graph {
         }
       }
     }
-    this.mem[mm] = true;
+    this.mem[mm] = mm.size+1;
   }
   update() {
     this.firing = false;
@@ -458,8 +458,8 @@ window.addEventListener("keyup", e => {
       select.v = 0;
     }
   }
-  if(key==27){
-    
+  if(key==27){ //esc key: unselect
+    select = null;
   }
 
   if (key == 84) {
