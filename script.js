@@ -233,7 +233,16 @@ class Graph {
   }
   print(){
     let s = "";
-    this.nodes.forEach(x=>s.)
+    this.nodes.forEach(x=>s+=String(x.v)+',');
+    s+='|';
+    for(let n of this.nodes){
+      for(let y of n.adj){
+        s+=y.id+',';
+      }
+      s+='/';
+    }
+    console.log(s);
+    return s;
   }
   init(){
     
@@ -314,7 +323,7 @@ function draw() {
     }
   }
 
-
+  G.print();
   t++;
   window.requestAnimationFrame(draw);
 }
