@@ -353,6 +353,7 @@ let mPos = null;
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
+  mPos = [x,y];
 });
 
 let movedx = 0;
@@ -364,7 +365,7 @@ c.addEventListener("mousemove", e => {
   if (mPos != null) {
     mPos = [x, y];
   }
-  if(select!=null) {
+  if (select != null && mPos!=null) {
     select.x = x;
     select.y = y;
   }
@@ -484,23 +485,24 @@ window.addEventListener("keyup", e => {
   if (key == 84) {
     //t key: generate tree
     G.reset();
-    for(let i = 0; i < inSize; i++){
-      while(true){
-        let xx = Math.random()*c.width;
-        let yy = Math.random()*c.height;
+    for (let i = 0; i < inSize; i++) {
+      while (true) {
+        let ddd = 50;
+        let xx = Math.random() * (c.width-2*ddd)+ddd;
+        let yy = Math.random() * (c.height-2*ddd)+ddd;
         let ooo = true;
-        for(let n of G.nodes){
-          if(dist([xx,yy],[n.x,n.y])<n.r*(2+2)){
-            ooo=false;
+        for (let n of G.nodes) {
+          if (dist([xx, yy], [n.x, n.y]) < n.r * (2 + 2)) {
+            ooo = false;
             break;
           }
         }
-        if(ooo) {
-          G.nodes.push(new Node(xx,yy));
-          if(G.nodes.length>1){
-            let oo = (Math.random()*(G.nodes.length-1))|0;
-            G.nodes[G.nodes.length-1].adj.push(G.nodes[oo]);
-            G.nodes[oo]
+        if (ooo) {
+          G.nodes.push(new Node(xx, yy));
+          if (G.nodes.length > 1) {
+            let oo = (Math.random() * (G.nodes.length - 1)) | 0;
+            G.nodes[G.nodes.length - 1].adj.push(G.nodes[oo]);
+            G.nodes[oo].adj.push(G.nodes[G.nodes.length - 1]);
           }
           break;
         }
