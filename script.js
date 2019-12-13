@@ -234,7 +234,7 @@ class Graph {
   }
   simple(){
     let ret = [];
-    this.nodes.forEach(x=>ret.push(x.v));
+    this.nodes.forEach(x=>ret.push(parseInt(x.v)));
     return ret;
   }
   print() {
@@ -298,10 +298,12 @@ function draw() {
       st += sim_speed / presimfrate;
     } else {
       if (st >= H.length && st <= H.length + sim_speed / presimfrate) {
-        console.log(Hcomp[0]);
-        console.log(G.simple());
-        console.log()
-        st = Hcomp.indexOf(G.simple());
+        for(let i =0; i < Hcomp.length; i++){
+          if(JSON.stringify(Hcomp[i])==JSON.stringify(G.simple())){
+            st = i;
+            break;
+          }
+        }
       }
       st = ((st % H.length) + H.length) % H.length;
     }
