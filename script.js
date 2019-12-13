@@ -364,6 +364,10 @@ c.addEventListener("mousemove", e => {
   if (mPos != null) {
     mPos = [x, y];
   }
+  if(select!=null) {
+    select.x = x;
+    select.y = y;
+  }
 });
 
 c.addEventListener("mouseup", e => {
@@ -494,7 +498,9 @@ window.addEventListener("keyup", e => {
         if(ooo) {
           G.nodes.push(new Node(xx,yy));
           if(G.nodes.length>1){
-            G.nodes[G.nodes.length-1].adj.push(G.nodes[(Math.random()*(G.nodes.length-1))|0]);
+            let oo = (Math.random()*(G.nodes.length-1))|0;
+            G.nodes[G.nodes.length-1].adj.push(G.nodes[oo]);
+            G.nodes[oo]
           }
           break;
         }
