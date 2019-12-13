@@ -455,6 +455,10 @@ window.addEventListener("keyup", e => {
     else if (scene == "play") scene = "add";
     else if (scene == "readd") scene = "replay";
     else if (scene == "replay") scene = "readd";
+    else if (scene == "addplay") scene = "addpause"
+  }
+  if(key == 187) {
+    
   }
   if (key == 16) {
     //shift up: not yeeting edges
@@ -554,6 +558,24 @@ window.addEventListener("keyup", e => {
       for (let j = i + 1; j < G.nodes.length; j++) {
         G.nodes[i].adj.push(G.nodes[j]);
         G.nodes[j].adj.push(G.nodes[i]);
+      }
+    }
+  }
+  if(key==71){
+    //g key: generate grid graph
+    let iii = 0;
+    for(let i = 0; i < inSize; i++){
+      for(let j = 0; j < inSize; j++){
+        G.nodes.push(new Node(50+i*75,50+j*75));
+        if(j>0){
+          G.nodes[iii].adj.push(G.nodes[iii-1]);
+          G.nodes[iii-1].adj.push(G.nodes[iii]);
+        }
+        if(i>0){
+          G.nodes[iii].adj.push(G.nodes[iii-inSize]);
+          G.nodes[iii-inSize].adj.push(G.nodes[iii]);
+        }
+        iii++;
       }
     }
   }
