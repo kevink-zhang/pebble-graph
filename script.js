@@ -232,6 +232,11 @@ class Graph {
   addNode(x, y) {
     this.nodes.push(new Node(x, y));
   }
+  simple(){
+    let ret = [];
+    this.nodes.forEach(x=>ret.push(x.v));
+    return ret;
+  }
   print() {
     let s = "";
     this.nodes.forEach(x => (s += String(x.v) + ","));
@@ -266,6 +271,7 @@ let inSize = 0; //input graph generation size
 
 let G = new Graph();
 let H = [];
+let Hcomp = [];
 
 function draw() {
   //background
@@ -292,7 +298,10 @@ function draw() {
       st += sim_speed / presimfrate;
     } else {
       if (st >= H.length && st <= H.length + sim_speed / presimfrate) {
-        st = H.indexOf(H[H.length - 1]);
+        console.log(Hcomp[0]);
+        console.log(G.simple());
+        console.log()
+        st = Hcomp.indexOf(G.simple());
       }
       st = ((st % H.length) + H.length) % H.length;
     }
@@ -328,11 +337,13 @@ function presim() {
   sim_speed = presimfrate; //adjust for higher "frame rate"
 
   H = [deepClone(G)];
+  Hcomp = [G.simple()];
   let milestone = [];
 
   while (G.finsim == false) {
     G.update();
     H.push(deepClone(G));
+    Hcomp.push(G.simple());
 
     if (G.firing) {
       milestone.push(tt);
@@ -482,6 +493,10 @@ window.addEventListener("keyup", e => {
   if (key == 27) {
     //esc key: unselect
     select = null;
+  }
+  if(key==79) {
+    //o key: random values for each node
+    G.nodes.forEach(x=>x.v = Math.round(Math.random()*x.adj.length));
   }
 
   if (key == 84) {
