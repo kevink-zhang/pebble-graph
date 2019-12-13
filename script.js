@@ -37,6 +37,7 @@ c.height = Math.ceil(800 * scale);
 ctx.scale(scale, scale);
 
 let sim_speed = 0.5;
+let rand_val_gen = 1.5;
 const refractory = 25;
 const presimfrate = 0.25;
 const select_color = "yellow";
@@ -505,7 +506,7 @@ window.addEventListener("keyup", e => {
   }
   if(key==79) {
     //o key: random values for each node
-    G.nodes.forEach(x=>x.v = 2*Math.round(Math.random()*x.adj.length));
+    G.nodes.forEach(x=>x.v = Math.round(rand_val_gen*Math.random()*x.adj.length));
   }
 
   if (key == 84) {
