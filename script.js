@@ -28,12 +28,12 @@ function deepClone(obj, hash = new WeakMap()) {
   );
 }
 
-c.style.width = "500px";
-c.style.height = "500px";
+c.style.width = "800px";
+c.style.height = "800px";
 
 const scale = window.devicePixelRatio;
-c.width = Math.ceil(500 * scale);
-c.height = Math.ceil(500 * scale);
+c.width = Math.ceil(800 * scale);
+c.height = Math.ceil(800 * scale);
 ctx.scale(scale, scale);
 
 let sim_speed = 0.5;
@@ -328,7 +328,14 @@ function draw() {
       ctx.closePath();
     }
   }
-
+  
+  ctx.fillStyle= neutral_color;
+  ctx.fillText("Nodes: "+G.nodes.length,5,10);
+  let ooo = 0; G.nodes.forEach(x=>ooo+=x.adj.length); ooo/=2;
+  ctx.fillText("Edges: "+ooo,5,20);
+  ooo = 0; G.nodes.forEach(x=>ooo+=x.v); ooo+=G.signals.length;
+  ctx.fillText("Pebbles: "+ooo,5,30);
+  
   t++;
   window.requestAnimationFrame(draw);
 }
@@ -350,7 +357,7 @@ function presim() {
     if (G.firing) {
       milestone.push(tt);
     }
-    if(!t%1000)
+    if(!tt%1000)
       console.log(tt++);
   }
 
@@ -498,7 +505,7 @@ window.addEventListener("keyup", e => {
   }
   if(key==79) {
     //o key: random values for each node
-    G.nodes.forEach(x=>x.v = Math.round(Math.random()*x.adj.length));
+    G.nodes.forEach(x=>x.v = 2*Math.round(Math.random()*x.adj.length));
   }
 
   if (key == 84) {
