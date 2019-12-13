@@ -283,7 +283,7 @@ function draw() {
 
   if (scene == "play") {
     G.update();
-    st = Math.round(st);
+    st = Math.floor(st);
     if (st >= 0 && st < H.length) {
       H.push(deepClone(G));
       st += sim_speed;
@@ -292,8 +292,30 @@ function draw() {
         st = ((st % H.length) + H.length) % H.length;
     }
     document.getElementById("slider").value = st;
-  } else if (scene == "replay") {
-    st = Math.round(st);
+  } else if (scene == "addplay") {
+    G.update();
+    let asd = false;
+    G.nodes.forEach(x=>asd=!x.sink||asd);
+    while(asd){
+      let ii = Math.floor(Math.random()*G.nodes.length);
+      if(!G.nodes[ii].sink){
+        if(G.firing)
+          G.nodes[ii].addVal(1);
+        asd=false;
+      }
+    }
+    
+    st = Math.floor(st);
+    if (st >= 0 && st < H.length) {
+      H.push(deepClone(G));
+      st += sim_speed;
+    } else {
+      if (st >= H.length && st <= H.length + sim_speed)
+        st = ((st % H.length) + H.length) % H.length;
+    }
+    document.getElementById("slider").value = st;
+  }else if (scene == "replay") {
+    st = Math.floor(st);
     if (st >= 0 && st < H.length) {
       G = H[st];
       st += sim_speed / presimfrate;
@@ -455,10 +477,10 @@ window.addEventListener("keyup", e => {
     else if (scene == "play") scene = "add";
     else if (scene == "readd") scene = "replay";
     else if (scene == "replay") scene = "readd";
-    else if (scene == "addplay") scene = "addpause"
   }
   if(key == 187) {
-    
+    if (scene == "addplay") scene = "add";
+    else if (scene == "add") scene = "addplay";
   }
   if (key == 16) {
     //shift up: not yeeting edges
@@ -510,7 +532,7 @@ window.addEventListener("keyup", e => {
   }
   if(key==79) {
     //o key: random values for each node
-    G.nodes.forEach(x=>x.v = Math.round(rand_val_gen*Math.random()*x.adj.length));
+    G.nodes.forEach(x=>x.v = Math.floor(rand_val_gen*Math.random()*x.adj.length));
   }
 
   if (key == 84) {
