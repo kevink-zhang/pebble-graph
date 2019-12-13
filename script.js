@@ -37,6 +37,7 @@ c.height = Math.ceil(500 * scale);
 ctx.scale(scale, scale);
 
 let sim_speed = 0.5;
+const refractory = 25;
 const presimfrate = 0.25;
 const select_color = "yellow";
 const unstable_color = "red";
@@ -143,7 +144,7 @@ class Signal {
     if (this.count <= 0) {
       this.tar.addVal(1);
       G.signals.splice(G.signals.indexOf(this), 1);
-      G.move = 50;
+      G.move = refractory;
     }
   }
 }
@@ -336,7 +337,8 @@ function presim() {
     if (G.firing) {
       milestone.push(tt);
     }
-    console.log(tt++);
+    if(!t%1000)
+      console.log(tt++);
   }
 
   document.getElementById("slider").max = H.length - 1;
