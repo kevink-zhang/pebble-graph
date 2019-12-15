@@ -365,7 +365,7 @@ function draw() {
   ooo += G.signals.length;
   ctx.fillText("Pebbles: " + ooo, 5, 30);
 
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.setTransform(1, 0, 0, 1, CAM.x, CAM.y);
   t++;
   window.requestAnimationFrame(draw);
 }
