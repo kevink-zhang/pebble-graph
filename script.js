@@ -38,6 +38,8 @@ ctx.scale(scale, scale);
 
 let sim_speed = 0.5;
 let rand_val_gen = 1.5;
+
+let CAM = {x:0, y:0};
 const refractory = 25;
 const presimfrate = 0.25;
 const select_color = "yellow";
@@ -69,23 +71,23 @@ class Node {
 
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+    ctx.arc(this.x+CAM.x, this.y+CAM.y, this.r, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.closePath();
 
     if (this.sink) ctx.fillStyle = ctx.strokeStyle = back_color;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r - 4, 0, 2 * Math.PI);
+    ctx.arc(this.x+CAM.x, this.y+CAM.y, this.r - 4, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
 
     ctx.fillStyle = neutral_color;
     if (this.v >= this.adj.length) ctx.fillStyle = unstable_color;
-    ctx.fillText(this.v, this.x + this.r + 2, this.y - 3);
+    ctx.fillText(this.v, this.x + this.r + 2 +CAM.x, this.y - 3 +CAM.y);
     ctx.fillStyle = neutral_color;
-    ctx.fillText(this.adj.length, this.x + this.r + 2, this.y + 10);
-    ctx.fillText(this.tcount, this.x - this.r - 7, this.y + 10);
+    ctx.fillText(this.adj.length, this.x + this.r + 2 +CAM.x, this.y + 10 +CAM.y);
+    ctx.fillText(this.tcount, this.x - this.r - 7 +CAM.x, this.y + 10 +CAM.y);
   }
   drawEdge() {
     for (let e of this.adj) {
@@ -94,8 +96,8 @@ class Node {
         ctx.strokeStyle = select_color;
       ctx.lineWidth = edge_width;
       ctx.beginPath();
-      ctx.moveTo(this.x, this.y);
-      ctx.lineTo(e.x, e.y);
+      ctx.moveTo(this.x +CAM.x, this.y +CAM.y);
+      ctx.lineTo(e.x +CAM.x, e.y +CAM.y);
       ctx.stroke();
       ctx.closePath();
     }
@@ -133,7 +135,7 @@ class Signal {
     //ctx.fillStyle = "black";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.pos[0], this.pos[1], 2, 0, 2 * Math.PI);
+    ctx.arc(this.pos[0] +CAM.x, this.pos[1] +CAM.y, 2, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
@@ -181,7 +183,7 @@ class Graph {
       ctx.strokeStyle = unstable_color;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(this.src.x, this.src.y, this.cnt / 4, 0, 2 * Math.PI);
+      ctx.arc(this.src.x +CAM.x, this.src.y +CAM.y, this.cnt / 4, 0, 2 * Math.PI);
       ctx.stroke();
       ctx.closePath();
     }
@@ -341,8 +343,8 @@ function draw() {
     for (let i = 0; i < 3; i++) {
       ctx.beginPath();
       ctx.arc(
-        select.x,
-        select.y,
+        select.x +CAM.x,
+        select.y +CAM.y,
         select.r + 4,
         (i * 2 * Math.PI) / 3 + t / 10,
         (i * 2 * Math.PI) / 3 + (2 * Math.PI) / 3 - 0.65 + t / 10
