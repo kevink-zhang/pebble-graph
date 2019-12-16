@@ -281,7 +281,8 @@ function draw() {
   //background
   ctx.fillStyle = back_color;
   ctx.fillRect(0, 0, c.width, c.height);
-
+  
+  //ctx.setTransform(1, 0, 0, 1, 0, 0);
   //update graph
 
   if (scene == "play") {
@@ -365,7 +366,7 @@ function draw() {
   ooo += G.signals.length;
   ctx.fillText("Pebbles: " + ooo, 5, 30);
 
-  ctx.setTransform(1, 0, 0, 1, CAM.x, CAM.y);
+  //ctx.setTransform(1, 0, 0, 1, CAM.x, CAM.y);
   t++;
   window.requestAnimationFrame(draw);
 }
