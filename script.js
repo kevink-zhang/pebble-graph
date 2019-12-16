@@ -121,6 +121,7 @@ class Node {
     if (this.adj.length == 0) return false;
 
     if (this.v >= this.adj.length) {
+      this.v-=this.adj.length;
       this.tcount++;
       return true;
     }
@@ -279,6 +280,7 @@ function MPos(xx,yy) {
 }
 
 function moveCAM() {
+  return;
   let zfactor = 0.99;
   if(G.signals.length>0){ //refractory, zoom in and move
     let dt = sim_speed/signaltime;
