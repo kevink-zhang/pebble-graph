@@ -407,13 +407,14 @@ draw();
 
 let mPos = null;
 let mDrag = false;
+let sSel = false;
 
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
   mPos = [x,y];
   
-  //if(select!=null && dist(mPos,[select.x,select.y])>select.r+1) mDrag = true;
+  if(select!=null && dist(mPos,[select.x,select.y])<select.r+1) sSel = true;
 });
 
 let movedx = 0;
@@ -424,7 +425,7 @@ c.addEventListener("mousemove", e => {
   let y = e.clientY - c.getBoundingClientRect().top;
   
   if (mPos!=null) {
-    if(select!=null && dist(mPos,[select.x,select.y])<select.r+1){ //dragging node
+    if(select!=null && sSel){ //dragging node
       select.x = x-CAM.x;
       select.y = y-CAM.y;
     }
@@ -473,6 +474,7 @@ c.addEventListener("mouseup", e => {
   
   mDrag = false;
   mPos = null;
+  sSel = false;
 });
 
 let keysdown = {};
