@@ -298,11 +298,12 @@ function draw() {
     G.update();
     let asd = false;
     G.nodes.forEach(x=>asd=!x.sink||asd);
+    
+    G.nodes.forEach(x=>asd=!(x.v==x.adj.length)&&asd);
     while(asd){
       let ii = Math.floor(Math.random()*G.nodes.length);
-      if(!G.nodes[ii].sink){
-        if(G.firing)
-          G.nodes[ii].addVal(1);
+      if(!G.nodes[ii].sink && G.v < G.nodes[ii].adj.length-1){
+        G.nodes[ii].addVal(1);
         asd=false;
       }
     }
