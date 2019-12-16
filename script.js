@@ -363,7 +363,7 @@ function draw() {
       ctx.closePath();
     }
   }
-  
+    
   ctx.fillStyle= neutral_color;
   ctx.fillText("Nodes: "+G.nodes.length,5,10);
   let ooo = 0; G.nodes.forEach(x=>ooo+=x.adj.length); ooo/=2;
@@ -375,6 +375,7 @@ function draw() {
   ctx.fillText("Free pebbles: "+ooo,5,40);
   
   ctx.fillText("Scene: "+scene,5,50);
+  
   
   t++;
   window.requestAnimationFrame(draw);
@@ -417,7 +418,7 @@ let sSel = false;
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  mPos = MPos(x,y);;
+  mPos = MPos(x,y);
   
   if(select!=null && dist(mPos,[CAMPos(select.x,select.y).x, CAMPos(select.x,select.y).y])<select.r+1) sSel = true;
 });
