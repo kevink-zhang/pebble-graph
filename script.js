@@ -274,16 +274,17 @@ function MPos(xx,yy) {
 }
 
 function moveCAM() {
-  if(G.signals.length>0){ //sending out signals, zoom out
+  let zfactor = 0.99;
+  if(G.move>0){ //refractory, zoom in and move
     let dt = sim_speed/signaltime;
-    ZOOM *= 0.98;
+    ZOOM *= zfactor;
   }
-  else if(G.move>0){ //refractory, zoom in and move
-    ZOOM /= 0.98;
+  else if(G.signals.length>0){ //sending out signals, zoom out
+    ZOOM /= zfactor;
     let dt = sim_speed/refractory;
     if(G.src!=null){
-      CAM.x+=dt * (G.src-CAM.x);
-      CAM.y+=dt * (G.src-CAM.y);
+      CAM.x+=dt * (G.src.x-CAM.x);
+      CAM.y+=dt * (G.src.y-CAM.y);
     }
   }
 }
