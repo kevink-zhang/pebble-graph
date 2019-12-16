@@ -58,12 +58,17 @@ class Node {
     this.x = x;
     this.y = y;
     this.v = 0; //number of pebbles
+    this.vv = 0; //uh estimating?
     this.r = 10;
     this.tcount = 0; //topple count
     this.id = G.nodes.length;
     this.sink = false;
   }
   drawNode() {
+    if(this.v >= this.adj.length) {
+      this.vv = this.v;
+    }
+    
     ctx.strokeStyle = neutral_color;
     ctx.fillStyle = neutral_color;
     if (this.sink) {
@@ -116,7 +121,6 @@ class Node {
     if (this.adj.length == 0) return false;
 
     if (this.v >= this.adj.length) {
-      this.v -= this.adj.length;
       this.tcount++;
       return true;
     }
@@ -231,6 +235,7 @@ class Graph {
           this.src = n;
           this.cnt = 40;
           n.adj.forEach(x => this.signals.push(new Signal(n, x)));
+          n.adj.forEach(x => x.vv++);
           break;
         }
       }
