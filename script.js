@@ -299,10 +299,11 @@ function draw() {
     let asd = false;
     G.nodes.forEach(x=>asd=!x.sink||asd);
     
-    G.nodes.forEach(x=>asd=!(x.v==x.adj.length)&&asd);
+    G.nodes.forEach(x=>asd=(!(x.v>=x.adj.length)&&!x.sink)&&asd);
+    
     while(asd){
       let ii = Math.floor(Math.random()*G.nodes.length);
-      if(!G.nodes[ii].sink && G.v < G.nodes[ii].adj.length-1){
+      if(!G.nodes[ii].sink ){
         G.nodes[ii].addVal(1);
         asd=false;
       }
