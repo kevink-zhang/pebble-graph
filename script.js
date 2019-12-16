@@ -39,8 +39,7 @@ ctx.scale(scale, scale);
 let sim_speed = 0.5;
 let rand_val_gen = 1.5;
 
-let CAM = { x: 0, y: 0 };
-let ZOOM = 2;
+let CAM = {x:0, y:0};
 const refractory = 25;
 const presimfrate = 0.25;
 const select_color = "yellow";
@@ -72,23 +71,23 @@ class Node {
 
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
+    ctx.arc(this.x+CAM.x, this.y+CAM.y, this.r, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.closePath();
 
     if (this.sink) ctx.fillStyle = ctx.strokeStyle = back_color;
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.r - 4, 0, 2 * Math.PI);
+    ctx.arc(this.x+CAM.x, this.y+CAM.y, this.r - 4, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
 
     ctx.fillStyle = neutral_color;
     if (this.v >= this.adj.length) ctx.fillStyle = unstable_color;
-    ctx.fillText(this.v, this.x + this.r + 2, this.y - 3);
+    ctx.fillText(this.v, this.x + this.r + 2 +CAM.x, this.y - 3 +CAM.y);
     ctx.fillStyle = neutral_color;
-    ctx.fillText(this.adj.length, this.x + this.r + 2, this.y + 10);
-    ctx.fillText(this.tcount, this.x - this.r - 7, this.y + 10);
+    ctx.fillText(this.adj.length, this.x + this.r + 2 +CAM.x, this.y + 10 +CAM.y);
+    ctx.fillText(this.tcount, this.x - this.r - 7 +CAM.x, this.y + 10 +CAM.y);
   }
   drawEdge() {
     for (let e of this.adj) {
@@ -97,8 +96,8 @@ class Node {
         ctx.strokeStyle = select_color;
       ctx.lineWidth = edge_width;
       ctx.beginPath();
-      ctx.moveTo(this.x, this.y);
-      ctx.lineTo(e.x, e.y);
+      ctx.moveTo(this.x +CAM.x, this.y +CAM.y);
+      ctx.lineTo(e.x +CAM.x, e.y +CAM.y);
       ctx.stroke();
       ctx.closePath();
     }
@@ -136,7 +135,7 @@ class Signal {
     //ctx.fillStyle = "black";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.pos[0], this.pos[1], 2, 0, 2 * Math.PI);
+    ctx.arc(this.pos[0] +CAM.x, this.pos[1] +CAM.y, 2, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
@@ -184,7 +183,7 @@ class Graph {
       ctx.strokeStyle = unstable_color;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(this.src.x, this.src.y, this.cnt / 4, 0, 2 * Math.PI);
+      ctx.arc(this.src.x +CAM.x, this.src.y +CAM.y, this.cnt / 4, 0, 2 * Math.PI);
       ctx.stroke();
       ctx.closePath();
     }
@@ -236,9 +235,9 @@ class Graph {
   addNode(x, y) {
     this.nodes.push(new Node(x, y));
   }
-  simple() {
+  simple(){
     let ret = [];
-    this.nodes.forEach(x => ret.push(parseInt(x.v)));
+    this.nodes.forEach(x=>ret.push(parseInt(x.v)));
     return ret;
   }
   print() {
@@ -281,8 +280,7 @@ function draw() {
   //background
   ctx.fillStyle = back_color;
   ctx.fillRect(0, 0, c.width, c.height);
-  
-  //ctx.setTransform(1, 0, 0, 1, 0, 0);
+
   //update graph
 
   if (scene == "play") {
@@ -299,15 +297,16 @@ function draw() {
   } else if (scene == "addplay") {
     G.update();
     let asd = false;
-    G.nodes.forEach(x => (asd = !x.sink || asd));
-    while (asd) {
-      let ii = Math.floor(Math.random() * G.nodes.length);
-      if (!G.nodes[ii].sink) {
-        if (G.firing) G.nodes[ii].addVal(1);
-        asd = false;
+    G.nodes.forEach(x=>asd=!x.sink||asd);
+    while(asd){
+      let ii = Math.floor(Math.random()*G.nodes.length);
+      if(!G.nodes[ii].sink){
+        if(G.firing)
+          G.nodes[ii].addVal(1);
+        asd=false;
       }
     }
-
+    
     st = Math.floor(st);
     if (st >= 0 && st < H.length) {
       H.push(deepClone(G));
@@ -317,15 +316,15 @@ function draw() {
         st = ((st % H.length) + H.length) % H.length;
     }
     document.getElementById("slider").value = st;
-  } else if (scene == "replay") {
+  }else if (scene == "replay") {
     st = Math.floor(st);
     if (st >= 0 && st < H.length) {
       G = H[st];
       st += sim_speed / presimfrate;
     } else {
       if (st >= H.length && st <= H.length + sim_speed / presimfrate) {
-        for (let i = 0; i < Hcomp.length; i++) {
-          if (JSON.stringify(Hcomp[i]) == JSON.stringify(G.simple())) {
+        for(let i =0; i < Hcomp.length; i++){
+          if(JSON.stringify(Hcomp[i])==JSON.stringify(G.simple())){
             st = i;
             break;
           }
@@ -344,8 +343,8 @@ function draw() {
     for (let i = 0; i < 3; i++) {
       ctx.beginPath();
       ctx.arc(
-        select.x,
-        select.y,
+        select.x +CAM.x,
+        select.y +CAM.y,
         select.r + 4,
         (i * 2 * Math.PI) / 3 + t / 10,
         (i * 2 * Math.PI) / 3 + (2 * Math.PI) / 3 - 0.65 + t / 10
@@ -354,19 +353,14 @@ function draw() {
       ctx.closePath();
     }
   }
-
-  ctx.fillStyle = neutral_color;
-  ctx.fillText("Nodes: " + G.nodes.length, 5, 10);
-  let ooo = 0;
-  G.nodes.forEach(x => (ooo += x.adj.length));
-  ooo /= 2;
-  ctx.fillText("Edges: " + ooo, 5, 20);
-  ooo = 0;
-  G.nodes.forEach(x => (ooo += x.v));
-  ooo += G.signals.length;
-  ctx.fillText("Pebbles: " + ooo, 5, 30);
-
-  //ctx.setTransform(1, 0, 0, 1, CAM.x, CAM.y);
+  
+  ctx.fillStyle= neutral_color;
+  ctx.fillText("Nodes: "+G.nodes.length,5,10);
+  let ooo = 0; G.nodes.forEach(x=>ooo+=x.adj.length); ooo/=2;
+  ctx.fillText("Edges: "+ooo,5,20);
+  ooo = 0; G.nodes.forEach(x=>ooo+=x.v); ooo+=G.signals.length;
+  ctx.fillText("Pebbles: "+ooo,5,30);
+  
   t++;
   window.requestAnimationFrame(draw);
 }
@@ -388,7 +382,8 @@ function presim() {
     if (G.firing) {
       milestone.push(tt);
     }
-    if (!tt % 1000) console.log(tt++);
+    if(!tt%1000)
+      console.log(tt++);
   }
 
   document.getElementById("slider").max = H.length - 1;
@@ -406,7 +401,7 @@ let mDrag = false;
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  mPos = [x, y];
+  mPos = [x,y];
 });
 
 let movedx = 0;
@@ -415,30 +410,28 @@ let movedy = 0;
 c.addEventListener("mousemove", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-
-  if (mPos != null) {
-    if (
-      select != null &&
-      dist([select.x + CAM.x, select.y + CAM.y], mPos) < 2 * select.r
-    ) {
-      //dragging node
-      select.x = x - CAM.x;
-      select.y = y - CAM.y;
-    } else {
-      //dragging camera
-      CAM.x += x - mPos[0];
-      CAM.y += y - mPos[1];
+  
+  if (mPos!=null) {
+    if(select!=null && dist([x,y])){ //dragging node
+      select.x = x-CAM.x;
+      select.y = y-CAM.y;
     }
-    if (x != mPos[0] || y != mPos[1]) mDrag = true;
+    else{ //dragging camera
+      console
+      CAM.x+=x-mPos[0];
+      CAM.y+=y-mPos[1];
+    }
+    if(x!=mPos[0]||y!=mPos[1]) mDrag = true;
     mPos = [x, y];
   }
 });
 
 c.addEventListener("mouseup", e => {
+
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
 
-  let p = [x - CAM.x, y - CAM.y];
+  let p = [x-CAM.x, y-CAM.y];
   let newN = true;
   for (let n of G.nodes) {
     let pp = [n.x, n.y];
@@ -466,7 +459,7 @@ c.addEventListener("mouseup", e => {
     G.addNode(p[0], p[1]);
     console.log("new node at: " + p[0] + " , " + p[1]);
   }
-
+  
   mDrag = false;
   mPos = null;
 });
@@ -495,7 +488,7 @@ window.addEventListener("keyup", e => {
     else if (scene == "readd") scene = "replay";
     else if (scene == "replay") scene = "readd";
   }
-  if (key == 187) {
+  if(key == 187) {
     if (scene == "addplay") scene = "add";
     else if (scene == "add") scene = "addplay";
   }
@@ -547,11 +540,9 @@ window.addEventListener("keyup", e => {
     //esc key: unselect
     select = null;
   }
-  if (key == 79) {
+  if(key==79) {
     //o key: random values for each node
-    G.nodes.forEach(
-      x => (x.v = Math.floor(rand_val_gen * Math.random() * x.adj.length))
-    );
+    G.nodes.forEach(x=>x.v = Math.floor(rand_val_gen*Math.random()*x.adj.length));
   }
 
   if (key == 84) {
@@ -560,8 +551,8 @@ window.addEventListener("keyup", e => {
     for (let i = 0; i < inSize; i++) {
       while (true) {
         let ddd = 50;
-        let xx = Math.random() * (c.width - 2 * ddd) + ddd;
-        let yy = Math.random() * (c.height - 2 * ddd) + ddd;
+        let xx = Math.random() * (c.width-2*ddd)+ddd;
+        let yy = Math.random() * (c.height-2*ddd)+ddd;
         let ooo = true;
         for (let n of G.nodes) {
           if (dist([xx, yy], [n.x, n.y]) < n.r * (2 + 2)) {
@@ -602,19 +593,19 @@ window.addEventListener("keyup", e => {
       }
     }
   }
-  if (key == 71) {
+  if(key==71){
     //g key: generate grid graph
     let iii = 0;
-    for (let i = 0; i < inSize; i++) {
-      for (let j = 0; j < inSize; j++) {
-        G.nodes.push(new Node(50 + i * 75, 50 + j * 75));
-        if (j > 0) {
-          G.nodes[iii].adj.push(G.nodes[iii - 1]);
-          G.nodes[iii - 1].adj.push(G.nodes[iii]);
+    for(let i = 0; i < inSize; i++){
+      for(let j = 0; j < inSize; j++){
+        G.nodes.push(new Node(50+i*75,50+j*75));
+        if(j>0){
+          G.nodes[iii].adj.push(G.nodes[iii-1]);
+          G.nodes[iii-1].adj.push(G.nodes[iii]);
         }
-        if (i > 0) {
-          G.nodes[iii].adj.push(G.nodes[iii - inSize]);
-          G.nodes[iii - inSize].adj.push(G.nodes[iii]);
+        if(i>0){
+          G.nodes[iii].adj.push(G.nodes[iii-inSize]);
+          G.nodes[iii-inSize].adj.push(G.nodes[iii]);
         }
         iii++;
       }
