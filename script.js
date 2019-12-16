@@ -43,6 +43,7 @@ let CAM = {x:c.width/2, y:c.height/2};
 let ZOOM = 1;
 
 const refractory = 25;
+const signaltime = 25;
 const presimfrate = 0.25;
 const select_color = "yellow";
 const unstable_color = "red";
@@ -128,7 +129,7 @@ class Signal {
     this.src = src;
     this.tar = tar;
     this.pos = [src.x, src.y];
-    this.count = 25;
+    this.count = signaltime;
     this.dx = (tar.x - src.x) / this.count;
     this.dy = (tar.y - src.y) / this.count;
   }
@@ -141,6 +142,7 @@ class Signal {
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
+  
   }
   update() {
     this.pos[0] += this.dx * sim_speed;
@@ -269,6 +271,15 @@ function CAMPos(xx, yy) {
 }
 function MPos(xx,yy) {
   return [ZOOM*(xx-c.width/2) + CAM.x, ZOOM*(yy-c.height/2) + CAM.y];
+}
+
+function moveCAM() {
+  if(G.signals.length>0){ //sending out signals, zoom out
+    
+  }
+  else{ //re
+    
+  }
 }
 
 let t = 0; //time counter
