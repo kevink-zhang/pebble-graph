@@ -426,14 +426,16 @@ c.addEventListener("mousemove", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
   
+  let ooo = [ZOOM*x + CAM.x, ZOOM*y + CAM.y];
+  
   if (mPos!=null) {
     if(select!=null && sSel){ //dragging node
-      select.x = x-CAM.x;
-      select.y = y-CAM.y;
+      select.x = ooo[0]-CAM.x;
+      select.y = ooo[1]-CAM.y;
     }
     else{ //dragging camera
-      CAM.x+=x-mPos[0];
-      CAM.y+=y-mPos[1];
+      CAM.x-=ooo[0]-mPos[0];
+      CAM.y-=ooo[1]-mPos[1];
     }
     if(x!=mPos[0]||y!=mPos[1]) mDrag = true;
     mPos = [ZOOM*x + CAM.x, ZOOM*y + CAM.y];
@@ -478,12 +480,7 @@ c.addEventListener("mouseup", e => {
   sSel = false;
 });
 
-let lastScroll = 0;
-c.addEventListener("scroll",e => {
-  var st = window.pageYOffset;
-  ZOOM += st-lastScroll;
-  lastScroll=st;
-});
+
 
 let keysdown = {};
 window.addEventListener("keydown", e => {
@@ -502,6 +499,12 @@ window.addEventListener("keyup", e => {
     CAM.x = CAM.y = 0;
     ZOOM = 1;
   }
+  if (key == 187){
+    ZOOM -= 0.1;
+  }
+  if(key==189){
+    ZOOM += 0.1;
+  }
   if (key == 80) {
     //p key: presimulation
     presim();
@@ -514,7 +517,8 @@ window.addEventListener("keyup", e => {
     else if (scene == "readd") scene = "replay";
     else if (scene == "replay") scene = "readd";
   }
-  if(key == 187) {
+  if(key == 81) {
+    //q key: simulation where it adds pebbles if the graph stabalizes
     if (scene == "addplay") scene = "add";
     else if (scene == "add") scene = "addplay";
   }
