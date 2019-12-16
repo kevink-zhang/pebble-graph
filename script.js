@@ -275,11 +275,12 @@ function MPos(xx,yy) {
 
 function moveCAM() {
   let zfactor = 0.99;
-  if(G.move>0){ //refractory, zoom in and move
+  if(G.signals.length>0){ //refractory, zoom in and move
     let dt = sim_speed/signaltime;
+    
     ZOOM *= zfactor;
   }
-  else if(G.signals.length>0){ //sending out signals, zoom out
+  else if(G.move>0){ //sending out signals, zoom out
     ZOOM /= zfactor;
     let dt = sim_speed/refractory;
     if(G.src!=null){
