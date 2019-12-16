@@ -265,7 +265,7 @@ function dist(p1, p2) {
   );
 }
 function CAMPos(xx, yy) {
-  return {x:(xx-CAM.x+c.width/2)/ZOOM, y:(yy-CAM.y+c.height/2)/ZOOM};
+  return {x:(xx-CAM.x)/ZOOM + c.width/2, y:(yy-CAM.y)/ZOOM + c.height/2};
 }
 function MPos(xx,yy) {
   return [ZOOM*(xx-c.width/2) + CAM.x, ZOOM*(yy-c.height/2) + CAM.y];
@@ -434,15 +434,17 @@ c.addEventListener("mousemove", e => {
   
   if (mPos!=null) {
     if(select!=null && sSel){ //dragging node
-      select.x = ooo[0]-CAM.x;
-      select.y = ooo[1]-CAM.y;
+      select.x += ooo[0]-mPos[0];
+      select.y += ooo[1]-mPos[1];
     }
     else{ //dragging camera
+      // console.log(ooo[0]);
+      // console.log(mPos[0]);
       CAM.x-=ooo[0]-mPos[0];
       CAM.y-=ooo[1]-mPos[1];
     }
     if(x!=mPos[0]||y!=mPos[1]) mDrag = true;
-    mPos = [ZOOM*x + CAM.x, ZOOM*y + CAM.y];
+    mPos = MPos(x,y);
   }
 });
 
