@@ -39,7 +39,7 @@ ctx.scale(scale, scale);
 let sim_speed = 0.5;
 let rand_val_gen = 1.5;
 
-let CAM = {x:0, y:0};
+let CAM = {x:c.width/2, y:c.height/2};
 let ZOOM = 1;
 
 const refractory = 25;
@@ -137,7 +137,7 @@ class Signal {
     //ctx.fillStyle = "black";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.pos[0] +CAM.x, this.pos[1] +CAM.y, 2, 0, 2 * Math.PI);
+    ctx.arc(CAMPos(this.pos[0],this.pos[1]).x, CAMPos(this.pos[0],this.pos[1]).y, 2, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
@@ -186,7 +186,7 @@ class Graph {
       ctx.strokeStyle = unstable_color;
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(this.src.x +CAM.x, this.src.y +CAM.y, this.cnt / 4, 0, 2 * Math.PI);
+      ctx.arc(CAMPos(this.src.x,this.src.y).x, CAMPos(this.src.x,this.src.y).y, this.cnt / 4, 0, 2 * Math.PI);
       ctx.stroke();
       ctx.closePath();
     }
@@ -265,7 +265,10 @@ function dist(p1, p2) {
   );
 }
 function CAMPos(xx, yy) {
-  return {x:(xx-CAM.x)/ZOOM, y:(yy-CAM.y)/ZOOM};
+  return {x:(xx-CAM.x+c.width/2)/ZOOM, y:(yy-CAM.y+c.height/2)/ZOOM};
+}
+function MPos(xx,yy) {
+  return [ZOOM*(xx-c.width/2) + CAM.x, ZOOM*(yy-c.height/2) + CAM.y];
 }
 
 let t = 0; //time counter
@@ -414,7 +417,7 @@ let sSel = false;
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  mPos = [ZOOM*x + CAM.x, ZOOM*y + CAM.y];
+  mPos = MPos(x,y);;
   
   if(select!=null && dist(mPos,[CAMPos(select.x,select.y).x, CAMPos(select.x,select.y).y])<select.r+1) sSel = true;
 });
@@ -426,7 +429,7 @@ c.addEventListener("mousemove", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
   
-  let ooo = [ZOOM*x + CAM.x, ZOOM*y + CAM.y];
+  let ooo = MPos(x,y);
   
   if (mPos!=null) {
     if(select!=null && sSel){ //dragging node
@@ -496,7 +499,7 @@ window.addEventListener("keyup", e => {
   console.log(key);
   if (key == 91){
     //command key: reset camera
-    CAM.x = CAM.y = 0;
+    CAM = {x:c.width/2, y:c.height/2};
     ZOOM = 1;
   }
   if (key == 187){
