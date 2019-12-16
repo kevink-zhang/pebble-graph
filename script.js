@@ -73,23 +73,23 @@ class Node {
 
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(this.x+CAM.x, this.y+CAM.y, this.r, 0, 2 * Math.PI);
+    ctx.arc(CAMPos(this.x,this.y).x, CAMPos(this.x,this.y).y, this.r, 0, 2 * Math.PI);
     ctx.stroke();
     ctx.closePath();
 
     if (this.sink) ctx.fillStyle = ctx.strokeStyle = back_color;
     ctx.beginPath();
-    ctx.arc(this.x+CAM.x, this.y+CAM.y, this.r - 4, 0, 2 * Math.PI);
+    ctx.arc(CAMPos(this.x,this.y).x, CAMPos(this.x,this.y).y, this.r - 4, 0, 2 * Math.PI);
     ctx.fill();
     ctx.stroke();
     ctx.closePath();
 
     ctx.fillStyle = neutral_color;
     if (this.v >= this.adj.length) ctx.fillStyle = unstable_color;
-    ctx.fillText(this.v, this.x + this.r + 2 +CAM.x, this.y - 3 +CAM.y);
+    ctx.fillText(this.v, CAMPos(this.x,this.y).x + this.r + 2, CAMPos(this.x,this.y).y -3);
     ctx.fillStyle = neutral_color;
-    ctx.fillText(this.adj.length, this.x + this.r + 2 +CAM.x, this.y + 10 +CAM.y);
-    ctx.fillText(this.tcount, this.x - this.r - 7 +CAM.x, this.y + 10 +CAM.y);
+    ctx.fillText(this.adj.length, CAMPos(this.x,this.y).x + this.r + 2, CAMPos(this.x,this.y).y+10);
+    ctx.fillText(this.tcount, CAMPos(this.x,this.y).x - this.r - 7, CAMPos(this.x,this.y).y+10);
   }
   drawEdge() {
     for (let e of this.adj) {
@@ -98,8 +98,8 @@ class Node {
         ctx.strokeStyle = select_color;
       ctx.lineWidth = edge_width;
       ctx.beginPath();
-      ctx.moveTo(this.x +CAM.x, this.y +CAM.y);
-      ctx.lineTo(e.x +CAM.x, e.y +CAM.y);
+      ctx.moveTo(CAMPos(this.x,this.y).x, CAMPos(this.x,this.y).y);
+      ctx.lineTo(CAMPos(e.x,e.y).x, CAMPos(e.x,e.y).y);
       ctx.stroke();
       ctx.closePath();
     }
@@ -264,8 +264,8 @@ function dist(p1, p2) {
     (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1])
   );
 }
-function newPos(xx, yy) {
-  return {x:xx+CAM.x, y:};
+function CAMPos(xx, yy) {
+  return {x:(xx-CAM.x)/ZOOM, y:(yy-CAM.y)/ZOOM};
 }
 
 let t = 0; //time counter
@@ -351,8 +351,7 @@ function draw() {
     for (let i = 0; i < 3; i++) {
       ctx.beginPath();
       ctx.arc(
-        select.x +CAM.x,
-        select.y +CAM.y,
+        CAMPos(select.x,select.y).x, CAMPos(select.x,select.y).y,
         select.r + 4,
         (i * 2 * Math.PI) / 3 + t / 10,
         (i * 2 * Math.PI) / 3 + (2 * Math.PI) / 3 - 0.65 + t / 10
@@ -415,9 +414,9 @@ let sSel = false;
 c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
-  mPos = [x,y];
+  mPos = [ZOOM*x + CAM.x, ZOOM*y + CAM.y];
   
-  if(select!=null && dist(mPos,[select.x+CAM.x,select.y+CAM.y])<select.r+1) sSel = true;
+  if(select!=null && dist(mPos,[CAMPos(select.x,select.y).x, CAMPos(select.x,select.y).y])<select.r+1) sSel = true;
 });
 
 let movedx = 0;
@@ -437,7 +436,7 @@ c.addEventListener("mousemove", e => {
       CAM.y+=y-mPos[1];
     }
     if(x!=mPos[0]||y!=mPos[1]) mDrag = true;
-    mPos = [x, y];
+    mPos = [ZOOM*x + CAM.x, ZOOM*y + CAM.y];
   }
 });
 
@@ -446,11 +445,10 @@ c.addEventListener("mouseup", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
 
-  let p = [x-CAM.x, y-CAM.y];
   let newN = true;
   for (let n of G.nodes) {
     let pp = [n.x, n.y];
-    if (dist(p, pp) <= n.r + 1) {
+    if (dist(mPos, pp) <= n.r + 1) {
       newN = false;
       if (keysdown[16]) {
         if (select != null) {
@@ -468,16 +466,23 @@ c.addEventListener("mouseup", e => {
         }
       }
     }
-    if (dist(p, pp) <= n.r * 2) newN = false;
+    if (dist(mPos, pp) <= n.r * 2) newN = false;
   }
   if (newN && !mDrag) {
-    G.addNode(p[0], p[1]);
-    console.log("new node at: " + p[0] + " , " + p[1]);
+    G.addNode(mPos[0], mPos[1]);
+    console.log("new node at: " + mPos[0] + " , " + mPos[1]);
   }
   
   mDrag = false;
   mPos = null;
   sSel = false;
+});
+
+let lastScroll = 0;
+c.addEventListener("scroll",e => {
+  var st = window.pageYOffset;
+  ZOOM += st-lastScroll;
+  lastScroll=st;
 });
 
 let keysdown = {};
