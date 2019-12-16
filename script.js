@@ -506,10 +506,12 @@ window.addEventListener("keyup", e => {
     ZOOM = 1;
   }
   if (key == 187){
-    ZOOM -= 0.1;
+    //- key: zoom out
+    ZOOM /= 1.1;
   }
   if(key==189){
-    ZOOM += 0.1;
+    //+ key: zoom in
+    ZOOM *= 1.1;
   }
   if (key == 80) {
     //p key: presimulation
