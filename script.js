@@ -40,6 +40,8 @@ let sim_speed = 0.5;
 let rand_val_gen = 1.5;
 
 let CAM = {x:0, y:0};
+let ZOOM = 1;
+
 const refractory = 25;
 const presimfrate = 0.25;
 const select_color = "yellow";
@@ -151,6 +153,7 @@ class Signal {
     }
   }
 }
+
 class Graph {
   constructor() {
     this.nodes = [];
@@ -261,8 +264,8 @@ function dist(p1, p2) {
     (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1])
   );
 }
-function fround(x, f) {
-  return Math.floor(x * f) / f;
+function newPos(xx, yy) {
+  return {x:xx+CAM.x, y:};
 }
 
 let t = 0; //time counter
@@ -414,7 +417,7 @@ c.addEventListener("mousedown", e => {
   let y = e.clientY - c.getBoundingClientRect().top;
   mPos = [x,y];
   
-  if(select!=null && dist(mPos,[select.x,select.y])<select.r+1) sSel = true;
+  if(select!=null && dist(mPos,[select.x+CAM.x,select.y+CAM.y])<select.r+1) sSel = true;
 });
 
 let movedx = 0;
@@ -489,6 +492,11 @@ window.addEventListener("keydown", e => {
 window.addEventListener("keyup", e => {
   const key = e.keyCode;
   console.log(key);
+  if (key == 91){
+    //command key: reset camera
+    CAM.x = CAM.y = 0;
+    ZOOM = 1;
+  }
   if (key == 80) {
     //p key: presimulation
     presim();
