@@ -402,6 +402,8 @@ c.addEventListener("mousedown", e => {
   let x = e.clientX - c.getBoundingClientRect().left;
   let y = e.clientY - c.getBoundingClientRect().top;
   mPos = [x,y];
+  
+  if(select!=null && dist(mPos,[select.x,select.y])) mDrag = true;
 });
 
 let movedx = 0;
@@ -412,16 +414,15 @@ c.addEventListener("mousemove", e => {
   let y = e.clientY - c.getBoundingClientRect().top;
   
   if (mPos!=null) {
-    if(select!=null && dist([x,y])){ //dragging node
+    if(select!=null && mDrag){ //dragging node
       select.x = x-CAM.x;
       select.y = y-CAM.y;
     }
     else{ //dragging camera
-      console
       CAM.x+=x-mPos[0];
       CAM.y+=y-mPos[1];
     }
-    if(x!=mPos[0]||y!=mPos[1]) mDrag = true;
+    //f(x!=mPos[0]||y!=mPos[1]) mDrag = true;
     mPos = [x, y];
   }
 });
