@@ -302,8 +302,8 @@ function draw() {
     let stable = true; 
     G.nodes.forEach(x=>stable=stable&&((x.v<x.adj.length)||x.sink));
     
-    // console.log("!!!");
-    // console.log(stable);
+    console.log("!!!");
+    console.log(stable);
     while(G.signals.length == 0 && stable && asd){
       let ii = Math.floor(Math.random()*G.nodes.length);
       if(!G.nodes[ii].sink){
@@ -365,6 +365,11 @@ function draw() {
   ctx.fillText("Edges: "+ooo,5,20);
   ooo = 0; G.nodes.forEach(x=>ooo+=x.v); ooo+=G.signals.length;
   ctx.fillText("Pebbles: "+ooo,5,30);
+  
+  for(let n of G.nodes) if(n.sink) ooo-= n.v;
+  ctx.fillText("Free pebbles: "+ooo,5,40);
+  
+  ctx.fillText("Scene: "+scene,5,50);
   
   t++;
   window.requestAnimationFrame(draw);
