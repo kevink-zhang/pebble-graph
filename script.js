@@ -570,7 +570,7 @@ window.addEventListener("keyup", e => {
     select.sink = !select.sink;
     select = null;
   }
-  if (key == 90 && select != null) {
+  if (key == 8 && select != null) {
     //z key: deletes selected node
     let ooo = select;
     G.nodes.splice(G.nodes.indexOf(select), 1);
