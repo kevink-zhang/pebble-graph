@@ -517,9 +517,18 @@ c.addEventListener("mouseup", e => {
 let keysdown = {};
 window.addEventListener("keydown", e => {
   const key = e.keyCode;
+  let zFactor = 1.01;
   if (key == 16) {
     //shift key: yeeting edges
     keysdown[16] = true;
+  }
+  if (key == 187){
+    //- key: zoom out
+    ZOOM /= zFactor;
+  }
+  if(key==189){
+    //+ key: zoom in
+    ZOOM *= zFactor;
   }
 });
 
@@ -530,14 +539,6 @@ window.addEventListener("keyup", e => {
     //command key: reset camera
     CAM = {x:c.width/2, y:c.height/2};
     ZOOM = 1;
-  }
-  if (key == 187){
-    //- key: zoom out
-    ZOOM /= 1.1;
-  }
-  if(key==189){
-    //+ key: zoom in
-    ZOOM *= 1.1;
   }
   if (key == 80) {
     //p key: presimulation
