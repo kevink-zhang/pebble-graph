@@ -83,7 +83,6 @@ class Node {
     ctx.stroke();
     ctx.closePath();
 
-    if (this.sink) ctx.fillStyle = ctx.strokeStyle = back_color;
     ctx.beginPath();
     ctx.arc(CAMPos(this.x,this.y).x, CAMPos(this.x,this.y).y, this.r - 4, 0, 2 * Math.PI);
     ctx.fill();
